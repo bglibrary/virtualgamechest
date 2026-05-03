@@ -14,15 +14,6 @@ Game Chest is a **Digital Game Box**: a web application that lets users create a
 | **Open & extensible** | Anyone can create game material by writing a JSON file |
 | **Physical-table metaphor** | The play area is a virtual table with permissive interactions |
 
-## V1 Scope
-
-- **Object types:** Cards and Decks
-- **Capabilities:** `shufflable`, `drawable`, `flippable`, `moveable`, `dealable`, `sortable`
-- **Smart interactions:** Snap-to-card stacking, cascade offset, stack-grab drag, snap-to-zone
-- **Modes:** Play Mode, Creation Mode, Home Screen
-- **Validation scenario:** Solitaire Klondike (full physical interaction support)
-- **Device:** Single device only (P2P architecture-ready for post-MVP)
-
 ## Tech Stack
 
 | Layer | Technology |
@@ -43,29 +34,24 @@ Game Chest is a **Digital Game Box**: a web application that lets users create a
 ## Getting Started
 
 ```bash
-npm install
-npm run dev
+npm install       # Install dependencies
+npm run dev       # Start dev server (http://localhost:5173)
+npm test          # Run unit tests
+npm run lint      # Lint code
+npm run format    # Format code
+npm run build     # Production build
 ```
 
 ## Project Structure
 
 ```
-├── docs/           # Vision, specs, context documents
-│   ├── context/    # Vision, conceptual model
-│   └── specs/      # Detailed implementation specs
-├── games/          # Game definition JSON files
-├── public/         # Static assets (game images, etc.)
-└── src/            # Application source code
+├── docs/          # Vision, specs, context documents
+│   ├── product/   # Product requirements
+│   └── specs/     # Detailed implementation specs
+├── games/         # Game definition JSON files
+├── public/        # Static assets (game images, etc.)
+└── src/           # Application source code
 ```
-
-## Documentation
-
-- **Vision:** `docs/context/01-vision.md`
-- **Conceptual Model:** `docs/context/02-conceptual-model.md`
-- **Tech Stack:** `docs/specs/tech-stack.md`
-- **V1 Scope:** `docs/specs/scope-v1.md`
-- **Philosophy:** `docs/specs/philosophy-scope.md`
-- **Data Model:** `docs/specs/data-model.md`
 
 ## License
 
