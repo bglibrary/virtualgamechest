@@ -1,0 +1,17 @@
+{
+  "name": "Poker Patience",
+  "version": "1.0.0",
+  "components": [
+    {
+      "type": "card",
+      "face": {
+        "type": "text",
+        "text": "As Cœur"
+      },
+      "position": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  ]
+}
