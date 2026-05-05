@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { useGameStore } from "@/store/gameStore";
+import { useCardStateStore } from "@/store/cardStateStore";
 import CardRenderer from "@/ui/canvas/CardRenderer";
 
 function TableCanvas() {
@@ -9,6 +10,7 @@ function TableCanvas() {
     height: window.innerHeight,
   });
   const game = useGameStore((s) => s.game);
+  const isFaceUp = useCardStateStore((s) => s.isFaceUp);
 
   useEffect(() => {
     const handleResize = () => {
@@ -36,6 +38,8 @@ function TableCanvas() {
               <CardRenderer
                 key={index}
                 component={component}
+                cardIndex={index}
+                faceUp={isFaceUp(index)}
                 viewportWidth={size.width}
                 viewportHeight={size.height}
               />

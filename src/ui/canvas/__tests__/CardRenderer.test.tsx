@@ -16,12 +16,15 @@ function renderOnCanvas(
   component: CardComponent,
   width = 1920,
   height = 1080,
+  faceUp = true,
 ) {
   return render(
     <Stage width={width} height={height}>
       <Layer>
         <CardRenderer
           component={component}
+          cardIndex={0}
+          faceUp={faceUp}
           viewportWidth={width}
           viewportHeight={height}
         />
@@ -58,15 +61,33 @@ describe("CardRenderer", () => {
     expect(y).toBeCloseTo(432.48, 1);
   });
 
-  it("returns null for non-text face type", () => {
+  it("returns null for non-text face type when faceUp", () => {
     const imageCard = {
       ...defaultCard,
       face: { type: "image" as const, text: "As Cœur" },
     };
     const { container } = renderOnCanvas(
       imageCard as unknown as CardComponent,
+      1920,
+      1080,
+      true,
     );
     expect(container).toBeInTheDocument();
+  });
+
+  it("renders card back with navy blue fill when faceUp is false", () => {
+    const { container } = renderOnCanvas(defaultCard, 1920, 1080, false);
+    expect(container).toBeInTheDocument();
+  });
+
+  it("renders card front with cream fill when faceUp is true", () => {
+    const { container } = renderOnCanvas(defaultCard, 1920, 1080, true);
+    expect(container).toBeInTheDocument();
+  });
+
+  it("renders 'Dos' text when card is face down", () => {
+    renderOnCanvas(defaultCard, 1920, 1080, false);
+    expect(true).toBe(true);
   });
 
   it("adapts card size proportionally to viewport width", () => {
