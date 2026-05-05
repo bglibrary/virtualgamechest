@@ -7,8 +7,16 @@ Before coding:
 - [ ] Technical spec updated
 - [ ] User approved implementation
 
-Before commit:
-- [ ] Tests passing
+After each user story implementation:
+- [ ] Implementation completed
 - [ ] Regression tests added
-- [ ] README updated
+- [ ] Tests passing
+- [ ] Lint/typecheck/build passing
+- [ ] Specs updated if needed
+- [ ] User asked to validate (STOP here, do NOT proceed to next US)
+- [ ] User validation received
+
+Before commit (per user story):
+- [ ] Definition of Done checklist fully satisfied (Step 7)
 - [ ] User validated behavior
+- [ ] One commit per validated user story

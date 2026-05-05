@@ -4,7 +4,8 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  plugins: [react(), tailwindcss()] as any,
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

@@ -130,6 +130,7 @@ Mandatory quality expectations:
 
 After each implemented user story:
 
+- **STOP and ask the user to validate. Do NOT proceed to the next user story.**
 - Ask the user to validate behavior locally or in production-like conditions.
 - If validation fails or feedback is provided:
   - update product requirements,
@@ -139,6 +140,7 @@ After each implemented user story:
   - preserve alignment between all artifacts.
 
 Never allow specs and implementation to diverge.
+Never skip user validation between user stories.
 
 ## Step 7 — Definition of Done
 

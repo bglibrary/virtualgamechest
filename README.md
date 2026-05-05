@@ -53,6 +53,12 @@ npm run build     # Production build
 └── src/           # Application source code
 ```
 
+## Global Constraints
+
+| Constraint | Description |
+|---|---|
+| **Native responsive** | All UI must be natively responsive. Component sizes, positions, and layouts must adapt proportionally to the viewport. No fixed pixel sizes for game components — all dimensions derived from viewport metrics. This affects all technical specifications. |
+
 ## License
 
 Private project — all rights reserved.
