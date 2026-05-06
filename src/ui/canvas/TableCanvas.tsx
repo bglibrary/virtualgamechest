@@ -4,7 +4,7 @@ import { useGameStore } from "@/store/gameStore";
 import { useCardStateStore } from "@/store/cardStateStore";
 import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import ActionBar from "@/ui/html/ActionBar";
-import { CARD_WIDTH_RATIO, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
+import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
 
 function TableCanvas() {
   const [size, setSize] = useState({
@@ -29,6 +29,7 @@ function TableCanvas() {
   }, [selectCard]);
 
   const selectedComponent = game?.components[selectedCardIndex ?? -1];
+  const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
   const actionBarX =
     selectedComponent && selectedComponent.type === "card"
       ? selectedComponent.position.x * size.width
@@ -36,7 +37,7 @@ function TableCanvas() {
   const actionBarY =
     selectedComponent && selectedComponent.type === "card"
       ? selectedComponent.position.y * size.height -
-        (size.width * CARD_WIDTH_RATIO * CARD_ASPECT) / 2 -
+        (cardWidth * CARD_ASPECT) / 2 -
         48
       : 0;
 

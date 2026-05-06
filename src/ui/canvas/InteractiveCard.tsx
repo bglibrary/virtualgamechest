@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import type { CardComponent } from "@/types/game";
 import { useCardStateStore } from "@/store/cardStateStore";
 import CardRenderer from "@/ui/canvas/CardRenderer";
@@ -20,6 +20,15 @@ function InteractiveCard({
   const isFaceUp = useCardStateStore((s) => s.isFaceUp(cardIndex));
   const selectCard = useCardStateStore((s) => s.selectCard);
   const flipCard = useCardStateStore((s) => s.flipCard);
+  const bounceRef = useRef<(() => void) | null>(null);
+  const prevFaceUp = useRef(isFaceUp);
+
+  useEffect(() => {
+    if (prevFaceUp.current !== isFaceUp) {
+      prevFaceUp.current = isFaceUp;
+      bounceRef.current?.();
+    }
+  }, [isFaceUp]);
 
   const handleClick = useCallback(() => {
     selectCard(cardIndex);
@@ -27,7 +36,8 @@ function InteractiveCard({
 
   const handleDblClick = useCallback(() => {
     flipCard(cardIndex);
-  }, [flipCard, cardIndex]);
+    selectCard(null);
+  }, [flipCard, selectCard, cardIndex]);
 
   const { onClick } = useClickOrDblClick({
     onClick: handleClick,
@@ -42,6 +52,7 @@ function InteractiveCard({
       viewportWidth={viewportWidth}
       viewportHeight={viewportHeight}
       onClick={onClick}
+      onBounceRef={bounceRef}
     />
   );
 }
