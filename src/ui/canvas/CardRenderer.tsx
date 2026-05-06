@@ -19,6 +19,7 @@ interface CardRendererProps {
   faceUp: boolean;
   viewportWidth: number;
   viewportHeight: number;
+  onClick?: () => void;
 }
 
 function CardRenderer({
@@ -26,6 +27,7 @@ function CardRenderer({
   faceUp,
   viewportWidth,
   viewportHeight,
+  onClick,
 }: CardRendererProps) {
   const cardWidth = viewportWidth * CARD_WIDTH_RATIO;
   const cardHeight = cardWidth * CARD_ASPECT;
@@ -40,7 +42,7 @@ function CardRenderer({
   const textFill = faceUp ? CARD_FRONT_TEXT_FILL : CARD_BACK_TEXT_FILL;
 
   return (
-    <Group x={x} y={y}>
+    <Group x={x} y={y} onClick={onClick} onTap={onClick}>
       <Rect
         width={cardWidth}
         height={cardHeight}

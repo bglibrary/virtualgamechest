@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { useCardStateStore } from "@/store/cardStateStore";
 
 beforeEach(() => {
-  useCardStateStore.setState({ faceUp: {} });
+  useCardStateStore.setState({ faceUp: {}, selectedCardIndex: null });
 });
 
 describe("cardStateStore", () => {
@@ -25,5 +25,22 @@ describe("cardStateStore", () => {
     useCardStateStore.getState().flipCard(0);
     expect(useCardStateStore.getState().isFaceUp(0)).toBe(false);
     expect(useCardStateStore.getState().isFaceUp(1)).toBe(true);
+  });
+
+  it("selects a card", () => {
+    useCardStateStore.getState().selectCard(0);
+    expect(useCardStateStore.getState().selectedCardIndex).toBe(0);
+  });
+
+  it("deselects a card with null", () => {
+    useCardStateStore.getState().selectCard(0);
+    useCardStateStore.getState().selectCard(null);
+    expect(useCardStateStore.getState().selectedCardIndex).toBe(null);
+  });
+
+  it("switches selection to a different card", () => {
+    useCardStateStore.getState().selectCard(0);
+    useCardStateStore.getState().selectCard(1);
+    expect(useCardStateStore.getState().selectedCardIndex).toBe(1);
   });
 });
