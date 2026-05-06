@@ -8,9 +8,9 @@
 | Field | Value |
 |---|---|
 | Feature | Card Flip & Action Bar |
-| Status | Draft |
+| Status | Implemented |
 | Created | 2026-05-05 |
-| Last Updated | 2026-05-05 |
+| Last Updated | 2026-05-06 |
 | Author | User |
 | Backlog Reference | docs/specs/backlog.md |
 
@@ -29,9 +29,10 @@ This is the first interaction feature for Game Chest. Cards in board games have 
 - Action bar (HTML overlay) appearing on single click/tap on a card
 - Action bar contains a "Retourner" button with icon (RotateCw from Lucide) + text
 - Action bar dismisses when clicking elsewhere on the table
-- Double click/tap on a card flips it directly (no action bar shown)
-- Bounce animation on flip: slight vertical bounce (~5px) to draw attention
-- Action bar is extensible (more actions can be added later)
+- Action bar dismisses after clicking "Retourner" (must re-click card to show it again)
+- Double click/tap on a card flips it directly (no action bar shown) and dismisses any visible action bar
+- Bounce animation on flip: vertical bounce (~12px) to draw attention
+- Card minimum width of 55px to ensure readability on mobile viewports
 
 ## Out of Scope
 
@@ -71,7 +72,7 @@ This is the first interaction feature for Game Chest. Cards in board games have 
 - [ ] Single click/tap on a card shows the action bar near that card
 - [ ] The action bar is positioned above the card, horizontally centered
 - [ ] The action bar contains a "Retourner" button with a rotate icon and text label
-- [ ] Clicking the "Retourner" button flips the card (front ↔ back)
+- [ ] Clicking the "Retourner" button flips the card (front ↔ back) and dismisses the action bar
 - [ ] Clicking anywhere outside the card and action bar dismisses the action bar
 - [ ] The action bar does not appear on double click/tap (the card flips directly instead)
 - [ ] Only one action bar is visible at a time (clicking another card moves the action bar)
@@ -86,8 +87,8 @@ This is the first interaction feature for Game Chest. Cards in board games have 
 **Acceptance Criteria:**
 
 - [ ] Double click (desktop) or double tap (mobile) on a card flips it (front ↔ back)
-- [ ] A double click/tap does NOT show the action bar
-- [ ] After a flip (via action bar or double click), the card performs a subtle vertical bounce (~5px up then back)
+- [ ] A double click/tap does NOT show the action bar and dismisses any visible action bar
+- [ ] After a flip (via action bar or double click), the card performs a subtle vertical bounce (~12px up then back)
 - [ ] The bounce animation completes in under 300ms
 - [ ] The flip is instantaneous (no 3D rotation animation) — the bounce is the only visual feedback
 - [ ] The card remains in its new state (front/back) after the bounce
@@ -130,3 +131,4 @@ This is the first interaction feature for Game Chest. Cards in board games have 
 | Date | Change | Author |
 |---|---|---|
 | 2026-05-05 | Initial draft | AI |
+| 2026-05-06 | Updated: bounce 12px, action bar dismiss on flip/dblclick, mobile min-width 55px | AI |

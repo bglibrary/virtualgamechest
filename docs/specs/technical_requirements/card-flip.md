@@ -8,9 +8,9 @@
 | Field | Value |
 |---|---|
 | Feature | Card Flip & Action Bar |
-| Status | Draft |
+| Status | Implemented |
 | Created | 2026-05-05 |
-| Last Updated | 2026-05-05 |
+| Last Updated | 2026-05-06 |
 | Requirements Reference | docs/specs/product_requirements/card-flip.md |
 
 ## Architecture Decisions
@@ -20,7 +20,7 @@
 | Flip state in a separate Zustand store (`cardStateStore`), not in game JSON | Flip state is runtime UI state, not game definition data. Keeps game JSON immutable and schema clean. | Add `faceUp` field to JSON (mixes data and state); React local state (no cross-component access) |
 | Action bar as HTML overlay (not Konva node) | Better text rendering, Tailwind styling, accessibility, and extensibility. Position computed from card's Konva coordinates. | Konva Group/Label (poor text rendering, no Tailwind, harder to extend) |
 | 250ms click delay to distinguish single/double click | Standard web UX pattern. Uses Konva's native `onClick`/`onDblClick` events. Simple, reliable. | Custom tap counter (more complex, error-prone); no delay (action bar appears on every click then hides on dblclick — jarring) |
-| Bounce animation via Konva `to()` tween on the Group `y` offset | Konva built-in tween engine. No extra library. Lightweight. | Framer Motion (requires wrapping Konva nodes — complex integration); CSS animation (doesn't apply to canvas) |
+| Bounce animation via Konva `to()` tween on the Group `offsetY` | Konva built-in tween engine. No extra library. Lightweight. `offsetY` used instead of `y` to avoid recalculating position. | Framer Motion (requires wrapping Konva nodes — complex integration); CSS animation (doesn't apply to canvas) |
 | Component index as card identifier (temporary) | Only one card exists currently. Index is sufficient for MVP. Will need stable IDs for multi-card games. | UUID per card (over-engineering for MVP); position-based key (fragile) |
 
 ## Impacted Components
@@ -28,11 +28,12 @@
 | Component | Change Type | Description |
 |---|---|---|
 | `src/store/cardStateStore.ts` | New | Zustand store for per-card flip state + selected card |
-| `src/ui/canvas/CardRenderer.tsx` | Modified | Add back face rendering, click/dblclick handlers, bounce animation |
-| `src/ui/canvas/TableCanvas.tsx` | Modified | Add click-on-background handler, render action bar overlay |
+| `src/ui/canvas/CardRenderer.tsx` | Modified | Add back face rendering, onClick prop, bounce animation via onBounceRef |
+| `src/ui/canvas/TableCanvas.tsx` | Modified | Add click-on-background handler, render action bar overlay, relative container |
+| `src/ui/canvas/InteractiveCard.tsx` | New | Wrapper component: useClickOrDblClick + bounce trigger on faceUp change |
 | `src/ui/html/ActionBar.tsx` | New | HTML overlay action bar with "Retourner" button |
 | `src/ui/hooks/useClickOrDblClick.ts` | New | Custom hook to distinguish single click from double click with 250ms delay |
-| `src/App.tsx` | Modified | Wrap TableCanvas + ActionBar in relative container |
+| `src/App.tsx` | Unchanged | No changes needed (container moved to TableCanvas) |
 | `src/schemas/game.ts` | Unchanged | Game JSON schema stays the same (back face is hardcoded, not from JSON) |
 | `src/types/game.ts` | Unchanged | No new types needed from schema |
 
@@ -92,7 +93,7 @@ const CARD_BACK_TEXT_FILL = "#FFFFFF"; // White
   - `selectedCardIndex`: `number | null` — which card index has its action bar visible. `null` = no selection.
   - `flipCard(index)`: toggles `faceUp[index]` and triggers bounce animation.
   - `selectCard(index | null)`: sets/clears selected card.
-- **Flow**: Click on card → `selectCard(index)` → ActionBar appears. Click "Retourner" → `flipCard(index)` → card re-renders with opposite face + bounce. Click background → `selectCard(null)` → ActionBar hides.
+- **Flow**: Click on card → `selectCard(index)` → ActionBar appears. Click "Retourner" → `flipCard(index)` + `selectCard(null)` → card re-renders with opposite face + bounce + ActionBar hides. Double click → `flipCard(index)` + `selectCard(null)` → card flips + ActionBar hides. Click background → `selectCard(null)` → ActionBar hides.
 - **Persistence**: None. Flip state resets on reload.
 
 ## Database / Storage Changes
@@ -135,7 +136,7 @@ Key test scenarios:
 
 ## Performance Considerations
 
-- Konva `to()` tween for bounce is lightweight — one property animated over 300ms.
+- Konva `to()` tween for bounce is lightweight — `offsetY` animated over 120ms up + 120ms down (240ms total).
 - 250ms click delay is a deliberate UX tradeoff — acceptable for card games.
 - Action bar is an HTML overlay — React re-renders only when selection changes.
 
@@ -161,3 +162,4 @@ None needed. This is pure UI interaction.
 | Date | Change | Author |
 |---|---|---|
 | 2026-05-05 | Initial draft | AI |
+| 2026-05-06 | Updated: Implemented status, offsetY bounce, InteractiveCard, action bar dismiss on flip/dblclick, min-width 55px | AI |
