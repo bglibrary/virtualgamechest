@@ -3,6 +3,8 @@
 Before coding:
 - [ ] Requirements clarified
 - [ ] Feature scope validated
+- [ ] Parallelization opportunities identified in backlog
+- [ ] Specs for independent features written in parallel where possible
 - [ ] Product spec updated
 - [ ] Technical spec updated
 - [ ] User approved implementation
@@ -20,3 +22,9 @@ Before commit (per user story):
 - [ ] Definition of Done checklist fully satisfied (Step 7)
 - [ ] User validated behavior
 - [ ] One commit per validated user story
+
+Before merging a parallel branch:
+- [ ] Parallel feature validated on its branch
+- [ ] Main branch up to date with all prior sequential features
+- [ ] Merge conflicts resolved and tested
+- [ ] No regression from merge

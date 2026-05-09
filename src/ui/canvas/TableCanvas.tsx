@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { useGameStore } from "@/store/gameStore";
 import { useCardStateStore } from "@/store/cardStateStore";
+import { useCardPositionStore } from "@/store/cardPositionStore";
 import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import ActionBar from "@/ui/html/ActionBar";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
@@ -13,6 +14,7 @@ function TableCanvas() {
   });
   const game = useGameStore((s) => s.game);
   const selectedCardIndex = useCardStateStore((s) => s.selectedCardIndex);
+  const isDragging = useCardPositionStore((s) => s.isDragging);
   const selectCard = useCardStateStore((s) => s.selectCard);
   const flipCard = useCardStateStore((s) => s.flipCard);
 
@@ -40,6 +42,11 @@ function TableCanvas() {
         (cardWidth * CARD_ASPECT) / 2 -
         48
       : 0;
+
+  const showActionBar =
+    !isDragging &&
+    selectedCardIndex !== null &&
+    selectedComponent?.type === "card";
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
@@ -75,13 +82,13 @@ function TableCanvas() {
       <ActionBar
         x={actionBarX}
         y={actionBarY}
-      onFlip={() => {
-        if (selectedCardIndex !== null) {
-          flipCard(selectedCardIndex);
-          selectCard(null);
-        }
-      }}
-        visible={selectedCardIndex !== null && selectedComponent?.type === "card"}
+        onFlip={() => {
+          if (selectedCardIndex !== null) {
+            flipCard(selectedCardIndex);
+            selectCard(null);
+          }
+        }}
+        visible={showActionBar}
       />
     </div>
   );

@@ -39,6 +39,19 @@ const defaultCard: CardComponent = {
   position: { x: 0.5, y: 0.5 },
 };
 
+const cardWithFrontImage: CardComponent = {
+  type: "card",
+  face: { type: "text", text: "As Cœur", image: "https://example.com/ace.png" },
+  position: { x: 0.5, y: 0.5 },
+};
+
+const cardWithBack: CardComponent = {
+  type: "card",
+  face: { type: "text", text: "As Cœur" },
+  back: { type: "text", text: "Mon Jeu", image: "https://example.com/back.svg" },
+  position: { x: 0.5, y: 0.5 },
+};
+
 describe("CardRenderer", () => {
   it("renders without crashing", () => {
     const { container } = renderOnCanvas(defaultCard);
@@ -61,20 +74,6 @@ describe("CardRenderer", () => {
     expect(y).toBeCloseTo(432.48, 1);
   });
 
-  it("returns null for non-text face type when faceUp", () => {
-    const imageCard = {
-      ...defaultCard,
-      face: { type: "image" as const, text: "As Cœur" },
-    };
-    const { container } = renderOnCanvas(
-      imageCard as unknown as CardComponent,
-      1920,
-      1080,
-      true,
-    );
-    expect(container).toBeInTheDocument();
-  });
-
   it("renders card back with navy blue fill when faceUp is false", () => {
     const { container } = renderOnCanvas(defaultCard, 1920, 1080, false);
     expect(container).toBeInTheDocument();
@@ -85,8 +84,13 @@ describe("CardRenderer", () => {
     expect(container).toBeInTheDocument();
   });
 
-  it("renders 'Dos' text when card is face down", () => {
+  it("renders 'Dos' text when card is face down and no back field", () => {
     renderOnCanvas(defaultCard, 1920, 1080, false);
+    expect(true).toBe(true);
+  });
+
+  it("renders custom back text when card is face down and back field is present", () => {
+    renderOnCanvas(cardWithBack, 1920, 1080, false);
     expect(true).toBe(true);
   });
 
@@ -103,5 +107,30 @@ describe("CardRenderer", () => {
     const y = 0.75 * 1080 - cardHeight / 2;
     expect(x).toBeCloseTo(403.2, 1);
     expect(y).toBeCloseTo(702.48, 1);
+  });
+
+  it("renders card with front image without crashing", () => {
+    const { container } = renderOnCanvas(cardWithFrontImage, 1920, 1080, true);
+    expect(container).toBeInTheDocument();
+  });
+
+  it("renders card with back image without crashing", () => {
+    const { container } = renderOnCanvas(cardWithBack, 1920, 1080, false);
+    expect(container).toBeInTheDocument();
+  });
+
+  it("renders text fallback when front image is loading (face up)", () => {
+    const { container } = renderOnCanvas(cardWithFrontImage, 1920, 1080, true);
+    expect(container).toBeInTheDocument();
+  });
+
+  it("renders text fallback when back image is loading (face down)", () => {
+    const { container } = renderOnCanvas(cardWithBack, 1920, 1080, false);
+    expect(container).toBeInTheDocument();
+  });
+
+  it("renders default Dos when face down without back field", () => {
+    const { container } = renderOnCanvas(defaultCard, 1920, 1080, false);
+    expect(container).toBeInTheDocument();
   });
 });

@@ -6,7 +6,16 @@ interface UseClickOrDblClickOptions {
   delay?: number;
 }
 
-function useClickOrDblClick({ onClick, onDblClick, delay = 250 }: UseClickOrDblClickOptions) {
+interface UseClickOrDblClickResult {
+  onClick: () => void;
+  cancelPendingClick: () => void;
+}
+
+function useClickOrDblClick({
+  onClick,
+  onDblClick,
+  delay = 250,
+}: UseClickOrDblClickOptions): UseClickOrDblClickResult {
   const clickTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleClick = useCallback(() => {
@@ -22,7 +31,14 @@ function useClickOrDblClick({ onClick, onDblClick, delay = 250 }: UseClickOrDblC
     }
   }, [onClick, onDblClick, delay]);
 
-  return { onClick: handleClick };
+  const cancelPendingClick = useCallback(() => {
+    if (clickTimeout.current !== null) {
+      clearTimeout(clickTimeout.current);
+      clickTimeout.current = null;
+    }
+  }, []);
+
+  return { onClick: handleClick, cancelPendingClick };
 }
 
 export default useClickOrDblClick;

@@ -41,6 +41,10 @@ If the feature is too large, risky, or poorly scoped:
   - dependencies,
   - recommended implementation order,
   - risks if relevant.
+- Identify parallelization opportunities:
+  - Features with no code dependencies can be implemented in separate sessions/branches concurrently.
+  - Specs (product requirements + technical specs) for downstream features can be written in parallel by sub-agents while upstream features are being implemented.
+  - Explicitly document which features are parallelizable and which are sequential in the backlog.
 
 Wait for validation before continuing.
 
@@ -62,10 +66,18 @@ Before coding:
   - UX expectations if applicable.
 
 Rules:
+
 - Requirements must be explicit and testable.
 - Acceptance criteria must be unambiguous.
 - Missing information must trigger clarification questions.
 - Do not proceed until the user validates the requirements.
+
+Parallelization:
+
+- If the backlog identifies parallelizable features, launch sub-agents or suggest separate sessions to write specs for independent features concurrently.
+- Spec writing (documents only, no code) is always safe to parallelize since it produces separate files with no code conflicts.
+- When parallelizing spec writing, provide each sub-agent with: the current codebase context (schemas, stores, components), the user's clarification answers, and the spec template.
+- After parallel spec writing, the main session must review all specs for consistency before presenting them to the user for validation.
 
 ## Step 4 — Technical Specification
 
@@ -97,6 +109,7 @@ If a refactor is needed:
 ## Step 5 — Incremental Implementation
 
 Default rule:
+
 - Implement ONE user story at a time.
 - Never implement the entire feature at once unless explicitly authorized.
 
@@ -111,6 +124,14 @@ For each user story:
    - impacted files,
    - test results,
    - local validation instructions if needed.
+
+Parallelization:
+
+- When multiple features have no code dependencies and touch different files, they can be implemented in separate sessions on separate git branches.
+- Each session must work on its own branch. Branches are merged sequentially into main after user validation.
+- Overlapping files (shared schemas, types, shared components) create merge conflicts. If overlap is minimal and well-understood, parallel implementation is acceptable with a planned merge order.
+- When launching a parallel implementation session, provide it with: the current branch state, the exact files it may modify, and the files it must NOT modify.
+- The main session is responsible for merging parallel branches and resolving conflicts.
 
 Mandatory quality expectations:
 - clean architecture,
