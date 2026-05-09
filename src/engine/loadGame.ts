@@ -17,9 +17,40 @@ export async function loadGame(url: string): Promise<GameDefinition | null> {
       return null;
     }
 
-    return result.data;
+    return resolveImageUrls(result.data, url);
   } catch (error) {
     console.error("Error loading game:", error);
     return null;
   }
+}
+
+function resolveImageUrl(imageUrl: string | undefined, gameJsonUrl: string): string | undefined {
+  if (!imageUrl) return undefined;
+  try {
+    return new URL(imageUrl, gameJsonUrl).href;
+  } catch {
+    return imageUrl;
+  }
+}
+
+function resolveImageUrls(game: GameDefinition, gameJsonUrl: string): GameDefinition {
+  return {
+    ...game,
+    components: game.components.map((component) => {
+      if (component.type !== "card") return component;
+      return {
+        ...component,
+        face: {
+          ...component.face,
+          image: resolveImageUrl(component.face.image, gameJsonUrl),
+        },
+        back: component.back
+          ? {
+              ...component.back,
+              image: resolveImageUrl(component.back.image, gameJsonUrl),
+            }
+          : undefined,
+      };
+    }),
+  };
 }

@@ -1,8 +1,24 @@
 import { z } from "zod/v4";
 
+export const imageUrlSchema = z.string().min(1).refine(
+  (url) => {
+    const supported = [".png", ".jpg", ".jpeg", ".svg"];
+    const lower = url.toLowerCase().split("?")[0].split("#")[0];
+    return supported.some((ext) => lower.endsWith(ext));
+  },
+  { message: "Image URL must end with .png, .jpg, .jpeg, or .svg" },
+);
+
 export const cardFaceSchema = z.object({
   type: z.literal("text"),
   text: z.string().min(1),
+  image: imageUrlSchema.optional(),
+});
+
+export const cardBackSchema = z.object({
+  type: z.literal("text"),
+  text: z.string().min(1),
+  image: imageUrlSchema.optional(),
 });
 
 export const positionSchema = z.object({
@@ -13,6 +29,7 @@ export const positionSchema = z.object({
 export const cardComponentSchema = z.object({
   type: z.literal("card"),
   face: cardFaceSchema,
+  back: cardBackSchema.optional(),
   position: positionSchema,
 });
 
@@ -27,6 +44,7 @@ export const gameDefinitionSchema = z.object({
 });
 
 export type CardFace = z.infer<typeof cardFaceSchema>;
+export type CardBack = z.infer<typeof cardBackSchema>;
 export type Position = z.infer<typeof positionSchema>;
 export type CardComponent = z.infer<typeof cardComponentSchema>;
 export type GameComponent = z.infer<typeof componentSchema>;

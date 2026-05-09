@@ -1,5 +1,6 @@
 export type {
   CardFace,
+  CardBack,
   Position,
   CardComponent,
   GameComponent,

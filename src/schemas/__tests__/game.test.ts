@@ -2,13 +2,87 @@ import { describe, it, expect } from "vitest";
 import {
   gameDefinitionSchema,
   cardFaceSchema,
+  cardBackSchema,
   positionSchema,
   componentSchema,
+  imageUrlSchema,
 } from "@/schemas/game";
+
+describe("imageUrlSchema", () => {
+  it("accepts absolute HTTPS URL with .png", () => {
+    const result = imageUrlSchema.safeParse("https://example.com/card.png");
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts absolute HTTP URL with .jpg", () => {
+    const result = imageUrlSchema.safeParse("http://example.com/card.jpg");
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts relative path with .svg", () => {
+    const result = imageUrlSchema.safeParse("images/ace.svg");
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts relative path with .jpeg", () => {
+    const result = imageUrlSchema.safeParse("photo.jpeg");
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts URL with query string", () => {
+    const result = imageUrlSchema.safeParse("https://cdn.example.com/ace.png?v=1");
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts URL with hash fragment", () => {
+    const result = imageUrlSchema.safeParse("https://cdn.example.com/ace.svg#icon");
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts uppercase extension", () => {
+    const result = imageUrlSchema.safeParse("images/ace.PNG");
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects .gif extension", () => {
+    const result = imageUrlSchema.safeParse("card.gif");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects empty string", () => {
+    const result = imageUrlSchema.safeParse("");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects .txt extension", () => {
+    const result = imageUrlSchema.safeParse("card.txt");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects .png.exe (extension not at end)", () => {
+    const result = imageUrlSchema.safeParse("card.png.exe");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects URL with no extension", () => {
+    const result = imageUrlSchema.safeParse("https://example.com/card");
+    expect(result.success).toBe(false);
+  });
+});
 
 describe("cardFaceSchema", () => {
   it("accepts valid text face", () => {
     const result = cardFaceSchema.safeParse({ type: "text", text: "As Cœur" });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts text face with image", () => {
+    const result = cardFaceSchema.safeParse({ type: "text", text: "As Cœur", image: "images/ace.png" });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts text face with absolute image URL", () => {
+    const result = cardFaceSchema.safeParse({ type: "text", text: "As Cœur", image: "https://cdn.example.com/ace.jpg" });
     expect(result.success).toBe(true);
   });
 
@@ -24,6 +98,41 @@ describe("cardFaceSchema", () => {
 
   it("rejects missing text", () => {
     const result = cardFaceSchema.safeParse({ type: "text" });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid image extension", () => {
+    const result = cardFaceSchema.safeParse({ type: "text", text: "As Cœur", image: "card.gif" });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts face without image (backward compatible)", () => {
+    const result = cardFaceSchema.safeParse({ type: "text", text: "As Cœur" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.image).toBeUndefined();
+    }
+  });
+});
+
+describe("cardBackSchema", () => {
+  it("accepts valid back with text and image", () => {
+    const result = cardBackSchema.safeParse({ type: "text", text: "Poker", image: "images/back.svg" });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts back with text only", () => {
+    const result = cardBackSchema.safeParse({ type: "text", text: "Poker" });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects back with empty text", () => {
+    const result = cardBackSchema.safeParse({ type: "text", text: "", image: "back.png" });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects back with invalid image extension", () => {
+    const result = cardBackSchema.safeParse({ type: "text", text: "Poker", image: "back.gif" });
     expect(result.success).toBe(false);
   });
 });
@@ -65,6 +174,37 @@ describe("componentSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts card component with face image", () => {
+    const result = componentSchema.safeParse({
+      type: "card",
+      face: { type: "text", text: "As Cœur", image: "images/ace.png" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts card component with back field", () => {
+    const result = componentSchema.safeParse({
+      type: "card",
+      face: { type: "text", text: "As Cœur" },
+      back: { type: "text", text: "Poker", image: "images/back.svg" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts card component without back field (backward compatible)", () => {
+    const result = componentSchema.safeParse({
+      type: "card",
+      face: { type: "text", text: "As Cœur" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.back).toBeUndefined();
+    }
+  });
+
   it("rejects unknown component type", () => {
     const result = componentSchema.safeParse({
       type: "token",
@@ -83,6 +223,22 @@ describe("gameDefinitionSchema", () => {
         {
           type: "card",
           face: { type: "text", text: "As Cœur" },
+          position: { x: 0.5, y: 0.5 },
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts game definition with image fields", () => {
+    const result = gameDefinitionSchema.safeParse({
+      name: "Poker Patience",
+      version: "1.0.0",
+      components: [
+        {
+          type: "card",
+          face: { type: "text", text: "As Cœur", image: "images/ace.png" },
+          back: { type: "text", text: "Dos", image: "images/back.svg" },
           position: { x: 0.5, y: 0.5 },
         },
       ],
