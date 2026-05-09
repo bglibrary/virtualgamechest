@@ -48,14 +48,32 @@ function TableCanvas() {
   const effectiveSelectedPosition =
     selectedPositionOverride ?? selectedComponent?.position;
   const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-  const actionBarX = effectiveSelectedPosition
+  const cardHeight = cardWidth * CARD_ASPECT;
+  const actionBarWidth = 120;
+  const actionBarHeight = 36;
+  const actionBarPadding = 8;
+
+  const cardCenterX = effectiveSelectedPosition
     ? effectiveSelectedPosition.x * size.width
-  : 0;
-  const actionBarY = effectiveSelectedPosition
-  ? effectiveSelectedPosition.y * size.height -
-    (cardWidth * CARD_ASPECT) / 2 -
-    48
-  : 0;
+    : 0;
+  const cardCenterY = effectiveSelectedPosition
+    ? effectiveSelectedPosition.y * size.height
+    : 0;
+
+  const aboveY =
+    cardCenterY - cardHeight / 2 - actionBarHeight - actionBarPadding;
+  const belowY = cardCenterY + cardHeight / 2 + actionBarPadding;
+  const actionBarY =
+    aboveY >= 0
+      ? aboveY
+      : belowY + actionBarHeight <= size.height
+        ? belowY
+        : Math.max(0, size.height - actionBarHeight);
+
+  const actionBarX = Math.max(
+    actionBarWidth / 2,
+    Math.min(size.width - actionBarWidth / 2, cardCenterX),
+  );
 
   const showActionBar =
     !isDragging &&
