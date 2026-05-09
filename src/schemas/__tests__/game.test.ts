@@ -5,6 +5,7 @@ import {
   cardBackSchema,
   positionSchema,
   componentSchema,
+  cardComponentSchema,
   imageUrlSchema,
 } from "@/schemas/game";
 
@@ -137,6 +138,77 @@ describe("cardBackSchema", () => {
   });
 });
 
+describe("cardComponentSchema", () => {
+  it("accepts card with valid id", () => {
+    const result = cardComponentSchema.safeParse({
+      type: "card",
+      id: "ace-hearts",
+      face: { type: "text", text: "As Cœur" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts id with underscores and numbers", () => {
+    const result = cardComponentSchema.safeParse({
+      type: "card",
+      id: "card_1",
+      face: { type: "text", text: "As" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects missing id", () => {
+    const result = cardComponentSchema.safeParse({
+      type: "card",
+      face: { type: "text", text: "As Cœur" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects empty id", () => {
+    const result = cardComponentSchema.safeParse({
+      type: "card",
+      id: "",
+      face: { type: "text", text: "As Cœur" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects id with spaces", () => {
+    const result = cardComponentSchema.safeParse({
+      type: "card",
+      id: "ace hearts",
+      face: { type: "text", text: "As Cœur" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects id with special characters", () => {
+    const result = cardComponentSchema.safeParse({
+      type: "card",
+      id: "ace/hearts",
+      face: { type: "text", text: "As Cœur" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects id with accented characters", () => {
+    const result = cardComponentSchema.safeParse({
+      type: "card",
+      id: "cœur",
+      face: { type: "text", text: "As Cœur" },
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
 describe("positionSchema", () => {
   it("accepts valid position", () => {
     const result = positionSchema.safeParse({ x: 0.5, y: 0.5 });
@@ -165,27 +237,30 @@ describe("positionSchema", () => {
 });
 
 describe("componentSchema", () => {
-  it("accepts valid card component", () => {
+  it("accepts valid card component with id", () => {
     const result = componentSchema.safeParse({
       type: "card",
+      id: "ace-hearts",
       face: { type: "text", text: "As Cœur" },
       position: { x: 0.5, y: 0.5 },
     });
     expect(result.success).toBe(true);
   });
 
-  it("accepts card component with face image", () => {
+  it("accepts card component with face image and id", () => {
     const result = componentSchema.safeParse({
       type: "card",
+      id: "ace-hearts",
       face: { type: "text", text: "As Cœur", image: "images/ace.png" },
       position: { x: 0.5, y: 0.5 },
     });
     expect(result.success).toBe(true);
   });
 
-  it("accepts card component with back field", () => {
+  it("accepts card component with back field and id", () => {
     const result = componentSchema.safeParse({
       type: "card",
+      id: "ace-hearts",
       face: { type: "text", text: "As Cœur" },
       back: { type: "text", text: "Poker", image: "images/back.svg" },
       position: { x: 0.5, y: 0.5 },
@@ -193,16 +268,13 @@ describe("componentSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts card component without back field (backward compatible)", () => {
+  it("rejects card component without id", () => {
     const result = componentSchema.safeParse({
       type: "card",
       face: { type: "text", text: "As Cœur" },
       position: { x: 0.5, y: 0.5 },
     });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.back).toBeUndefined();
-    }
+    expect(result.success).toBe(false);
   });
 
   it("rejects unknown component type", () => {
@@ -215,13 +287,14 @@ describe("componentSchema", () => {
 });
 
 describe("gameDefinitionSchema", () => {
-  it("accepts valid game definition", () => {
+  it("accepts valid game definition with unique ids", () => {
     const result = gameDefinitionSchema.safeParse({
       name: "Poker Patience",
       version: "1.0.0",
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur" },
           position: { x: 0.5, y: 0.5 },
         },
@@ -237,6 +310,7 @@ describe("gameDefinitionSchema", () => {
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur", image: "images/ace.png" },
           back: { type: "text", text: "Dos", image: "images/back.svg" },
           position: { x: 0.5, y: 0.5 },
@@ -246,12 +320,60 @@ describe("gameDefinitionSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts game with multiple components having unique ids", () => {
+    const result = gameDefinitionSchema.safeParse({
+      name: "Poker Patience",
+      version: "1.0.0",
+      components: [
+        {
+          type: "card",
+          id: "ace-hearts",
+          face: { type: "text", text: "As Cœur" },
+          position: { x: 0.3, y: 0.5 },
+        },
+        {
+          type: "card",
+          id: "king-spades",
+          face: { type: "text", text: "Roi Pique" },
+          position: { x: 0.7, y: 0.5 },
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects duplicate component ids", () => {
+    const result = gameDefinitionSchema.safeParse({
+      name: "Poker Patience",
+      version: "1.0.0",
+      components: [
+        {
+          type: "card",
+          id: "ace-hearts",
+          face: { type: "text", text: "As Cœur" },
+          position: { x: 0.3, y: 0.5 },
+        },
+        {
+          type: "card",
+          id: "ace-hearts",
+          face: { type: "text", text: "As Cœur 2" },
+          position: { x: 0.7, y: 0.5 },
+        },
+      ],
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("unique");
+    }
+  });
+
   it("rejects missing name", () => {
     const result = gameDefinitionSchema.safeParse({
       version: "1.0.0",
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur" },
           position: { x: 0.5, y: 0.5 },
         },
@@ -267,6 +389,7 @@ describe("gameDefinitionSchema", () => {
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur" },
           position: { x: 0.5, y: 0.5 },
         },
@@ -290,6 +413,7 @@ describe("gameDefinitionSchema", () => {
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur" },
           position: { x: 0.5, y: 0.5 },
         },

@@ -28,6 +28,7 @@ export const positionSchema = z.object({
 
 export const cardComponentSchema = z.object({
   type: z.literal("card"),
+  id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
   face: cardFaceSchema,
   back: cardBackSchema.optional(),
   position: positionSchema,
@@ -41,7 +42,13 @@ export const gameDefinitionSchema = z.object({
   name: z.string().min(1),
   version: z.string().min(1),
   components: z.array(componentSchema).min(1),
-});
+}).refine(
+  (data) => {
+    const ids = data.components.map((c) => c.id);
+    return new Set(ids).size === ids.length;
+  },
+  { message: "Component IDs must be unique within a game definition", path: ["components"] },
+);
 
 export type CardFace = z.infer<typeof cardFaceSchema>;
 export type CardBack = z.infer<typeof cardBackSchema>;

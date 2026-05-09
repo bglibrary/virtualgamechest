@@ -3,6 +3,7 @@ import { Stage, Layer, Rect } from "react-konva";
 import { useGameStore } from "@/store/gameStore";
 import { useCardStateStore } from "@/store/cardStateStore";
 import { useCardPositionStore } from "@/store/cardPositionStore";
+import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import ActionBar from "@/ui/html/ActionBar";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
@@ -13,10 +14,18 @@ function TableCanvas() {
     height: window.innerHeight,
   });
   const game = useGameStore((s) => s.game);
-  const selectedCardIndex = useCardStateStore((s) => s.selectedCardIndex);
+  const selectedCardId = useCardStateStore((s) => s.selectedCardId);
   const isDragging = useCardPositionStore((s) => s.isDragging);
+  const positions = useCardPositionStore((s) => s.positions);
   const selectCard = useCardStateStore((s) => s.selectCard);
   const flipCard = useCardStateStore((s) => s.flipCard);
+  const initZOrder = useCardZOrderStore((s) => s.initZOrder);
+
+  useEffect(() => {
+    if (game) {
+      initZOrder(game.components.map((c) => c.id));
+    }
+  }, [game, initZOrder]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -30,22 +39,27 @@ function TableCanvas() {
     selectCard(null);
   }, [selectCard]);
 
-  const selectedComponent = game?.components[selectedCardIndex ?? -1];
+  const selectedComponent = game?.components.find(
+    (c) => c.type === "card" && c.id === selectedCardId,
+  );
+  const selectedPositionOverride = selectedCardId
+    ? positions[selectedCardId]
+    : undefined;
+  const effectiveSelectedPosition =
+    selectedPositionOverride ?? selectedComponent?.position;
   const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-  const actionBarX =
-    selectedComponent && selectedComponent.type === "card"
-      ? selectedComponent.position.x * size.width
-      : 0;
-  const actionBarY =
-    selectedComponent && selectedComponent.type === "card"
-      ? selectedComponent.position.y * size.height -
-        (cardWidth * CARD_ASPECT) / 2 -
-        48
-      : 0;
+  const actionBarX = effectiveSelectedPosition
+    ? effectiveSelectedPosition.x * size.width
+  : 0;
+  const actionBarY = effectiveSelectedPosition
+  ? effectiveSelectedPosition.y * size.height -
+    (cardWidth * CARD_ASPECT) / 2 -
+    48
+  : 0;
 
   const showActionBar =
     !isDragging &&
-    selectedCardIndex !== null &&
+    selectedCardId !== null &&
     selectedComponent?.type === "card";
 
   return (
@@ -63,13 +77,13 @@ function TableCanvas() {
           />
         </Layer>
         <Layer>
-          {game?.components.map((component, index) => {
+          {game?.components.map((component) => {
             if (component.type === "card") {
               return (
                 <InteractiveCard
-                  key={index}
+                  key={component.id}
                   component={component}
-                  cardIndex={index}
+                  cardId={component.id}
                   viewportWidth={size.width}
                   viewportHeight={size.height}
                 />
@@ -83,8 +97,8 @@ function TableCanvas() {
         x={actionBarX}
         y={actionBarY}
         onFlip={() => {
-          if (selectedCardIndex !== null) {
-            flipCard(selectedCardIndex);
+          if (selectedCardId !== null) {
+            flipCard(selectedCardId);
             selectCard(null);
           }
         }}

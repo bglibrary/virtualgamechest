@@ -23,7 +23,7 @@ function renderOnCanvas(
       <Layer>
         <CardRenderer
           component={component}
-          cardIndex={0}
+          cardId="test-card"
           faceUp={faceUp}
           viewportWidth={width}
           viewportHeight={height}
@@ -35,18 +35,21 @@ function renderOnCanvas(
 
 const defaultCard: CardComponent = {
   type: "card",
+  id: "test-card",
   face: { type: "text", text: "As Cœur" },
   position: { x: 0.5, y: 0.5 },
 };
 
 const cardWithFrontImage: CardComponent = {
   type: "card",
+  id: "test-card-img",
   face: { type: "text", text: "As Cœur", image: "https://example.com/ace.png" },
   position: { x: 0.5, y: 0.5 },
 };
 
 const cardWithBack: CardComponent = {
   type: "card",
+  id: "test-card-back",
   face: { type: "text", text: "As Cœur" },
   back: { type: "text", text: "Mon Jeu", image: "https://example.com/back.svg" },
   position: { x: 0.5, y: 0.5 },

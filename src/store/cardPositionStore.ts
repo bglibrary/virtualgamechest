@@ -2,10 +2,10 @@ import { create } from "zustand";
 import type { Position } from "@/types/game";
 
 interface CardPositionStore {
-  positions: Record<number, Position>;
+  positions: Record<string, Position>;
   isDragging: boolean;
-  updateCardPosition: (index: number, position: Position) => void;
-  getCardPosition: (index: number) => Position | undefined;
+  updateCardPosition: (id: string, position: Position) => void;
+  getCardPosition: (id: string) => Position | undefined;
   setDragging: (dragging: boolean) => void;
   resetPositions: () => void;
 }
@@ -13,17 +13,17 @@ interface CardPositionStore {
 export const useCardPositionStore = create<CardPositionStore>((set, get) => ({
   positions: {},
   isDragging: false,
-  updateCardPosition: (index, position) =>
+  updateCardPosition: (id, position) =>
     set((state) => ({
       positions: {
         ...state.positions,
-        [index]: {
+        [id]: {
           x: Math.max(0, Math.min(1, position.x)),
           y: Math.max(0, Math.min(1, position.y)),
         },
       },
     })),
-  getCardPosition: (index) => get().positions[index],
+  getCardPosition: (id) => get().positions[id],
   setDragging: (dragging) => set({ isDragging: dragging }),
   resetPositions: () => set({ positions: {} }),
 }));

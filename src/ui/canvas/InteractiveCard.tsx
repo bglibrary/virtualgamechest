@@ -3,29 +3,32 @@ import type Konva from "konva";
 import type { CardComponent } from "@/types/game";
 import { useCardStateStore } from "@/store/cardStateStore";
 import { useCardPositionStore } from "@/store/cardPositionStore";
+import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
 import CardRenderer from "@/ui/canvas/CardRenderer";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
 
 interface InteractiveCardProps {
   component: CardComponent;
-  cardIndex: number;
+  cardId: string;
   viewportWidth: number;
   viewportHeight: number;
 }
 
 function InteractiveCard({
   component,
-  cardIndex,
+  cardId,
   viewportWidth,
   viewportHeight,
 }: InteractiveCardProps) {
-  const isFaceUp = useCardStateStore((s) => s.isFaceUp(cardIndex));
+  const isFaceUp = useCardStateStore((s) => s.isFaceUp(cardId));
   const selectCard = useCardStateStore((s) => s.selectCard);
   const flipCard = useCardStateStore((s) => s.flipCard);
-  const positionOverride = useCardPositionStore((s) => s.positions[cardIndex]);
+  const positionOverride = useCardPositionStore((s) => s.positions[cardId]);
   const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
   const setDragging = useCardPositionStore((s) => s.setDragging);
+  const zIndex = useCardZOrderStore((s) => s.getZIndex(cardId));
+  const bringToTop = useCardZOrderStore((s) => s.bringToTop);
   const bounceRef = useRef<(() => void) | null>(null);
   const prevFaceUp = useRef(isFaceUp);
 
@@ -37,13 +40,13 @@ function InteractiveCard({
   }, [isFaceUp]);
 
   const handleClick = useCallback(() => {
-    selectCard(cardIndex);
-  }, [selectCard, cardIndex]);
+    selectCard(cardId);
+  }, [selectCard, cardId]);
 
   const handleDblClick = useCallback(() => {
-    flipCard(cardIndex);
+    flipCard(cardId);
     selectCard(null);
-  }, [flipCard, selectCard, cardIndex]);
+  }, [flipCard, selectCard, cardId]);
 
   const { onClick, cancelPendingClick } = useClickOrDblClick({
     onClick: handleClick,
@@ -51,10 +54,11 @@ function InteractiveCard({
   });
 
   const handleDragStart = useCallback(() => {
+    bringToTop(cardId);
     setDragging(true);
     selectCard(null);
     cancelPendingClick();
-  }, [setDragging, selectCard, cancelPendingClick]);
+  }, [bringToTop, cardId, setDragging, selectCard, cancelPendingClick]);
 
   const handleDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
@@ -70,16 +74,16 @@ function InteractiveCard({
         y: Math.max(0, Math.min(1, ny)),
       };
 
-      updateCardPosition(cardIndex, clampedPosition);
+      updateCardPosition(cardId, clampedPosition);
       setDragging(false);
     },
-    [cardIndex, viewportWidth, viewportHeight, updateCardPosition, setDragging],
+    [cardId, viewportWidth, viewportHeight, updateCardPosition, setDragging],
   );
 
   return (
     <CardRenderer
       component={component}
-      cardIndex={cardIndex}
+      cardId={cardId}
       faceUp={isFaceUp}
       viewportWidth={viewportWidth}
       viewportHeight={viewportHeight}
@@ -89,6 +93,7 @@ function InteractiveCard({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       positionOverride={positionOverride}
+      zIndex={zIndex}
     />
   );
 }

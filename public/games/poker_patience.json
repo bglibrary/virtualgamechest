@@ -4,14 +4,63 @@
   "components": [
     {
       "type": "card",
+      "id": "ace-hearts",
       "face": {
         "type": "text",
-        "text": "As Cœur"
+        "text": "As Cœur",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/01_of_hearts_A.svg/langfr-1280px-01_of_hearts_A.svg.png"
       },
-      "position": {
-        "x": 0.5,
-        "y": 0.5
-      }
+      "back": {
+        "type": "text",
+        "text": "Dosdos",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Back09.svg/1280px-Back09.svg.png"
+      },
+      "position": { "x": 0.35, "y": 0.45 }
+    },
+    {
+      "type": "card",
+      "id": "king-spades",
+      "face": {
+        "type": "text",
+        "text": "Roi Pique"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dosdos",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Back09.svg/1280px-Back09.svg.png"
+      },
+      "position": { "x": 0.38, "y": 0.48 }
+    },
+    {
+      "type": "card",
+      "id": "queen-diamonds",
+      "face": {
+        "type": "text",
+        "text": "Dame Carreau"
+      },
+      "position": { "x": 0.65, "y": 0.5 }
+    },
+    {
+      "type": "card",
+      "id": "jack-clubs",
+      "face": {
+        "type": "text",
+        "text": "Valet Trèfle"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos"
+      },
+      "position": { "x": 0.5, "y": 0.35 }
+    },
+    {
+      "type": "card",
+      "id": "ten-hearts",
+      "face": {
+        "type": "text",
+        "text": "10 Cœur"
+      },
+      "position": { "x": 0.2, "y": 0.7 }
     }
   ]
 }

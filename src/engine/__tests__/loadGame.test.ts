@@ -8,6 +8,7 @@ describe("loadGame", () => {
     components: [
       {
         type: "card",
+        id: "ace-hearts",
         face: { type: "text", text: "As Cœur" },
         position: { x: 0.5, y: 0.5 },
       },
@@ -75,6 +76,7 @@ describe("loadGame", () => {
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur", image: "images/ace.png" },
           position: { x: 0.5, y: 0.5 },
         },
@@ -98,6 +100,7 @@ describe("loadGame", () => {
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur" },
           back: { type: "text", text: "Dos", image: "images/back.svg" },
           position: { x: 0.5, y: 0.5 },
@@ -122,6 +125,7 @@ describe("loadGame", () => {
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur", image: "https://cdn.example.com/ace.jpg" },
           position: { x: 0.5, y: 0.5 },
         },
@@ -145,6 +149,7 @@ describe("loadGame", () => {
       components: [
         {
           type: "card",
+          id: "ace-hearts",
           face: { type: "text", text: "As Cœur", image: "../assets/back.svg" },
           position: { x: 0.5, y: 0.5 },
         },
