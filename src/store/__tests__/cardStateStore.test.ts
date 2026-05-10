@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { useCardStateStore } from "@/store/cardStateStore";
 
 beforeEach(() => {
-  useCardStateStore.setState({ faceUp: {}, selectedCardId: null });
+  useCardStateStore.setState({ faceUp: {}, selectedComponentId: null });
 });
 
 describe("cardStateStore", () => {
@@ -27,20 +27,31 @@ describe("cardStateStore", () => {
     expect(useCardStateStore.getState().isFaceUp("king-spades")).toBe(true);
   });
 
-  it("selects a card", () => {
-    useCardStateStore.getState().selectCard("ace-hearts");
-    expect(useCardStateStore.getState().selectedCardId).toBe("ace-hearts");
+  it("selects a component", () => {
+    useCardStateStore.getState().selectComponent("ace-hearts");
+    expect(useCardStateStore.getState().selectedComponentId).toBe("ace-hearts");
   });
 
-  it("deselects a card with null", () => {
-    useCardStateStore.getState().selectCard("ace-hearts");
-    useCardStateStore.getState().selectCard(null);
-    expect(useCardStateStore.getState().selectedCardId).toBe(null);
+  it("deselects a component with null", () => {
+    useCardStateStore.getState().selectComponent("ace-hearts");
+    useCardStateStore.getState().selectComponent(null);
+    expect(useCardStateStore.getState().selectedComponentId).toBe(null);
   });
 
-  it("switches selection to a different card", () => {
-    useCardStateStore.getState().selectCard("ace-hearts");
-    useCardStateStore.getState().selectCard("king-spades");
-    expect(useCardStateStore.getState().selectedCardId).toBe("king-spades");
+  it("switches selection to a different component", () => {
+    useCardStateStore.getState().selectComponent("ace-hearts");
+    useCardStateStore.getState().selectComponent("king-spades");
+    expect(useCardStateStore.getState().selectedComponentId).toBe("king-spades");
+  });
+
+  it("sets face-up state explicitly", () => {
+    useCardStateStore.getState().setFaceUp("ace-hearts", false);
+    expect(useCardStateStore.getState().isFaceUp("ace-hearts")).toBe(false);
+  });
+
+  it("setFaceUp can set a card face-up", () => {
+    useCardStateStore.getState().flipCard("ace-hearts");
+    useCardStateStore.getState().setFaceUp("ace-hearts", true);
+    expect(useCardStateStore.getState().isFaceUp("ace-hearts")).toBe(true);
   });
 });

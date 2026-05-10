@@ -61,6 +61,17 @@
         "text": "10 Cœur"
       },
       "position": { "x": 0.2, "y": 0.7 }
+    },
+    {
+      "type": "deck",
+      "id": "draw-pile",
+      "cards": [
+        { "face": { "type": "text", "text": "Roi Pique" }, "back": { "type": "text", "text": "DosRP" } },
+        { "face": { "type": "text", "text": "Dame Carreau" }, "back": { "type": "text", "text": "DosDC" } },
+        { "face": { "type": "text", "text": "Valet Trèfle" }, "back": { "type": "text", "text": "DosVT" } }
+      ],
+      "position": { "x": 0.8, "y": 0.5 },
+      "faceUp": false
     }
   ]
 }

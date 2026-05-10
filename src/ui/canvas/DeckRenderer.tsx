@@ -2,34 +2,44 @@ import { useRef, useEffect, useCallback } from "react";
 import { Rect, Text, Group } from "react-konva";
 import type Konva from "konva";
 import KonvaLib from "konva";
-import type { CardComponent, Position } from "@/types/game";
+import type { DeckComponent, CardInDeck, Position } from "@/types/game";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
+import {
+  CARD_WIDTH_RATIO,
+  CARD_MIN_WIDTH,
+  CARD_ASPECT,
+  CORNER_RADIUS_RATIO,
+  FONT_SIZE_RATIO,
+  BORDER_WIDTH,
+  CARD_FRONT_FILL,
+  CARD_FRONT_TEXT_FILL,
+  CARD_BACK_FILL,
+  CARD_BACK_TEXT,
+  CARD_BACK_TEXT_FILL,
+  DRAG_SCALE,
+  DEFAULT_SHADOW_BLUR,
+  DRAG_SHADOW_BLUR,
+  DRAG_SHADOW_OFFSET,
+  SETTLE_DURATION,
+  BOUNCE_DISTANCE,
+  BOUNCE_DURATION,
+} from "@/ui/canvas/CardRenderer";
 
-const CARD_WIDTH_RATIO = 0.08;
-const CARD_MIN_WIDTH = 55;
-const CARD_ASPECT = 1.4;
-const CORNER_RADIUS_RATIO = 0.05;
-const FONT_SIZE_RATIO = 0.22;
-const BORDER_WIDTH = 2;
+const BADGE_WIDTH_RATIO = 0.3;
+const BADGE_HEIGHT_RATIO = 0.18;
+const BADGE_FONT_SIZE_RATIO = 0.14;
+const BADGE_FILL = "rgba(0, 0, 0, 0.65)";
+const BADGE_TEXT_FILL = "#FFFFFF";
+const BADGE_CORNER_RADIUS = 4;
+const BADGE_PADDING_X = 4;
+const BADGE_PADDING_Y = 2;
 
-const CARD_FRONT_FILL = "#FFF8E7";
-const CARD_FRONT_TEXT_FILL = "#1a1a1a";
-const CARD_BACK_FILL = "#1B2A4A";
-const CARD_BACK_TEXT = "Dos";
-const CARD_BACK_TEXT_FILL = "#FFFFFF";
-const BOUNCE_DISTANCE = 12;
-const BOUNCE_DURATION = 120;
-
-const DRAG_SCALE = 1.05;
-const DEFAULT_SHADOW_BLUR = 0;
-const DRAG_SHADOW_BLUR = 12;
-const DRAG_SHADOW_OFFSET = 6;
-const SETTLE_DURATION = 0.15;
-
-interface CardRendererProps {
-  component: CardComponent;
-  cardId: string;
+interface DeckRendererProps {
+  component: DeckComponent;
+  deckId: string;
   faceUp: boolean;
+  topCard: CardInDeck;
+  cardCount: number;
   viewportWidth: number;
   viewportHeight: number;
   onClick?: () => void;
@@ -41,9 +51,11 @@ interface CardRendererProps {
   zIndex?: number;
 }
 
-function CardRenderer({
+function DeckRenderer({
   component,
   faceUp,
+  topCard,
+  cardCount,
   viewportWidth,
   viewportHeight,
   onClick,
@@ -53,7 +65,7 @@ function CardRenderer({
   onDragEnd,
   positionOverride,
   zIndex,
-}: CardRendererProps) {
+}: DeckRendererProps) {
   const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
   const cardHeight = cardWidth * CARD_ASPECT;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
@@ -87,16 +99,16 @@ function CardRenderer({
   }, [zIndex]);
 
   const fill = faceUp ? CARD_FRONT_FILL : CARD_BACK_FILL;
-  const backText = component.back?.text ?? CARD_BACK_TEXT;
-  const text = faceUp ? component.face.text : backText;
+  const backText = topCard.back?.text ?? CARD_BACK_TEXT;
+  const text = faceUp ? topCard.face.text : backText;
   const textFill = faceUp ? CARD_FRONT_TEXT_FILL : CARD_BACK_TEXT_FILL;
 
-  const showFrontImage = faceUp && !!component.face.image;
-  const showBackImage = !faceUp && !!component.back?.image;
+  const showFrontImage = faceUp && !!topCard.face.image;
+  const showBackImage = !faceUp && !!topCard.back?.image;
   const imageUrl = showFrontImage
-    ? component.face.image!
+    ? topCard.face.image!
     : showBackImage
-      ? component.back!.image!
+      ? topCard.back!.image!
       : undefined;
 
   const textFallback = (
@@ -112,6 +124,13 @@ function CardRenderer({
       verticalAlign="middle"
     />
   );
+
+  const badgeWidth = cardWidth * BADGE_WIDTH_RATIO;
+  const badgeHeight = cardHeight * BADGE_HEIGHT_RATIO;
+  const badgeFontSize = cardWidth * BADGE_FONT_SIZE_RATIO;
+  const badgeX = cardWidth - badgeWidth - BADGE_PADDING_X;
+  const badgeY = BADGE_PADDING_Y;
+  const countText = String(cardCount);
 
   const dragBoundFunc = useCallback(
     (pos: Konva.Vector2d) => {
@@ -200,28 +219,27 @@ function CardRenderer({
         strokeWidth={BORDER_WIDTH}
       />
       {renderFaceContent()}
+      <Group x={badgeX} y={badgeY}>
+        <Rect
+          width={badgeWidth}
+          height={badgeHeight}
+          cornerRadius={BADGE_CORNER_RADIUS}
+          fill={BADGE_FILL}
+        />
+        <Text
+          text={countText}
+          fontSize={badgeFontSize}
+          fontFamily="sans-serif"
+          fontStyle="bold"
+          fill={BADGE_TEXT_FILL}
+          width={badgeWidth}
+          height={badgeHeight}
+          align="center"
+          verticalAlign="middle"
+        />
+      </Group>
     </Group>
   );
 }
 
-export default CardRenderer;
-export {
-  CARD_WIDTH_RATIO,
-  CARD_MIN_WIDTH,
-  CARD_ASPECT,
-  CORNER_RADIUS_RATIO,
-  FONT_SIZE_RATIO,
-  BORDER_WIDTH,
-  CARD_FRONT_FILL,
-  CARD_FRONT_TEXT_FILL,
-  CARD_BACK_FILL,
-  CARD_BACK_TEXT,
-  CARD_BACK_TEXT_FILL,
-  DRAG_SCALE,
-  DEFAULT_SHADOW_BLUR,
-  DRAG_SHADOW_BLUR,
-  DRAG_SHADOW_OFFSET,
-  SETTLE_DURATION,
-  BOUNCE_DISTANCE,
-  BOUNCE_DURATION,
-};
+export default DeckRenderer;

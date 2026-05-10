@@ -22,7 +22,7 @@ function InteractiveCard({
   viewportHeight,
 }: InteractiveCardProps) {
   const isFaceUp = useCardStateStore((s) => s.isFaceUp(cardId));
-  const selectCard = useCardStateStore((s) => s.selectCard);
+  const selectComponent = useCardStateStore((s) => s.selectComponent);
   const flipCard = useCardStateStore((s) => s.flipCard);
   const positionOverride = useCardPositionStore((s) => s.positions[cardId]);
   const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
@@ -40,13 +40,13 @@ function InteractiveCard({
   }, [isFaceUp]);
 
   const handleClick = useCallback(() => {
-    selectCard(cardId);
-  }, [selectCard, cardId]);
+    selectComponent(cardId);
+  }, [selectComponent, cardId]);
 
   const handleDblClick = useCallback(() => {
     flipCard(cardId);
-    selectCard(null);
-  }, [flipCard, selectCard, cardId]);
+    selectComponent(null);
+  }, [flipCard, selectComponent, cardId]);
 
   const { onClick, cancelPendingClick } = useClickOrDblClick({
     onClick: handleClick,
@@ -56,9 +56,9 @@ function InteractiveCard({
   const handleDragStart = useCallback(() => {
     bringToTop(cardId);
     setDragging(true);
-    selectCard(null);
+    selectComponent(null);
     cancelPendingClick();
-  }, [bringToTop, cardId, setDragging, selectCard, cancelPendingClick]);
+  }, [bringToTop, cardId, setDragging, selectComponent, cancelPendingClick]);
 
   const handleDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {

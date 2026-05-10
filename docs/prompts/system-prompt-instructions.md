@@ -1,5 +1,5 @@
 Follow strictly the workflow defined in:
-docs/prompts/coding_agent.md
+docs/prompts/coding-agent.md
 
 This document is the source of truth.
 

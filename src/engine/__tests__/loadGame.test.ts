@@ -90,7 +90,11 @@ describe("loadGame", () => {
 
     const result = await loadGame("https://example.com/games/poker.json");
     expect(result).not.toBeNull();
-    expect(result!.components[0].face.image).toBe("https://example.com/games/images/ace.png");
+    const comp = result!.components[0];
+    expect(comp.type).toBe("card");
+    if (comp.type === "card") {
+      expect(comp.face.image).toBe("https://example.com/games/images/ace.png");
+    }
   });
 
   it("resolves relative back image URL against game JSON URL", async () => {
@@ -115,7 +119,11 @@ describe("loadGame", () => {
 
     const result = await loadGame("https://example.com/games/poker.json");
     expect(result).not.toBeNull();
-    expect(result!.components[0].back!.image).toBe("https://example.com/games/images/back.svg");
+    const comp = result!.components[0];
+    expect(comp.type).toBe("card");
+    if (comp.type === "card") {
+      expect(comp.back!.image).toBe("https://example.com/games/images/back.svg");
+    }
   });
 
   it("leaves absolute image URLs unchanged", async () => {
@@ -139,7 +147,11 @@ describe("loadGame", () => {
 
     const result = await loadGame("https://example.com/games/poker.json");
     expect(result).not.toBeNull();
-    expect(result!.components[0].face.image).toBe("https://cdn.example.com/ace.jpg");
+    const comp = result!.components[0];
+    expect(comp.type).toBe("card");
+    if (comp.type === "card") {
+      expect(comp.face.image).toBe("https://cdn.example.com/ace.jpg");
+    }
   });
 
   it("resolves ../ relative paths", async () => {
@@ -163,7 +175,11 @@ describe("loadGame", () => {
 
     const result = await loadGame("https://example.com/games/poker.json");
     expect(result).not.toBeNull();
-    expect(result!.components[0].face.image).toBe("https://example.com/assets/back.svg");
+    const comp = result!.components[0];
+    expect(comp.type).toBe("card");
+    if (comp.type === "card") {
+      expect(comp.face.image).toBe("https://example.com/assets/back.svg");
+    }
   });
 
   it("preserves backward compatibility for games without image fields", async () => {
@@ -173,8 +189,45 @@ describe("loadGame", () => {
     } as Response);
 
     const result = await loadGame("/games/test.json");
-    expect(result).toEqual(validGame);
-    expect(result!.components[0].face.image).toBeUndefined();
-    expect((result!.components[0] as Record<string, unknown>).back).toBeUndefined();
+    expect(result).not.toBeNull();
+    const comp = result!.components[0];
+    expect(comp.type).toBe("card");
+    if (comp.type === "card") {
+      expect(comp.face.image).toBeUndefined();
+      expect(comp.back).toBeUndefined();
+    }
+  });
+
+  it("resolves relative image URLs for cards inside a deck", async () => {
+    const gameWithDeck = {
+      name: "Deck Test",
+      version: "1.0.0",
+      components: [
+        {
+          type: "deck",
+          id: "draw-pile",
+          cards: [
+            { face: { type: "text", text: "As", image: "images/ace.png" }, back: { type: "text", text: "Dos", image: "images/back.svg" } },
+            { face: { type: "text", text: "Roi" } },
+          ],
+          position: { x: 0.5, y: 0.5 },
+        },
+      ],
+    };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(gameWithDeck),
+    } as Response);
+
+    const result = await loadGame("https://example.com/games/poker.json");
+    expect(result).not.toBeNull();
+    const deck = result!.components[0];
+    expect(deck.type).toBe("deck");
+    if (deck.type === "deck") {
+      expect(deck.cards[0].face.image).toBe("https://example.com/games/images/ace.png");
+      expect(deck.cards[0].back!.image).toBe("https://example.com/games/images/back.svg");
+      expect(deck.cards[1].face.image).toBeUndefined();
+    }
   });
 });

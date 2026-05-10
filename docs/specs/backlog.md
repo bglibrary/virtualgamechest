@@ -6,7 +6,7 @@
 |---|---|---|---|---|---|
 | F1 | Card Drag & Drop | None | Medium | M | Partial (specs only) |
 | F2 | Multi-Card Independent | F1 | Low | S | No |
-| F3 | Deck (stack, move, flip) | F2 | Medium | L | Partial (specs only) |
+| F3 | Deck (stack, move, flip) | F2 | Medium | L | Specs drafted ✅ |
 | F4 | Draw from Deck | F3 | Medium | M | Partial (specs only) |
 | F5 | Snap Zone (magnetic area) | F4 | Medium | L | Partial (specs only) |
 | F6 | Card Image Face (image + text fallback) | None | Low | M | **Yes (fully)** |
@@ -19,6 +19,7 @@
 | I2 | Deck shuffle | Randomize card order in a deck |
 | I3 | Card rotation | Rotate a card 90°/180° on the table |
 | I4 | Multi-player / networked state | Sync card positions and actions across players |
+| I5 | Configurable actions per component type | Define available actions (flip, draw face-up, draw face-down, etc.) per component in the game JSON instead of hardcoding them by type. Enables e.g. a deck without draw, or a card with custom actions. |
 
 ## Dependency Graph
 
@@ -102,17 +103,20 @@ F1-F5 touch: schemas, stores, InteractiveCard, CardRenderer, TableCanvas
 |---|---|
 | Feature | Deck |
 | Priority | High |
-| Status | Proposed |
+| Status | Specs drafted |
 | Created | 2026-05-06 |
-| Last Updated | 2026-05-06 |
+| Last Updated | 2026-05-09 |
 
 **Problem Statement**: Need to group cards into a deck that moves as one unit and can be flipped (bottom card becomes top).
 
 **Clarified Requirements**:
 - Deck flip = real-life flip: order reverses AND every card's face state toggles (front↔back). The card that was on the bottom (face down) becomes the top card (face up).
-- Deck of 1 card = a regular card. When a deck is reduced to 1 card, it automatically becomes a standalone card component.
-- Visual: cards in a deck are aligned (not fanned), with a count badge in a corner showing the number of remaining cards. Slight offset to indicate stack is NOT desired — use count badge instead.
+- Deck of 1 card = a regular card. When a deck is reduced to 1 card, it automatically becomes a standalone card component (**real type change** in the store: `deck` → `card`).
+- Visual: cards in a deck are aligned (not fanned), with a count badge in the **upper-right corner** showing the number of remaining cards. Slight offset to indicate stack is NOT desired — use count badge instead.
 - Dragging the deck moves all cards as one unit.
+- Top card = last element of the deck's `cards` array.
+- Deck embeds its cards inline in the JSON (not references to top-level components).
+- **Specs**: `docs/specs/product_requirements/deck.md`, `docs/specs/technical_requirements/deck.md`
 
 **Risks**:
 | Risk | Impact | Mitigation |
@@ -129,25 +133,34 @@ F1-F5 touch: schemas, stores, InteractiveCard, CardRenderer, TableCanvas
 |---|---|
 | Feature | Draw from Deck |
 | Priority | Medium |
-| Status | Proposed |
+| Status | Specs drafted |
 | Created | 2026-05-06 |
-| Last Updated | 2026-05-06 |
+| Last Updated | 2026-05-09 |
 
 **Problem Statement**: Need to take the top card out of a deck so it becomes an independent card on the table.
 
 **Clarified Requirements**:
 - Dragging the top card of a deck drags the DECK (not the individual card).
 - Drawing is done via action bar buttons: "Tirer face visible" (draw face up) and "Tirer face cachée" (draw face down).
-- After clicking a draw button, the user must click on an empty area of the table to place the drawn card at that position.
+- **No click-to-place mode** (not mobile-friendly). The drawn card is automatically offset from the deck with a half-card-width offset in the direction with the most viewport space (smart direction: right > left > down > up).
 - The drawn card becomes an independent card component (no longer part of the deck).
-- If the deck has only 1 card left after drawing, the deck becomes a standalone card.
-- Card keeps its original face data when drawn.
+- If the deck has only 1 card left after drawing, the deck auto-converts to a standalone card (F3 US-5).
+- If the deck has 0 cards left after drawing, the deck is removed (F3 US-6).
+- Card keeps its original face and back data when drawn. Each card retains its own back definition.
+- "Tirer face visible" → drawn card `faceUp: true`. "Tirer face cachée" → drawn card `faceUp: false`.
+- Drawn card ID pattern: `{deckId}--{counter}` (e.g., `"draw-pile--1"`).
+- Drawn card is placed immediately above the deck in z-order (not at global top).
+- Drawing is immediate and irreversible. No undo/cancel.
+- Deck remains selected after draw (unless removed).
+- **Specs**: `docs/specs/product_requirements/draw-from-deck.md`, `docs/specs/technical_requirements/draw-from-deck.md`
 
 **Risks**:
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Card identity preservation | Card loses its face/data when removed from deck | Card keeps its original face data when drawn |
 | Deck becomes empty after draw | Edge case: drawing last card | Deck is removed from components, card becomes independent |
+| Drawn card offset overlaps existing components | Card appears on top of another card/deck | Acceptable — player can drag the drawn card away. Z-order places it above the deck only. |
+| Generated ID collision with existing component | Extremely unlikely edge case | Counter increments until unique ID found |
 
 ---
 

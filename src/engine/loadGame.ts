@@ -37,20 +37,40 @@ function resolveImageUrls(game: GameDefinition, gameJsonUrl: string): GameDefini
   return {
     ...game,
     components: game.components.map((component) => {
-      if (component.type !== "card") return component;
-      return {
-        ...component,
-        face: {
-          ...component.face,
-          image: resolveImageUrl(component.face.image, gameJsonUrl),
-        },
-        back: component.back
-          ? {
-              ...component.back,
-              image: resolveImageUrl(component.back.image, gameJsonUrl),
-            }
-          : undefined,
-      };
+      if (component.type === "card") {
+        return {
+          ...component,
+          face: {
+            ...component.face,
+            image: resolveImageUrl(component.face.image, gameJsonUrl),
+          },
+          back: component.back
+            ? {
+                ...component.back,
+                image: resolveImageUrl(component.back.image, gameJsonUrl),
+              }
+            : undefined,
+        };
+      }
+      if (component.type === "deck") {
+        return {
+          ...component,
+          cards: component.cards.map((card) => ({
+            ...card,
+            face: {
+              ...card.face,
+              image: resolveImageUrl(card.face.image, gameJsonUrl),
+            },
+            back: card.back
+              ? {
+                  ...card.back,
+                  image: resolveImageUrl(card.back.image, gameJsonUrl),
+                }
+              : undefined,
+          })),
+        };
+      }
+      return component;
     }),
   };
 }

@@ -4,7 +4,9 @@ import { useGameStore } from "@/store/gameStore";
 import { useCardStateStore } from "@/store/cardStateStore";
 import { useCardPositionStore } from "@/store/cardPositionStore";
 import { useCardZOrderStore } from "@/store/cardZOrderStore";
+import { useDeckStateStore } from "@/store/deckStateStore";
 import InteractiveCard from "@/ui/canvas/InteractiveCard";
+import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ActionBar from "@/ui/html/ActionBar";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
 
@@ -14,18 +16,27 @@ function TableCanvas() {
     height: window.innerHeight,
   });
   const game = useGameStore((s) => s.game);
-  const selectedCardId = useCardStateStore((s) => s.selectedCardId);
+  const selectedComponentId = useCardStateStore((s) => s.selectedComponentId);
   const isDragging = useCardPositionStore((s) => s.isDragging);
   const positions = useCardPositionStore((s) => s.positions);
-  const selectCard = useCardStateStore((s) => s.selectCard);
+  const selectComponent = useCardStateStore((s) => s.selectComponent);
   const flipCard = useCardStateStore((s) => s.flipCard);
+  const flipDeck = useDeckStateStore((s) => s.flipDeck);
   const initZOrder = useCardZOrderStore((s) => s.initZOrder);
+  const initDeck = useDeckStateStore((s) => s.initDeck);
+  const resetDecks = useDeckStateStore((s) => s.resetDecks);
 
   useEffect(() => {
     if (game) {
       initZOrder(game.components.map((c) => c.id));
+      resetDecks();
+      game.components.forEach((component) => {
+        if (component.type === "deck") {
+          initDeck(component.id, component.cards, component.faceUp ?? false);
+        }
+      });
     }
-  }, [game, initZOrder]);
+  }, [game, initZOrder, initDeck, resetDecks]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -36,14 +47,14 @@ function TableCanvas() {
   }, []);
 
   const handleBackgroundClick = useCallback(() => {
-    selectCard(null);
-  }, [selectCard]);
+    selectComponent(null);
+  }, [selectComponent]);
 
   const selectedComponent = game?.components.find(
-    (c) => c.type === "card" && c.id === selectedCardId,
+    (c) => c.id === selectedComponentId,
   );
-  const selectedPositionOverride = selectedCardId
-    ? positions[selectedCardId]
+  const selectedPositionOverride = selectedComponentId
+    ? positions[selectedComponentId]
     : undefined;
   const effectiveSelectedPosition =
     selectedPositionOverride ?? selectedComponent?.position;
@@ -76,9 +87,17 @@ function TableCanvas() {
   );
 
   const showActionBar =
-    !isDragging &&
-    selectedCardId !== null &&
-    selectedComponent?.type === "card";
+    !isDragging && selectedComponentId !== null && selectedComponent !== undefined;
+
+  const handleFlip = useCallback(() => {
+    if (selectedComponentId === null) return;
+    if (selectedComponent?.type === "card") {
+      flipCard(selectedComponentId);
+      selectComponent(null);
+    } else if (selectedComponent?.type === "deck") {
+      flipDeck(selectedComponentId);
+    }
+  }, [selectedComponentId, selectedComponent, flipCard, flipDeck, selectComponent]);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
@@ -107,6 +126,17 @@ function TableCanvas() {
                 />
               );
             }
+            if (component.type === "deck") {
+              return (
+                <InteractiveDeck
+                  key={component.id}
+                  component={component}
+                  deckId={component.id}
+                  viewportWidth={size.width}
+                  viewportHeight={size.height}
+                />
+              );
+            }
             return null;
           })}
         </Layer>
@@ -114,12 +144,7 @@ function TableCanvas() {
       <ActionBar
         x={actionBarX}
         y={actionBarY}
-        onFlip={() => {
-          if (selectedCardId !== null) {
-            flipCard(selectedCardId);
-            selectCard(null);
-          }
-        }}
+        onFlip={handleFlip}
         visible={showActionBar}
       />
     </div>

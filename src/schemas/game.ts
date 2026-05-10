@@ -26,6 +26,19 @@ export const positionSchema = z.object({
   y: z.number().min(0).max(1),
 });
 
+export const cardInDeckSchema = z.object({
+  face: cardFaceSchema,
+  back: cardBackSchema.optional(),
+});
+
+export const deckComponentSchema = z.object({
+  type: z.literal("deck"),
+  id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
+  cards: z.array(cardInDeckSchema).min(1),
+  position: positionSchema,
+  faceUp: z.boolean().optional().default(false),
+});
+
 export const cardComponentSchema = z.object({
   type: z.literal("card"),
   id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
@@ -36,6 +49,7 @@ export const cardComponentSchema = z.object({
 
 export const componentSchema = z.discriminatedUnion("type", [
   cardComponentSchema,
+  deckComponentSchema,
 ]);
 
 export const gameDefinitionSchema = z.object({
@@ -53,6 +67,8 @@ export const gameDefinitionSchema = z.object({
 export type CardFace = z.infer<typeof cardFaceSchema>;
 export type CardBack = z.infer<typeof cardBackSchema>;
 export type Position = z.infer<typeof positionSchema>;
+export type CardInDeck = z.infer<typeof cardInDeckSchema>;
+export type DeckComponent = z.infer<typeof deckComponentSchema>;
 export type CardComponent = z.infer<typeof cardComponentSchema>;
 export type GameComponent = z.infer<typeof componentSchema>;
 export type GameDefinition = z.infer<typeof gameDefinitionSchema>;
