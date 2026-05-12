@@ -14,6 +14,7 @@ After each user story implementation:
 - [ ] Regression tests added
 - [ ] Tests passing
 - [ ] Lint/typecheck/build passing
+- [ ] No errors or warnings in the browser console (runtime validation)
 - [ ] Specs updated if needed
 - [ ] User asked to validate (STOP here, do NOT proceed to next US)
 - [ ] User validation received

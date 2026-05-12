@@ -173,6 +173,7 @@ A user story is NOT done until ALL are true:
 - regression tests added,
 - tests passing,
 - lint/typecheck/build passing when relevant,
+- no errors or warnings in the browser console,
 - documentation updated if impacted,
 - README updated if impacted,
 - run/test procedures updated if impacted,
