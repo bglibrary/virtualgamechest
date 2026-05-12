@@ -57,4 +57,24 @@ describe("cardZOrderStore", () => {
     useCardZOrderStore.getState().initZOrder(["x", "y", "z"]);
     expect(useCardZOrderStore.getState().zOrder).toEqual(["x", "y", "z"]);
   });
+
+  describe("insertAfter", () => {
+    it("inserts new id after the specified id", () => {
+      useCardZOrderStore.getState().initZOrder(["a", "b", "c"]);
+      useCardZOrderStore.getState().insertAfter("b", "d");
+      expect(useCardZOrderStore.getState().zOrder).toEqual(["a", "b", "d", "c"]);
+    });
+
+    it("inserts at end when afterId is last", () => {
+      useCardZOrderStore.getState().initZOrder(["a", "b", "c"]);
+      useCardZOrderStore.getState().insertAfter("c", "d");
+      expect(useCardZOrderStore.getState().zOrder).toEqual(["a", "b", "c", "d"]);
+    });
+
+    it("appends at end when afterId not found", () => {
+      useCardZOrderStore.getState().initZOrder(["a", "b"]);
+      useCardZOrderStore.getState().insertAfter("missing", "d");
+      expect(useCardZOrderStore.getState().zOrder).toEqual(["a", "b", "d"]);
+    });
+  });
 });

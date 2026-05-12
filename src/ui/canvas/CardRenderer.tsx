@@ -81,7 +81,9 @@ function CardRenderer({
   useEffect(() => {
     const node = groupRef.current;
     if (!node || zIndex === undefined) return;
-    node.zIndex(zIndex);
+    const parent = node.getParent();
+    const maxZ = parent ? parent.children.length - 1 : 0;
+    node.zIndex(Math.min(zIndex, Math.max(maxZ, 0)));
     const layer = node.getLayer();
     if (layer) layer.batchDraw();
   }, [zIndex]);

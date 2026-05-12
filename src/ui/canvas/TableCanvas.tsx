@@ -9,6 +9,7 @@ import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ActionBar from "@/ui/html/ActionBar";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
+import type { CardComponent } from "@/types/game";
 
 function TableCanvas() {
   const [size, setSize] = useState({
@@ -21,22 +22,34 @@ function TableCanvas() {
   const positions = useCardPositionStore((s) => s.positions);
   const selectComponent = useCardStateStore((s) => s.selectComponent);
   const flipCard = useCardStateStore((s) => s.flipCard);
+  const setFaceUp = useCardStateStore((s) => s.setFaceUp);
   const flipDeck = useDeckStateStore((s) => s.flipDeck);
   const initZOrder = useCardZOrderStore((s) => s.initZOrder);
+  const insertAfter = useCardZOrderStore((s) => s.insertAfter);
   const initDeck = useDeckStateStore((s) => s.initDeck);
-  const resetDecks = useDeckStateStore((s) => s.resetDecks);
+  const addComponent = useGameStore((s) => s.addComponent);
+  const getCardPosition = useCardPositionStore((s) => s.getCardPosition);
+  const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
 
   useEffect(() => {
     if (game) {
-      initZOrder(game.components.map((c) => c.id));
-      resetDecks();
+      const currentDeckIds = Object.keys(useDeckStateStore.getState().cards);
+      const componentIds = game.components.map((c) => c.id);
+      initZOrder(componentIds);
+      const newDeckIds = new Set(
+        game.components.filter((c) => c.type === "deck").map((c) => c.id),
+      );
+      const staleIds = currentDeckIds.filter((id) => !newDeckIds.has(id));
+      for (const id of staleIds) {
+        useDeckStateStore.getState().removeDeck(id);
+      }
       game.components.forEach((component) => {
-        if (component.type === "deck") {
+        if (component.type === "deck" && !currentDeckIds.includes(component.id)) {
           initDeck(component.id, component.cards, component.faceUp ?? false);
         }
       });
     }
-  }, [game, initZOrder, initDeck, resetDecks]);
+  }, [game, initZOrder, initDeck]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,8 +73,6 @@ function TableCanvas() {
     selectedPositionOverride ?? selectedComponent?.position;
   const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
   const cardHeight = cardWidth * CARD_ASPECT;
-  const actionBarWidth = 120;
-  const actionBarHeight = 36;
   const actionBarPadding = 8;
 
   const cardCenterX = effectiveSelectedPosition
@@ -71,20 +82,16 @@ function TableCanvas() {
     ? effectiveSelectedPosition.y * size.height
     : 0;
 
-  const aboveY =
-    cardCenterY - cardHeight / 2 - actionBarHeight - actionBarPadding;
-  const belowY = cardCenterY + cardHeight / 2 + actionBarPadding;
-  const actionBarY =
-    aboveY >= 0
-      ? aboveY
-      : belowY + actionBarHeight <= size.height
-        ? belowY
-        : Math.max(0, size.height - actionBarHeight);
+  const rightSpace = size.width - (cardCenterX + cardWidth / 2);
+  const leftSpace = cardCenterX - cardWidth / 2;
+  const actionBarSide: "left" | "right" =
+    rightSpace >= leftSpace ? "right" : "left";
 
-  const actionBarX = Math.max(
-    actionBarWidth / 2,
-    Math.min(size.width - actionBarWidth / 2, cardCenterX),
-  );
+  const actionBarX =
+    actionBarSide === "right"
+      ? cardCenterX + cardWidth / 2 + actionBarPadding
+      : cardCenterX - cardWidth / 2 - actionBarPadding;
+  const actionBarY = cardCenterY;
 
   const showActionBar =
     !isDragging && selectedComponentId !== null && selectedComponent !== undefined;
@@ -93,11 +100,65 @@ function TableCanvas() {
     if (selectedComponentId === null) return;
     if (selectedComponent?.type === "card") {
       flipCard(selectedComponentId);
-      selectComponent(null);
     } else if (selectedComponent?.type === "deck") {
       flipDeck(selectedComponentId);
     }
+    selectComponent(null);
   }, [selectedComponentId, selectedComponent, flipCard, flipDeck, selectComponent]);
+
+  const handleDraw = useCallback(
+    (faceUp: boolean) => {
+      const deckId = selectedComponentId;
+      if (!deckId || selectedComponent?.type !== "deck") return;
+
+      const deckComp = selectedComponent;
+      const deckPosition = getCardPosition(deckId) ?? deckComp.position;
+
+      const result = useDeckStateStore.getState().drawCard(deckId, faceUp, {
+        deckPosition,
+        cardWidthPx: cardWidth,
+        cardHeightPx: cardHeight,
+        viewportWidth: size.width,
+        viewportHeight: size.height,
+      }, game?.components.map((c) => c.id) ?? []);
+
+      if (!result) return;
+
+      const newCard: CardComponent = {
+        type: "card",
+        id: result.newCardId,
+        face: result.card.face,
+        back: result.card.back,
+        position: result.position,
+      };
+
+    addComponent(newCard);
+    setFaceUp(result.newCardId, faceUp);
+    updateCardPosition(result.newCardId, result.position);
+    insertAfter(deckId, result.newCardId);
+    selectComponent(null);
+  },
+  [
+    selectedComponentId,
+    selectedComponent,
+    getCardPosition,
+    cardWidth,
+    cardHeight,
+    size.width,
+    size.height,
+    game,
+    addComponent,
+    setFaceUp,
+    updateCardPosition,
+    insertAfter,
+    selectComponent,
+  ],
+  );
+
+  const handleDrawFaceUp = useCallback(() => handleDraw(true), [handleDraw]);
+  const handleDrawFaceDown = useCallback(() => handleDraw(false), [handleDraw]);
+
+  const isDeckSelected = selectedComponent?.type === "deck";
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
@@ -144,7 +205,10 @@ function TableCanvas() {
       <ActionBar
         x={actionBarX}
         y={actionBarY}
+        side={actionBarSide}
         onFlip={handleFlip}
+        onDrawFaceUp={isDeckSelected ? handleDrawFaceUp : undefined}
+        onDrawFaceDown={isDeckSelected ? handleDrawFaceDown : undefined}
         visible={showActionBar}
       />
     </div>

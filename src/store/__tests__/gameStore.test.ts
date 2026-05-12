@@ -86,4 +86,38 @@ describe("gameStore", () => {
       expect(() => useGameStore.getState().removeComponent("c1")).not.toThrow();
     });
   });
+
+  describe("addComponent", () => {
+    it("adds a new component to the game", () => {
+      useGameStore.getState().setGame({
+        name: "Test",
+        version: "1.0.0",
+        components: [
+          { type: "card", id: "c1", face: { type: "text", text: "A" }, position: { x: 0.3, y: 0.5 } },
+        ],
+      });
+
+      useGameStore.getState().addComponent({
+        type: "card",
+        id: "c2",
+        face: { type: "text", text: "B" },
+        position: { x: 0.7, y: 0.5 },
+      });
+
+      const game = useGameStore.getState().game!;
+      expect(game.components).toHaveLength(2);
+      expect(game.components[1].id).toBe("c2");
+    });
+
+    it("no-op when game is null", () => {
+      expect(() =>
+        useGameStore.getState().addComponent({
+          type: "card",
+          id: "c1",
+          face: { type: "text", text: "A" },
+          position: { x: 0.5, y: 0.5 },
+        }),
+      ).not.toThrow();
+    });
+  });
 });

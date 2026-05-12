@@ -10,6 +10,7 @@ interface GameStore {
   setError: (error: string | null) => void;
   replaceComponent: (id: string, newComponent: GameComponent) => void;
   removeComponent: (id: string) => void;
+  addComponent: (component: GameComponent) => void;
 }
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -38,6 +39,16 @@ export const useGameStore = create<GameStore>((set) => ({
         game: {
           ...state.game,
           components: state.game.components.filter((c) => c.id !== id),
+        },
+      };
+    }),
+  addComponent: (component) =>
+    set((state) => {
+      if (!state.game) return state;
+      return {
+        game: {
+          ...state.game,
+          components: [...state.game.components, component],
         },
       };
     }),

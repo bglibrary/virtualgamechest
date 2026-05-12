@@ -21,7 +21,8 @@ function InteractiveCard({
   viewportWidth,
   viewportHeight,
 }: InteractiveCardProps) {
-  const isFaceUp = useCardStateStore((s) => s.isFaceUp(cardId));
+  const faceUpRaw = useCardStateStore((s) => s.faceUp[cardId]);
+  const isFaceUp = faceUpRaw === undefined ? true : faceUpRaw;
   const selectComponent = useCardStateStore((s) => s.selectComponent);
   const flipCard = useCardStateStore((s) => s.flipCard);
   const positionOverride = useCardPositionStore((s) => s.positions[cardId]);

@@ -8,28 +8,43 @@
 | F2 | Multi-Card Independent | F1 | Low | S | No |
 | F3 | Deck (stack, move, flip) | F2 | Medium | L | Specs drafted ✅ |
 | F4 | Draw from Deck | F3 | Medium | M | Partial (specs only) |
-| F5 | Snap Zone (magnetic area) | F4 | Medium | L | Partial (specs only) |
+| F5 | Snap Zone (magnetic area) | F4 | Medium | L | Specs drafted ✅ |
 | F6 | Card Image Face (image + text fallback) | None | Low | M | **Yes (fully)** |
+| F7 | Configurable Actions | F4 | Medium | M | No |
+| F8 | Draw-to-Zone Action | F4, F5, F7 | Low | S | No |
+| F9 | Deck Shuffle | F3, F7 | Medium | S | No |
+| F10 | Card/Deck Merge & Split (drag) | F3, F5, F7 | High | L | No |
+| F11 | Composite Actions (combo buttons) | F7 | Low | M | No |
+| F12 | Startup Sequence (auto-actions) | F7, F8 | Medium | M | No |
 
 ## Future Ideas (not yet scoped)
 
 | # | Idea | Notes |
 |---|---|---|
 | I1 | Alternate presentation modes for decks and zones | Configurable visual mode: stacked (slight offset), compact (aligned + count badge), fan, etc. |
-| I2 | Deck shuffle | Randomize card order in a deck |
 | I3 | Card rotation | Rotate a card 90°/180° on the table |
 | I4 | Multi-player / networked state | Sync card positions and actions across players |
-| I5 | Configurable actions per component type | Define available actions (flip, draw face-up, draw face-down, etc.) per component in the game JSON instead of hardcoding them by type. Enables e.g. a deck without draw, or a card with custom actions. |
+| I5 | Configurable actions per component type | Subsumed by F7 — kept for historical reference |
 
 ## Dependency Graph
 
-```
+```text
 F6 (Card Image Face) ─────────────────────────────┐
-                                                    │
+│
 F1 (Card Drag & Drop) ─► F2 (Multi-Card) ─► F3 (Deck) ─► F4 (Draw) ─► F5 (Snap Zone)
-                                                    │
-F6 touches: schemas, CardRenderer ──────────────────┘
+│ │ │
+└─► F7 (Configurable Actions + Deck-by-Ref) ◄─────┘ │
+│ │ │ │
+│ │ └─► F11 (Composite Actions) │
+│ └─► F9 (Deck Shuffle) │
+└─► F8 (Draw-to-Zone) ─► F12 (Startup Sequence) │
+│
+F3 + F5 + F7 ─► F10 (Card/Deck Merge & Split) ◄─────────────────────┘
+
+F6 touches: schemas, CardRenderer
 F1-F5 touch: schemas, stores, InteractiveCard, CardRenderer, TableCanvas
+F7 touches: schemas, stores, InteractiveCard, InteractiveDeck, ActionBar, TableCanvas, deckStateStore, gameStore
+F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw flow, degeneration logic
 ```
 
 ## Parallelization Strategy
@@ -170,26 +185,36 @@ F1-F5 touch: schemas, stores, InteractiveCard, CardRenderer, TableCanvas
 |---|---|
 | Feature | Snap Zone |
 | Priority | Medium |
-| Status | Proposed |
+| Status | Specs drafted |
 | Created | 2026-05-06 |
-| Last Updated | 2026-05-06 |
+| Last Updated | 2026-05-10 |
 
 **Problem Statement**: Need magnetic zones where cards snap into a stack when dragged over. Unlike decks, stacked cards in a zone are independent — only the top card is movable.
 
 **Clarified Requirements**:
 - Zones are predefined in the game JSON (not user-created at runtime).
-- Cards in a zone are aligned (not offset), with a count badge showing the number of cards (same visual as deck).
+- Zones are NOT draggable and NOT selectable. They are fixed positional areas.
+- Zone size = 1 card. Cards align perfectly within the zone.
+- Optional label displayed below the zone (e.g., "Défausse", max 30 chars).
+- Cards in a zone retain their own face-up/face-down state — no zone-level face state. A zone may contain a mix.
+- Empty zone renders as a dashed-outline placeholder. Zone with cards renders top card + count badge (same as deck).
 - Only the top card can be dragged out of the zone. It becomes an independent card on the table.
 - Cards below the top card remain in the zone in their original order.
-- Cards dropped onto a zone snap into place (magnetic/aimant UX). The newly dropped card becomes the top card.
+- Cards dropped onto a zone snap into place with ease-out animation (~150ms). The newly dropped card becomes the top card.
+- While dragging a card, the nearest zone within snap radius highlights (brighter border + glow).
+- Double-clicking the top card of a zone flips it.
 - Cards in a zone do NOT form a deck. They are independent entities stacked in a zone.
+- Configurable snap radius per zone in the game JSON (default: half-card-width).
+- **Specs**: `docs/specs/product_requirements/snap-zone.md`, `docs/specs/technical_requirements/snap-zone.md`
 
 **Risks**:
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Snap threshold / UX feel | Too aggressive = frustrating, too subtle = useless | Configurable snap radius with sensible default |
-| Zone vs deck visual distinction | Users confuse zone stacks with decks | Use count badge style consistent with decks; future: alternate presentation modes (I1) |
+| Snap threshold / UX feel | Too aggressive = frustrating, too subtle = useless | Configurable snap radius with sensible default (half-card-width) |
+| Zone vs deck visual distinction | Users confuse zone stacks with decks | Same count badge; empty zone has dashed outline; optional label distinguishes; future: alternate presentation modes (I1) |
 | Card ordering in zone | Which card is "on top" | Last card dropped = top |
+| Snap animation timing | Animation vs state update race condition | Animate first, update state on animation complete; `snappingCardId` flag prevents re-interaction |
+| Zone top card interaction | Drag-out + flip must work correctly | Top card rendered inside ZoneRenderer with CardRenderer-like interaction handlers |
 
 ---
 
@@ -223,7 +248,229 @@ F1-F5 touch: schemas, stores, InteractiveCard, CardRenderer, TableCanvas
 
 ---
 
-## Recommended Implementation Order
+### F7: Configurable Actions
+
+| Field | Value |
+|---|---|
+| Feature | Configurable Actions |
+| Priority | Medium |
+| Status | Specs drafted |
+| Created | 2026-05-10 |
+| Last Updated | 2026-05-11 |
+
+**Problem Statement**: Currently, actions available on each component type are hardcoded: cards always show "Retourner", decks always show "Retourner" + "Tirer face visible" + "Tirer face cachée". Game authors should be able to define which actions are available on each component in the game JSON. For example: a deck without draw (flip-only), a card with a custom action, or a deck that only draws face-down.
+
+**Clarified Requirements**:
+- Mandatory `actions` field on every card and deck component in the game JSON — no implicit defaults
+- Three available actions: `flip` (card + deck), `draw-face-up` (deck only), `draw-face-down` (deck only)
+- Labels are fixed (hardcoded in French). Game authors choose which actions to enable, not their names
+- The order of actions in the `actions` array determines the button order in the action bar
+- Empty or missing `actions` is a Zod validation error
+- **Gesture-action coupling**: double-click to flip is only available when `flip` is in the component's `actions`. If `flip` is not configured, the gesture is suppressed.
+- Zones (F5) are NOT affected — no configurable actions on zones
+- **Prerequisite refactor: deck-by-reference**. Decks reference cards by ID instead of embedding inline card definitions. Each card is a first-class component with its own `id`, `actions`, and `position` (nullable when inside a deck). This enables:
+  - Cards retain their own `actions` when drawn from a deck (no runtime action assignment)
+  - Cards retain their original ID when drawn (no ID generation like `{deckId}--{counter}`)
+  - Deck degeneration: the last card uses its own `actions` (not the deck's, not hardcoded `["flip"]`)
+- Cards with `position: null` are not rendered on the table (contained in a deck/zone)
+- Zod validates: all card IDs referenced in a deck exist in `components`, no card is referenced by multiple containers
+- No backward compatibility with old inline-deck JSON format (breaking change accepted)
+- F3 and F5 specs must be updated to reflect deck-by-reference model when F7 is implemented
+- **Specs**: `docs/specs/product_requirements/configurable-actions.md`, `docs/specs/technical_requirements/configurable-actions.md`
+
+**Risks**:
+| Risk | Impact | Mitigation |
+|---|---|---|
+| Schema breaking change | `actions` is mandatory + deck-by-reference breaks old JSON format | Only one game JSON exists (poker_patience.json); update it directly. No backward compatibility. |
+| Deck-by-reference refactor scope | Changes schema, deckStateStore, draw flow, degeneration logic, all test data. Touches nearly every file. | Careful incremental implementation: US-8 (deck-by-ref) first, then actions. |
+| Action bar UI complexity | Dynamic number of buttons based on configuration | Refactor ActionBar to accept `actions: ActionButton[]` instead of individual callback props |
+| Cards with `position: null` not in any container | Invisible, unreachable card in game state | TBD: Zod validation to reject unreferenced null-position cards, or accept as game author error |
+
+---
+
+### F8: Draw-to-Zone Action
+
+| Field | Value |
+|---|---|
+| Feature | Draw-to-Zone Action |
+| Priority | Medium |
+| Status | Proposed |
+| Created | 2026-05-10 |
+| Last Updated | 2026-05-10 |
+
+**Problem Statement**: F4 (Draw from Deck) places drawn cards on the table at a free offset position. Many games require drawn cards to go directly into a specific zone (e.g., a "hand" zone, a "discard" zone). Without this, the player must manually drag each drawn card to the zone.
+
+**Clarified Requirements**:
+- New deck action: `draw-to-zone` (available on deck only). Draws the top card and places it directly into a predefined zone instead of on the free table.
+- The target zone is specified in the action configuration in the game JSON (e.g., `draw-to-zone: "discard-zone"`). Always the same zone for a given action — no runtime zone selection.
+- The drawn card snaps into the zone following the same snap logic as F5 (US-4): card becomes the top card of the zone.
+- This creates two new action IDs: `draw-face-up-to-zone` and `draw-face-down-to-zone` (or a single `draw-to-zone` with a `targetZone` parameter — TBD in spec).
+- If the target zone does not exist in the game JSON, the game JSON is rejected by Zod validation.
+- The drawn card's faceUp state follows the same rules as F4 (face-up or face-down depending on which button).
+- All other draw behavior (deck auto-conversion, empty deck removal, ID generation) follows F4 rules.
+
+**Open Questions**:
+| # | Question | Resolution | Date |
+|---|---|---|---|
+| 1 | One action ID with a `targetZone` parameter, or two action IDs (`draw-face-up-to-zone`, `draw-face-down-to-zone`)? | Pending | |
+| 2 | Should the action label include the zone name (e.g., "Tirer face visible → Défausse")? | Pending | |
+| 3 | Can the same deck have both free-draw and draw-to-zone actions? | Pending | |
+| 4 | Can a deck draw to multiple different zones (multiple draw-to-zone buttons)? | Pending | |
+
+**Risks**:
+| Risk | Impact | Mitigation |
+|---|---|---|
+| Schema complexity — parameterized actions | Actions currently have no parameters. Adding `targetZone` requires a new action schema shape | Either: (a) parameterized action objects, or (b) generate unique action IDs per zone at parse time |
+| Target zone removed at runtime | Deck references a zone that was not defined | Zod validation ensures zone exists at load time |
+
+---
+
+### F9: Deck Shuffle
+
+| Field | Value |
+|---|---|
+| Feature | Deck Shuffle |
+| Priority | Low |
+| Status | Proposed |
+| Created | 2026-05-10 |
+| Last Updated | 2026-05-10 |
+
+**Problem Statement**: Need to randomize card order in a deck. Without shuffle, the deck order is always deterministic from the game JSON. Most card games require shuffling at setup.
+
+**Clarified Requirements**:
+- New deck action: `shuffle` (available on deck only). Randomizes the order of cards in the deck's `cards` array.
+- Shuffle must produce a different order each time — even across page reloads. The random seed must NOT be deterministic (e.g., not based on a fixed seed or timestamp alone).
+- The shuffle uses a cryptographically secure random source (`crypto.getRandomValues()`) to ensure uniqueness across sessions and reloads.
+- Shuffle does NOT change any card's faceUp/faceDown state — only reorders the array.
+- After shuffle, the deck remains selected and the count badge is unchanged.
+- The new top card (last element after shuffle) is rendered immediately.
+
+**Open Questions**:
+| # | Question | Resolution | Date |
+|---|---|---|---|
+| 1 | Should there be a shuffle animation (e.g., cards briefly scattering)? | Pending | |
+| 2 | Should shuffle be undoable? | Pending | |
+
+**Risks**:
+| Risk | Impact | Mitigation |
+|---|---|---|
+| PRNG determinism | Same shuffle on every reload | Use `crypto.getRandomValues()` (Web Crypto API) — non-deterministic, seeded by OS entropy |
+| Fisher-Yates implementation correctness | Bias in shuffle distribution | Use standard Fisher-Yates (Knuth) shuffle algorithm; test uniformity |
+
+---
+
+### F10: Card/Deck Merge & Split (drag)
+
+| Field | Value |
+|---|---|
+| Feature | Card/Deck Merge & Split (drag) |
+| Priority | Medium |
+| Status | Proposed |
+| Created | 2026-05-10 |
+| Last Updated | 2026-05-10 |
+
+**Problem Statement**: Need to form decks from individual cards, add cards to existing decks, and merge decks together — all via drag interactions. This is the reverse of drawing (F4) and is essential for games where players build stacks.
+
+**Clarified Requirements**:
+- **Card → Card merge (form deck)**: Dragging a card onto another card with the same `face.text` value creates a new deck containing both cards. The dragged card becomes the top card. The new deck uses the snap animation from F5 (~150ms ease-out). The dragged card takes the same face orientation as the other cards in the deck (it adopts the deck's faceUp state, not its own).
+- **Card → Deck merge (add to top)**: Dragging a card onto a deck adds it as the new top card of the deck, with snap animation. The card takes the deck's faceUp state. The deck's count badge increments. Valid only if the card's `face.text` matches the deck's top card's `face.text`.
+- **Deck → Card merge (add to bottom)**: Dragging a deck onto a card adds the card as the bottom card of the deck (first element of `cards` array), with snap animation. The card takes the deck's faceUp state. The deck's count badge increments. Valid only if the card's `face.text` matches the deck's top card's `face.text`.
+- **Deck → Deck merge**: Dragging a deck onto another deck merges them (all cards from the dragged deck are added on top of the target deck). Snap animation. Cards from the dragged deck adopt the target deck's faceUp state. Valid only if the top cards' `face.text` values match. The dragged deck is removed after merge.
+
+**Key design decisions**:
+- The matching criterion is `face.text` equality — this determines if two components can merge. TBD: should this be configurable (e.g., match on a custom field)?
+- When a card joins a deck, it loses its independence — it adopts the deck's faceUp state (like all cards in a deck share one orientation).
+- Snap animation on merge follows F5 UX (ease-out ~150ms).
+- After merge, the resulting deck remains at the target's position.
+
+**Open Questions**:
+| # | Question | Resolution | Date |
+|---|---|---|---|
+| 1 | Is `face.text` the right matching criterion, or should matching be configurable (e.g., a `group` field on components)? | Pending | |
+| 2 | What happens to the dragged component's ID after merge? | Pending | |
+| 3 | Should merge be reversible (undo)? | Pending | |
+| 4 | Visual feedback during drag: how to indicate a valid merge target (like zone highlight)? | Pending | |
+| 5 | Can a deck of 1 card be dragged onto another card (should it convert to card first, then card→card merge)? | Pending | |
+
+**Risks**:
+| Risk | Impact | Mitigation |
+|---|---|---|
+| Complex drag interaction logic | Multiple drop targets (zone, card, deck) with different behaviors | Clear priority: zone snap (F5) > merge > free drop |
+| face.text matching too rigid | Some games need different grouping rules | Start with face.text; make matching configurable in a future iteration |
+| Deck→Deck merge z-order | Which deck stays on the table? | Target deck stays; dragged deck is removed after merge |
+| State consistency during merge animation | User interacts during animation | Same mitigation as F5: `snappingCardId` flag prevents re-interaction |
+
+---
+
+### F11: Composite Actions (combo buttons)
+
+| Field | Value |
+|---|---|
+| Feature | Composite Actions |
+| Priority | Low |
+| Status | Proposed |
+| Created | 2026-05-10 |
+| Last Updated | 2026-05-10 |
+
+**Problem Statement**: Some game operations require multiple sequential actions (e.g., "shuffle then draw 3 face-down"). Currently, the player must click each action button individually. Composite actions let game authors define single buttons that execute a sequence of unit actions.
+
+**Clarified Requirements**:
+- Game authors can define composite actions in the game JSON — a single button that triggers a sequence of unit actions when clicked.
+- Each step in the sequence is a unit action (flip, draw-face-up, draw-face-down, draw-to-zone, shuffle, etc.).
+- Composite actions have a configurable label.
+- Steps execute sequentially and immediately (no pause between steps, no undo between steps).
+- If any step fails (e.g., draw from an empty deck), the sequence stops at that step. Previous steps are not rolled back.
+- Composite actions are listed in the component's `actions` array alongside unit actions.
+- Example: `{ type: "composite", label: "Mélanger et piocher", steps: ["shuffle", "draw-face-down", "draw-face-down", "draw-face-down"] }`
+
+**Open Questions**:
+| # | Question | Resolution | Date |
+|---|---|---|---|
+| 1 | Should composite actions support delays/pauses between steps? | Pending | |
+| 2 | Should composite actions support conditional steps (if/then)? | Pending | |
+| 3 | Maximum number of steps? | Pending | |
+| 4 | Should the action bar show a loading state during a long composite? | Pending | |
+
+**Risks**:
+| Risk | Impact | Mitigation |
+|---|---|---|
+| Partial failure in sequence | Some steps execute, others don't — game state is mid-sequence | Accept partial execution; document that sequences are not transactional |
+| Schema complexity | Composite actions need a different schema shape than unit actions | Extend `actions` to support both string IDs and composite action objects |
+
+---
+
+### F12: Startup Sequence (auto-actions)
+
+| Field | Value |
+|---|---|
+| Feature | Startup Sequence |
+| Priority | Low |
+| Status | Proposed |
+| Created | 2026-05-10 |
+| Last Updated | 2026-05-10 |
+
+**Problem Statement**: Some games require setup actions when the game loads (e.g., shuffle the draw pile, deal cards to zones, flip certain cards face-up). Currently, the player must perform these actions manually every time the game starts.
+
+**Clarified Requirements**:
+- Game authors can define a `startup` sequence in the game JSON — a list of actions that execute automatically when the game loads, before the player interacts.
+- Each step targets a specific component by ID and executes an action (or composite action) on it.
+- Example: `{ startup: [{ target: "draw-pile", action: "shuffle" }, { target: "draw-pile", action: "draw-face-down-to-zone", zone: "hand" }] }`
+- Steps execute sequentially after the game JSON is loaded and validated.
+- The startup sequence runs once per page load. Reloading the page re-runs the sequence (important: shuffle must still produce different results each reload — F9 ensures this).
+- If any step fails (e.g., target component not found), the sequence stops and an error is shown.
+
+**Open Questions**:
+| # | Question | Resolution | Date |
+|---|---|---|---|
+| 1 | Should startup actions be animated or instant? | Pending | |
+| 2 | Should startup run before or after the initial render? | Pending | |
+| 3 | Can startup actions target components created by earlier startup steps (e.g., a card drawn in step 1)? | Pending | |
+
+**Risks**:
+| Risk | Impact | Mitigation |
+|---|---|---|
+| Startup sequence depends on F8 (draw-to-zone) | Cannot implement until F8 is done | F12 depends on F8; implement in order |
+| Component IDs created during startup may not exist yet | Later steps reference dynamically created components | TBD: either (a) only allow targeting pre-existing components, or (b) use a deferred reference system |
 
 1. **F6** (Card Image Face) — Can start in parallel with F1. No dependency on drag/drop.
 2. **F1** (Card Drag & Drop) — Foundation for all interaction features.
@@ -231,10 +478,20 @@ F1-F5 touch: schemas, stores, InteractiveCard, CardRenderer, TableCanvas
 4. **F3** (Deck) — Requires F2.
 5. **F4** (Draw from Deck) — Requires F3.
 6. **F5** (Snap Zone) — Requires F4.
+7. **F7** (Configurable Actions + Deck-by-Reference) — Requires F4. Includes a prerequisite refactor of F3 (deck-by-reference: decks reference cards by ID instead of inline). Changes the data model for decks and cards. Must be done before F5 implementation since zones will also use card-by-reference. ActionBar refactor for dynamic actions.
+8. **F8** (Draw-to-Zone Action) — Requires F5 + F7. Extends the action catalogue with zone-targeted draw.
+9. **F9** (Deck Shuffle) — Requires F3 + F7. Simple standalone action. Can be done in parallel with F8.
+10. **F10** (Card/Deck Merge & Split) — Requires F3 + F5 + F7. High complexity, high risk. Must come after F5 (snap animation reuse) and F7 (action system).
+11. **F11** (Composite Actions) — Requires F7. Extends action schema with sequences. Should come after F8 and F9 so all unit actions exist first.
+12. **F12** (Startup Sequence) — Requires F7 + F8. Game-level auto-execution. Should come last so all actions (including composite) are available in startup steps.
 
 ## Change Log
 
 | Date | Change | Author |
 |---|---|---|
 | 2026-05-06 | Initial backlog with 6 features and parallelization strategy | AI |
-| 2026-05-06 | Added clarification answers, future ideas (I1-I4), updated deck/zone/snap/draw specs | AI |
+| 2026-05-09 | Added deck and draw specs, updated backlog with F3/F4 details | AI |
+| 2026-05-10 | Updated F5 Snap Zone with detailed specs and clarified requirements | AI |
+| 2026-05-10 | Added F7 (Configurable Actions), subsumed I5 into F7 | AI |
+| 2026-05-10 | Added F8-F12, removed I2 (subsumed by F9), updated F7 with validated requirements, updated dependency graph and implementation order | AI |
+| 2026-05-11 | Updated F7 with deck-by-reference prerequisite, gesture-action coupling, updated dependency graph | AI |

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useMemo } from "react";
 import type Konva from "konva";
 import type { DeckComponent, CardComponent } from "@/types/game";
 import { useCardStateStore } from "@/store/cardStateStore";
@@ -23,9 +23,11 @@ function InteractiveDeck({
   viewportWidth,
   viewportHeight,
 }: InteractiveDeckProps) {
-  const isFaceUp = useDeckStateStore((s) => s.isFaceUp(deckId));
-  const cards = useDeckStateStore((s) => s.getCards(deckId));
-  const cardCount = useDeckStateStore((s) => s.getCardCount(deckId));
+  const isFaceUp = useDeckStateStore((s) => s.faceUp[deckId] ?? false);
+  const deckCards = useDeckStateStore((s) => s.cards[deckId]);
+  const cards = useMemo(() => deckCards ?? [], [deckCards]);
+  const cardCount = deckCards?.length ?? 0;
+  const isInitialized = deckCards !== undefined;
   const selectComponent = useCardStateStore((s) => s.selectComponent);
   const setFaceUp = useCardStateStore((s) => s.setFaceUp);
   const flipDeck = useDeckStateStore((s) => s.flipDeck);
@@ -42,6 +44,7 @@ function InteractiveDeck({
   const prevFaceUp = useRef(isFaceUp);
 
   useEffect(() => {
+    if (!isInitialized) return;
     if (cardCount === 0) {
       removeComponent(deckId);
       removeDeck(deckId);
@@ -61,7 +64,7 @@ function InteractiveDeck({
       setFaceUp(deckId, isFaceUp);
       removeDeck(deckId);
     }
-  }, [cardCount, cards, deckId, isFaceUp, component.position, getCardPosition, replaceComponent, removeComponent, removeDeck, setFaceUp]);
+  }, [isInitialized, cardCount, cards, deckId, isFaceUp, component.position, getCardPosition, replaceComponent, removeComponent, removeDeck, setFaceUp]);
 
   useEffect(() => {
     if (prevFaceUp.current !== isFaceUp) {
@@ -110,7 +113,7 @@ function InteractiveDeck({
     [deckId, viewportWidth, viewportHeight, updateCardPosition, setDragging],
   );
 
-  if (cardCount === 0 || cardCount === 1) return null;
+  if (!isInitialized || cardCount === 0 || cardCount === 1) return null;
 
   const topCard = cards[cards.length - 1];
 

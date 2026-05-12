@@ -117,6 +117,7 @@ describe("deck-to-card degeneration flow (US-5)", () => {
             { face: { type: "text", text: "Roi" } },
           ],
           position: { x: 0.7, y: 0.5 },
+          faceUp: false,
         },
       ],
     });
@@ -150,22 +151,23 @@ describe("empty deck removal flow (US-6)", () => {
       version: "1.0.0",
       components: [
         { type: "card", id: "c1", face: { type: "text", text: "A" }, position: { x: 0.3, y: 0.5 } },
-        {
-          type: "deck",
-          id: "draw-pile",
-          cards: [
-            { face: { type: "text", text: "Roi" } },
-          ],
-          position: { x: 0.7, y: 0.5 },
-        },
-      ],
-    });
+      {
+        type: "deck",
+        id: "draw-pile",
+        cards: [
+          { face: { type: "text", text: "Roi" } },
+        ],
+        position: { x: 0.7, y: 0.5 },
+        faceUp: false,
+      },
+    ],
+  });
 
-    useDeckStateStore.getState().initDeck("draw-pile", [
-      { face: { type: "text", text: "Roi" } },
-    ], false);
+  useDeckStateStore.getState().initDeck("draw-pile", [
+    { face: { type: "text", text: "Roi" } },
+  ], false);
 
-    useDeckStateStore.getState().removeCardFromTop("draw-pile");
+  useDeckStateStore.getState().removeCardFromTop("draw-pile");
     expect(useDeckStateStore.getState().getCardCount("draw-pile")).toBe(0);
 
     useGameStore.getState().removeComponent("draw-pile");
