@@ -48,8 +48,7 @@ interface DeckRendererProps {
   draggable?: boolean;
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
-  positionOverride?: { x: number; y: number };
-  zIndex?: number;
+  positionOverride?: Position;
 }
 
 function DeckRenderer({
@@ -66,7 +65,6 @@ function DeckRenderer({
   onDragStart,
   onDragEnd,
   positionOverride,
-  zIndex,
 }: DeckRendererProps) {
   const game = useGameStore((s) => s.game);
   const topCard = game?.components.find(
@@ -97,16 +95,6 @@ function DeckRenderer({
   useEffect(() => {
     if (onBounceRef) onBounceRef.current = triggerBounce;
   }, [onBounceRef, triggerBounce]);
-
-  useEffect(() => {
-    const node = groupRef.current;
-    if (!node || zIndex === undefined) return;
-    const parent = node.getParent();
-    const maxZ = parent ? parent.children.length - 1 : 0;
-    node.zIndex(Math.min(zIndex, Math.max(maxZ, 0)));
-    const layer = node.getLayer();
-    if (layer) layer.batchDraw();
-  }, [zIndex]);
 
   const fill = faceUp ? CARD_FRONT_FILL : CARD_BACK_FILL;
   const backText = topCard.back?.text ?? CARD_BACK_TEXT;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { useGameStore } from "@/store/gameStore";
 import { useCardStateStore } from "@/store/cardStateStore";
@@ -9,6 +9,7 @@ import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ActionBar from "@/ui/html/ActionBar";
 import type { ActionButton } from "@/ui/html/ActionBar";
+import { logZOrder, initZOrderDebug } from "@/utils/debugZOrder";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
 
 function TableCanvas() {
@@ -25,18 +26,22 @@ function TableCanvas() {
   const setFaceUp = useCardStateStore((s) => s.setFaceUp);
   const flipDeck = useDeckStateStore((s) => s.flipDeck);
   const initZOrder = useCardZOrderStore((s) => s.initZOrder);
-  const insertAfter = useCardZOrderStore((s) => s.insertAfter);
+  const bringToTop = useCardZOrderStore((s) => s.bringToTop);
+  const replace = useCardZOrderStore((s) => s.replace);
+  const zOrder = useCardZOrderStore((s) => s.zOrder);
   const initDeck = useDeckStateStore((s) => s.initDeck);
   const updateComponentPosition = useGameStore((s) => s.updateComponentPosition);
   const getCardPosition = useCardPositionStore((s) => s.getCardPosition);
   const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
 
   useEffect(() => {
+    initZOrderDebug();
     if (game) {
       const currentDeckIds = Object.keys(useDeckStateStore.getState().cards);
       const componentIds = game.components
         .filter((c) => c.type !== "card" || c.position !== null)
         .map((c) => c.id);
+      logZOrder("TableCanvas initZOrder", componentIds);
       initZOrder(componentIds);
       const newDeckIds = new Set(
         game.components.filter((c) => c.type === "deck").map((c) => c.id),
@@ -129,7 +134,9 @@ function TableCanvas() {
     updateComponentPosition(result.cardId, result.position);
     updateCardPosition(result.cardId, result.position);
     setFaceUp(result.cardId, faceUp);
-    insertAfter(deckId, result.cardId);
+
+    logZOrder(`TableCanvas handleDraw → bringToTop("${result.cardId}") deckDegenerates=${result.deckDegenerates}`);
+    bringToTop(result.cardId);
 
     if (result.deckDegenerates) {
       const lastCardId = useDeckStateStore.getState().getCards(deckId)[0];
@@ -137,6 +144,8 @@ function TableCanvas() {
         updateComponentPosition(lastCardId, deckPosition);
         updateCardPosition(lastCardId, deckPosition);
         setFaceUp(lastCardId, useDeckStateStore.getState().isFaceUp(deckId));
+        logZOrder(`TableCanvas handleDraw deckDegenerates → replace("${deckId}", "${lastCardId}")`);
+        replace(deckId, lastCardId);
       }
       useGameStore.getState().removeComponent(deckId);
       useDeckStateStore.getState().removeDeck(deckId);
@@ -155,7 +164,8 @@ function TableCanvas() {
     updateComponentPosition,
     setFaceUp,
     updateCardPosition,
-    insertAfter,
+    bringToTop,
+    replace,
     selectComponent,
   ],
   );
@@ -186,10 +196,23 @@ function TableCanvas() {
     return buttons;
   })();
 
-  const visibleComponents = game?.components.filter((c) => {
+  const unsortedVisible = game?.components.filter((c) => {
     if (c.type === "card") return c.position !== null;
     return true;
   }) ?? [];
+
+  const zOrderRank = useMemo(() => {
+    const rank = new Map<string, number>();
+    zOrder.forEach((id, i) => rank.set(id, i));
+    return rank;
+  }, [zOrder]);
+
+  const visibleComponents = useMemo(
+    () => [...unsortedVisible].sort((a, b) => (zOrderRank.get(a.id) ?? 0) - (zOrderRank.get(b.id) ?? 0)),
+    [unsortedVisible, zOrderRank],
+  );
+
+  logZOrder(`TableCanvas render visibleComponents (${visibleComponents.length})`, visibleComponents.map((c) => `${c.id}(${c.type})`));
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
@@ -209,24 +232,24 @@ function TableCanvas() {
           {visibleComponents.map((component) => {
             if (component.type === "card") {
               return (
-                <InteractiveCard
-                  key={component.id}
-                  component={component}
-                  cardId={component.id}
-                  viewportWidth={size.width}
-                  viewportHeight={size.height}
-                />
+          <InteractiveCard
+            key={component.id}
+            component={component}
+            cardId={component.id}
+            viewportWidth={size.width}
+            viewportHeight={size.height}
+          />
               );
             }
             if (component.type === "deck") {
               return (
-                <InteractiveDeck
-                  key={component.id}
-                  component={component}
-                  deckId={component.id}
-                  viewportWidth={size.width}
-                  viewportHeight={size.height}
-                />
+          <InteractiveDeck
+            key={component.id}
+            component={component}
+            deckId={component.id}
+            viewportWidth={size.width}
+            viewportHeight={size.height}
+          />
               );
             }
             return null;

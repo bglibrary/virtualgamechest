@@ -37,12 +37,12 @@ interface CardRendererProps {
   draggable?: boolean;
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
-  positionOverride?: { x: number; y: number };
-  zIndex?: number;
+  positionOverride?: Position;
 }
 
 function CardRenderer({
   component,
+  cardId,
   faceUp,
   viewportWidth,
   viewportHeight,
@@ -52,7 +52,6 @@ function CardRenderer({
   onDragStart,
   onDragEnd,
   positionOverride,
-  zIndex,
 }: CardRendererProps) {
   const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
   const cardHeight = cardWidth * CARD_ASPECT;
@@ -78,16 +77,6 @@ function CardRenderer({
   useEffect(() => {
     if (onBounceRef) onBounceRef.current = triggerBounce;
   }, [onBounceRef, triggerBounce]);
-
-  useEffect(() => {
-    const node = groupRef.current;
-    if (!node || zIndex === undefined) return;
-    const parent = node.getParent();
-    const maxZ = parent ? parent.children.length - 1 : 0;
-    node.zIndex(Math.min(zIndex, Math.max(maxZ, 0)));
-    const layer = node.getLayer();
-    if (layer) layer.batchDraw();
-  }, [zIndex]);
 
   const fill = faceUp ? CARD_FRONT_FILL : CARD_BACK_FILL;
   const backText = component.back?.text ?? CARD_BACK_TEXT;

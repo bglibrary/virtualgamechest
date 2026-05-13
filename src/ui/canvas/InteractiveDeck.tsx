@@ -9,6 +9,7 @@ import { useGameStore } from "@/store/gameStore";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
 import DeckRenderer from "@/ui/canvas/DeckRenderer";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
+import { logZOrder } from "@/utils/debugZOrder";
 
 interface InteractiveDeckProps {
   component: DeckComponent;
@@ -29,38 +30,27 @@ function InteractiveDeck({
   const cardCount = deckCards?.length ?? 0;
   const isInitialized = deckCards !== undefined;
   const selectComponent = useCardStateStore((s) => s.selectComponent);
-  const setFaceUp = useCardStateStore((s) => s.setFaceUp);
   const flipDeck = useDeckStateStore((s) => s.flipDeck);
   const removeDeck = useDeckStateStore((s) => s.removeDeck);
   const positionOverride = useCardPositionStore((s) => s.positions[deckId]);
-  const getCardPosition = useCardPositionStore((s) => s.getCardPosition);
   const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
   const setDragging = useCardPositionStore((s) => s.setDragging);
-  const zIndex = useCardZOrderStore((s) => s.getZIndex(deckId));
   const bringToTop = useCardZOrderStore((s) => s.bringToTop);
-  const replaceComponent = useGameStore((s) => s.replaceComponent);
   const removeComponent = useGameStore((s) => s.removeComponent);
-  const updateComponentPosition = useGameStore((s) => s.updateComponentPosition);
   const bounceRef = useRef<(() => void) | null>(null);
   const prevFaceUp = useRef(isFaceUp);
+
+  logZOrder(`render:InteractiveDeck[${deckId}] count=${cardCount} rendered=${!(cardCount === 0 || cardCount === 1)}`);
 
   useEffect(() => {
     if (!isInitialized) return;
     if (cardCount === 0) {
+      logZOrder(`InteractiveDeck[${deckId}] useEffect: cardCount=0 → remove`);
       removeComponent(deckId);
       removeDeck(deckId);
       return;
     }
-  if (cardCount === 1) {
-    const lastCardId = cards[0];
-    const deckPosition = getCardPosition(deckId) ?? component.position;
-    updateComponentPosition(lastCardId, deckPosition);
-    updateCardPosition(lastCardId, deckPosition);
-    setFaceUp(lastCardId, isFaceUp);
-    removeComponent(deckId);
-    removeDeck(deckId);
-  }
-  }, [isInitialized, cardCount, cards, deckId, isFaceUp, component.position, getCardPosition, removeComponent, removeDeck, setFaceUp, updateComponentPosition, updateCardPosition]);
+  }, [isInitialized, cardCount, deckId, removeComponent, removeDeck]);
 
   useEffect(() => {
     if (prevFaceUp.current !== isFaceUp) {
@@ -129,7 +119,6 @@ function InteractiveDeck({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       positionOverride={positionOverride}
-      zIndex={zIndex}
     />
   );
 }

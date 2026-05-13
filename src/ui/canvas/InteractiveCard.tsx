@@ -7,6 +7,7 @@ import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
 import CardRenderer from "@/ui/canvas/CardRenderer";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
+import { logZOrder } from "@/utils/debugZOrder";
 
 interface InteractiveCardProps {
   component: CardComponent;
@@ -28,10 +29,11 @@ function InteractiveCard({
   const positionOverride = useCardPositionStore((s) => s.positions[cardId]);
   const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
   const setDragging = useCardPositionStore((s) => s.setDragging);
-  const zIndex = useCardZOrderStore((s) => s.getZIndex(cardId));
   const bringToTop = useCardZOrderStore((s) => s.bringToTop);
   const bounceRef = useRef<(() => void) | null>(null);
   const prevFaceUp = useRef(isFaceUp);
+
+  logZOrder(`render:InteractiveCard[${cardId}] position=${component.position?.x?.toFixed(2) ?? "null"}`);
 
   useEffect(() => {
     if (prevFaceUp.current !== isFaceUp) {
@@ -95,7 +97,6 @@ function InteractiveCard({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       positionOverride={positionOverride}
-      zIndex={zIndex}
     />
   );
 }
