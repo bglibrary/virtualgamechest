@@ -15,7 +15,8 @@
         "text": "Dosdos",
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Back09.svg/1280px-Back09.svg.png"
       },
-      "position": { "x": 0.35, "y": 0.45 }
+      "position": { "x": 0.35, "y": 0.45 },
+      "actions": [{ "type": "flip", "label": "Retourner" }]
     },
     {
       "type": "card",
@@ -29,7 +30,8 @@
         "text": "Dosdos",
         "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Back09.svg/1280px-Back09.svg.png"
       },
-      "position": { "x": 0.38, "y": 0.48 }
+      "position": { "x": 0.38, "y": 0.48 },
+      "actions": [{ "type": "flip", "label": "Retourner" }]
     },
     {
       "type": "card",
@@ -38,7 +40,8 @@
         "type": "text",
         "text": "Dame Carreau"
       },
-      "position": { "x": 0.65, "y": 0.5 }
+      "position": { "x": 0.65, "y": 0.5 },
+      "actions": [{ "type": "flip", "label": "Retourner" }]
     },
     {
       "type": "card",
@@ -51,7 +54,8 @@
         "type": "text",
         "text": "Dos"
       },
-      "position": { "x": 0.5, "y": 0.35 }
+      "position": { "x": 0.5, "y": 0.35 },
+      "actions": [{ "type": "flip", "label": "Retourner" }]
     },
     {
       "type": "card",
@@ -60,18 +64,40 @@
         "type": "text",
         "text": "10 Cœur"
       },
-      "position": { "x": 0.2, "y": 0.7 }
+      "position": { "x": 0.2, "y": 0.7 },
+      "actions": [{ "type": "flip", "label": "Retourner" }]
+    },
+    {
+      "type": "card",
+      "id": "rp-1",
+      "face": { "type": "text", "text": "Roi Pique" },
+      "back": { "type": "text", "text": "DosRP" },
+      "position": null,
+      "actions": [{ "type": "flip", "label": "Retourner" }]
+    },
+    {
+      "type": "card",
+      "id": "rp-2",
+      "face": { "type": "text", "text": "Dame Carreau" },
+      "back": { "type": "text", "text": "DosDC" },
+      "position": null,
+      "actions": [{ "type": "flip", "label": "Retourner" }]
+    },
+    {
+      "type": "card",
+      "id": "rp-3",
+      "face": { "type": "text", "text": "Valet Trèfle" },
+      "back": { "type": "text", "text": "DosVT" },
+      "position": null,
+      "actions": [{ "type": "flip", "label": "Retourner" }]
     },
     {
       "type": "deck",
       "id": "draw-pile",
-      "cards": [
-        { "face": { "type": "text", "text": "Roi Pique" }, "back": { "type": "text", "text": "DosRP" } },
-        { "face": { "type": "text", "text": "Dame Carreau" }, "back": { "type": "text", "text": "DosDC" } },
-        { "face": { "type": "text", "text": "Valet Trèfle" }, "back": { "type": "text", "text": "DosVT" } }
-      ],
+      "cards": ["rp-1", "rp-2", "rp-3"],
       "position": { "x": 0.8, "y": 0.5 },
-      "faceUp": false
+      "faceUp": false,
+      "actions": [{ "type": "flip", "label": "Retourner" }, { "type": "draw-face-up", "label": "Piocher face visible" }, { "type": "draw-face-down", "label": "Piocher face cachée" }]
     }
   ]
 }

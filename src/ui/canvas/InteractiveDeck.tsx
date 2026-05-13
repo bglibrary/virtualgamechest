@@ -1,6 +1,6 @@
 import { useCallback, useRef, useEffect, useMemo } from "react";
 import type Konva from "konva";
-import type { DeckComponent, CardComponent } from "@/types/game";
+import type { DeckComponent } from "@/types/game";
 import { useCardStateStore } from "@/store/cardStateStore";
 import { useDeckStateStore } from "@/store/deckStateStore";
 import { useCardPositionStore } from "@/store/cardPositionStore";
@@ -40,6 +40,7 @@ function InteractiveDeck({
   const bringToTop = useCardZOrderStore((s) => s.bringToTop);
   const replaceComponent = useGameStore((s) => s.replaceComponent);
   const removeComponent = useGameStore((s) => s.removeComponent);
+  const updateComponentPosition = useGameStore((s) => s.updateComponentPosition);
   const bounceRef = useRef<(() => void) | null>(null);
   const prevFaceUp = useRef(isFaceUp);
 
@@ -50,21 +51,16 @@ function InteractiveDeck({
       removeDeck(deckId);
       return;
     }
-    if (cardCount === 1) {
-      const lastCard = cards[0];
-      const deckPosition = getCardPosition(deckId) ?? component.position;
-      const newCard: CardComponent = {
-        type: "card",
-        id: deckId,
-        face: lastCard.face,
-        back: lastCard.back,
-        position: deckPosition,
-      };
-      replaceComponent(deckId, newCard);
-      setFaceUp(deckId, isFaceUp);
-      removeDeck(deckId);
-    }
-  }, [isInitialized, cardCount, cards, deckId, isFaceUp, component.position, getCardPosition, replaceComponent, removeComponent, removeDeck, setFaceUp]);
+  if (cardCount === 1) {
+    const lastCardId = cards[0];
+    const deckPosition = getCardPosition(deckId) ?? component.position;
+    updateComponentPosition(lastCardId, deckPosition);
+    updateCardPosition(lastCardId, deckPosition);
+    setFaceUp(lastCardId, isFaceUp);
+    removeComponent(deckId);
+    removeDeck(deckId);
+  }
+  }, [isInitialized, cardCount, cards, deckId, isFaceUp, component.position, getCardPosition, removeComponent, removeDeck, setFaceUp, updateComponentPosition, updateCardPosition]);
 
   useEffect(() => {
     if (prevFaceUp.current !== isFaceUp) {
@@ -78,8 +74,9 @@ function InteractiveDeck({
   }, [selectComponent, deckId]);
 
   const handleDblClick = useCallback(() => {
+    if (!component.actions.some((a) => a.type === "flip")) return;
     flipDeck(deckId);
-  }, [flipDeck, deckId]);
+  }, [component.actions, flipDeck, deckId]);
 
   const { onClick, cancelPendingClick } = useClickOrDblClick({
     onClick: handleClick,
@@ -115,14 +112,14 @@ function InteractiveDeck({
 
   if (!isInitialized || cardCount === 0 || cardCount === 1) return null;
 
-  const topCard = cards[cards.length - 1];
+  const topCardId = cards[cards.length - 1];
 
   return (
     <DeckRenderer
       component={component}
       deckId={deckId}
       faceUp={isFaceUp}
-      topCard={topCard}
+      topCardId={topCardId}
       cardCount={cardCount}
       viewportWidth={viewportWidth}
       viewportHeight={viewportHeight}

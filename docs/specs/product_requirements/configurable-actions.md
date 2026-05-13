@@ -30,15 +30,17 @@ F5 (Snap Zones) are explicitly excluded from configurable actions — zones rema
 
 - New **mandatory** `actions` field on `card` and `deck` component definitions in the game JSON
 - The `actions` field lists which actions are available on that component, in the desired display order
-- Action labels are fixed (hardcoded in French) — game authors choose which actions to enable, not what they are called
+- Action labels are **customizable** in the game JSON — every action entry has a mandatory `label` field. Game authors choose both which actions to enable and what they are called
+- Actions are defined as objects with `type` and `label` fields (not plain strings). Example: `{ "type": "flip", "label": "Retourner" }`
 - The order of actions in the `actions` array determines the order of buttons in the action bar
 - No implicit defaults: `actions` is required on every card and deck component
 - Validation: if `actions` is empty or missing, the game JSON is rejected by Zod validation
 - **Gesture-action coupling**: gestures (double-click to flip) are only available when the corresponding action (`flip`) is in the component's `actions` array. If `flip` is not configured, double-click does nothing.
 - Catalogue of available actions:
-  - `flip` — available on: card, deck. Label: "Retourner". Flips the card / flips the deck. Also enables double-click to flip.
-- `draw-face-up` — available on: deck only. Label: "Piocher face visible". Draws the top card face-up.
-- `draw-face-down` — available on: deck only. Label: "Piocher face cachée". Draws the top card face-down.
+  - `flip` — available on: card, deck. Default label: "Retourner". Flips the card / flips the deck. Also enables double-click to flip.
+  - `draw-face-up` — available on: deck only. Default label: "Piocher face visible". Draws the top card face-up.
+  - `draw-face-down` — available on: deck only. Default label: "Piocher face cachée". Draws the top card face-down.
+  - `draw-to-zone` — available on: deck only. Requires `targetZone` and `faceUp` parameters. Draws the top card into the specified zone. Introduced by F8.
 - No conditional actions (actions are always available when configured, regardless of component state)
 - Zones (F5) are NOT affected — no configurable actions on zones
 
@@ -59,9 +61,8 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 
 - Custom/user-defined actions with arbitrary behavior
 - Conditional actions (enable/disable based on game state: card face-up, deck size, etc.)
-- Configurable action labels (labels are fixed in French)
 - Actions on zones (zones remain non-selectable, no action bar)
-- New actions beyond the existing three (shuffle, peek, move-to-zone, etc.) — these will be added by F9, F8, F11
+- New actions beyond the existing four (shuffle, peek, move-to-zone, etc.) — these will be added by F9, F11
 - Keyboard shortcuts for actions
 - Undo/redo of actions
 - Action confirmation dialogs
@@ -78,12 +79,15 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 **Acceptance Criteria:**
 
 - [ ] A card component accepts a mandatory `actions` field in the game JSON
+- [ ] Each action entry is an object with `type` and `label` fields (e.g., `{ "type": "flip", "label": "Retourner" }`)
 - [ ] If `actions` is missing on a card, the game JSON is rejected by Zod validation
 - [ ] If `actions` is present on a card, only the listed actions appear in the action bar when the card is selected
-- [ ] The only valid action for a card is `flip`
-- [ ] If `actions` contains an action not valid for cards (e.g., `"draw-face-up"`), the game JSON is rejected by Zod validation
+- [ ] The only valid action type for a card is `flip`
+- [ ] If `actions` contains an action type not valid for cards (e.g., `"draw-face-up"`), the game JSON is rejected by Zod validation
 - [ ] If `actions` is an empty array on a card, the game JSON is rejected by Zod validation
 - [ ] The order of actions in `actions` determines the order of buttons in the action bar
+- [ ] The `label` field is mandatory on each action entry. If missing, the game JSON is rejected by Zod validation
+- [ ] The action bar displays the custom `label` text on each button
 - [ ] If `flip` is NOT in a card's `actions`, double-clicking the card does NOT flip it
 
 ### US-2: Configure actions on a deck component
@@ -95,12 +99,16 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 **Acceptance Criteria:**
 
 - [ ] A deck component accepts a mandatory `actions` field in the game JSON
+- [ ] Each action entry is an object with `type` and `label` fields (e.g., `{ "type": "draw-face-up", "label": "Piocher face visible" }`)
 - [ ] If `actions` is missing on a deck, the game JSON is rejected by Zod validation
 - [ ] If `actions` is present on a deck, only the listed actions appear in the action bar when the deck is selected
-- [ ] Valid actions for a deck are: `flip`, `draw-face-up`, `draw-face-down`
-- [ ] If `actions` contains an action not valid for decks (e.g., a non-existent action ID), the game JSON is rejected by Zod validation
+- [ ] Valid action types for a deck are: `flip`, `draw-face-up`, `draw-face-down`, `draw-to-zone`
+- [ ] `draw-to-zone` entries also require `targetZone` (zone ID) and `faceUp` (boolean) fields
+- [ ] If `actions` contains an action type not valid for decks (e.g., a non-existent action type), the game JSON is rejected by Zod validation
 - [ ] If `actions` is an empty array on a deck, the game JSON is rejected by Zod validation
-- [ ] Duplicate actions in the array are rejected by Zod validation (e.g., `["flip", "flip"]` is invalid)
+- [ ] Duplicate action entries (same `type` + same parameters) are rejected by Zod validation
+- [ ] The `label` field is mandatory on each action entry. If missing, the game JSON is rejected by Zod validation
+- [ ] The action bar displays the custom `label` text on each button
 - [ ] The order of actions in `actions` determines the order of buttons in the action bar
 - [ ] If `flip` is NOT in a deck's `actions`, double-clicking the deck does NOT flip it
 
@@ -113,7 +121,7 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 **Acceptance Criteria:**
 
 - [ ] When a component with a configured `actions` field is selected, the action bar displays buttons in the same order as the `actions` array
-- [ ] Example: a deck with `actions: ["draw-face-down", "flip"]` shows "Piocher face cachée" first, then "Retourner"
+- [ ] Example: a deck with `actions: [{ type: "draw-face-down", label: "Piocher face cachée" }, { type: "flip", label: "Retourner" }]` shows "Piocher face cachée" first, then "Retourner"
 - [ ] The action bar width adapts to the number of buttons displayed (same adaptive behavior as F4 US-6)
 
 ### US-4: Component with no valid actions is rejected at load time
@@ -126,8 +134,9 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 
 - [ ] A card component with `actions: []` is rejected by Zod validation with a clear error message
 - [ ] A deck component with `actions: []` is rejected by Zod validation with a clear error message
-- [ ] A card component with only invalid actions (e.g., `actions: ["draw-face-up"]`) is rejected by Zod validation — the final resolved action set must not be empty
+- [ ] A card component with only invalid action types (e.g., `actions: [{ type: "draw-face-up", label: "X" }]`) is rejected by Zod validation — the final resolved action set must not be empty
 - [ ] A component with a missing `actions` field is rejected by Zod validation
+- [ ] An action entry with a missing `label` field is rejected by Zod validation
 
 ### US-5: Card retains its own actions when drawn from a deck
 
@@ -193,15 +202,16 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 
 | Scenario | Expected Behavior |
 |---|---|
-| Card with `actions: ["flip"]` | Action bar shows "Retourner". Double-click flips the card. |
-| Card with no `flip` in actions | Not possible for cards: the only valid card action is `flip`, and `actions` must be non-empty. So a valid card always has `actions: ["flip"]`. |
-| Deck with `actions: ["flip"]` | Flip-only deck. No draw buttons. Player cannot draw from this deck. Double-click flips the deck. |
-| Deck with `actions: ["draw-face-down"]` | Draw-only-face-down deck. No flip, no face-up draw. Double-click does NOT flip (gesture suppressed). |
-| Deck with `actions: ["draw-face-up", "draw-face-down"]` | Draw-only deck. No flip button. Double-click does NOT flip. |
-| Deck with `actions: ["draw-face-down", "draw-face-up", "flip"]` | All three actions, custom order. "Piocher face cachée" first. Double-click flips. |
-| Card with `actions: ["draw-face-up"]` | Rejected by Zod — `draw-face-up` is not a valid action for cards. |
-| Component with duplicate action IDs (`["flip", "flip"]`) | Rejected by Zod validation — duplicate actions are not allowed. |
-| Component with unknown action ID (`["shuffle"]`) | Rejected by Zod validation — unknown action ID. |
+| Card with `actions: [{ type: "flip", label: "Retourner" }]` | Action bar shows "Retourner". Double-click flips the card. |
+| Card with no `flip` in actions | Not possible for cards: the only valid card action type is `flip`, and `actions` must be non-empty. So a valid card always has at least `{ type: "flip", label: "..." }`. |
+| Deck with `actions: [{ type: "flip", label: "Retourner" }]` | Flip-only deck. No draw buttons. Player cannot draw from this deck. Double-click flips the deck. |
+| Deck with `actions: [{ type: "draw-face-down", label: "Piocher face cachée" }]` | Draw-only-face-down deck. No flip, no face-up draw. Double-click does NOT flip (gesture suppressed). |
+| Deck with `actions: [{ type: "draw-face-up", label: "Piocher" }, { type: "draw-face-down", label: "Piocher caché" }]` | Draw-only deck. No flip button. Double-click does NOT flip. |
+| Deck with custom labels: `[{ type: "flip", label: "Brûler" }]` | Action bar shows "Brûler" instead of "Retourner". Double-click flips. |
+| Card with `actions: [{ type: "draw-face-up", label: "X" }]` | Rejected by Zod — `draw-face-up` is not a valid action type for cards. |
+| Component with duplicate action entries (same type + same parameters) | Rejected by Zod validation — duplicate actions are not allowed. |
+| Component with unknown action type (`{ type: "shuffle", label: "X" }`) | Rejected by Zod validation — unknown action type. |
+| Action entry with missing `label` | Rejected by Zod validation. `label` is mandatory on every action entry. |
 | Component without `actions` field | Rejected by Zod validation. `actions` is mandatory. |
 | Component with empty `actions: []` | Rejected by Zod validation. At least one action required. |
 | Deck degenerates to card — card actions | The card uses its own `actions` declared in the JSON. The deck's actions do NOT transfer. |
@@ -216,10 +226,11 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 
 | Input / Condition | Rule | Error Behavior |
 |---|---|---|
-| `actions` field on card | Mandatory. Non-empty array of valid card action IDs. Valid card actions: `"flip"`. | Zod rejects: missing field, empty array, invalid action ID, duplicate action. |
-| `actions` field on deck | Mandatory. Non-empty array of valid deck action IDs. Valid deck actions: `"flip"`, `"draw-face-up"`, `"draw-face-down"`. | Zod rejects: missing field, empty array, invalid action ID, duplicate action. |
-| Duplicate action in `actions` array | Not allowed. | Zod rejects with message indicating duplicate. |
-| Unknown action ID | Not allowed. | Zod rejects with message indicating unknown action. |
+| `actions` field on card | Mandatory. Non-empty array of action objects. Each entry: `{ type: string, label: string }`. Valid card action types: `"flip"`. | Zod rejects: missing field, empty array, invalid action type, duplicate action, missing label. |
+| `actions` field on deck | Mandatory. Non-empty array of action objects. Each entry: `{ type: string, label: string, ...params }`. Valid deck action types: `"flip"`, `"draw-face-up"`, `"draw-face-down"`, `"draw-to-zone"`. `draw-to-zone` also requires `targetZone` and `faceUp`. | Zod rejects: missing field, empty array, invalid action type, duplicate action, missing label, missing params. |
+| Action `label` field | Mandatory on every action entry. `z.string().min(1)`. | Zod rejects: missing or empty label. |
+| Duplicate action in `actions` array | Not allowed (same `type` + same parameters). | Zod rejects with message indicating duplicate. |
+| Unknown action `type` | Not allowed. | Zod rejects with message indicating unknown type. |
 | Deck `cards` array (IDs) | Mandatory. Non-empty array of card ID strings. All IDs must exist in `components`. Each ID referenced at most once across all containers. | Zod rejects: empty array, unknown ID, duplicate reference. |
 | Card `position` | Mandatory. Nullable: `{ x: number, y: number } | null`. `null` = card is contained in a deck/zone and not rendered on the table. | Zod rejects: missing field. |
 | Card with `position: null` not referenced by any container | Warning or error? Open question — see Open Questions. | TBD |
@@ -233,13 +244,18 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 - Action bar positioning and styling remain unchanged from F3/F4.
 - The action bar appears when a component is selected and hides when deselected — same as current behavior.
 
-### Labels (fixed, in French)
+### Labels (customizable in game JSON)
 
-| Action ID | Label | Available On |
+- Every action entry has a mandatory `label` field. The `label` is the text displayed on the action bar button.
+- Game authors can use any label text that makes sense for their game (e.g., "Retourner", "Brûler", "Défausser", "Piocher").
+- Common default labels (for reference — these are NOT hardcoded defaults, the game author must explicitly declare them):
+
+| Action Type | Common Label (French) | Available On |
 |---|---|---|
 | `flip` | Retourner | card, deck |
 | `draw-face-up` | Piocher face visible | deck |
 | `draw-face-down` | Piocher face cachée | deck |
+| `draw-to-zone` | (custom, e.g., "Défausser") | deck |
 
 ### Gesture-action coupling
 
@@ -277,6 +293,7 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 | 4 | Should the old inline-deck format be supported? | No. Breaking change accepted. No backward compatibility. | 2026-05-11 |
 | 5 | Can a card be in two decks simultaneously? | No. Each card can be referenced by at most one container. Zod validates this. | 2026-05-11 |
 | 6 | Are zones also affected by the card-by-reference model? | Yes, but zone-by-reference is out of scope for F7. Will be addressed when F5 is implemented. | 2026-05-11 |
+| 7 | Should action labels be fixed/hardcoded or customizable in the JSON? | Customizable. Every action entry has a mandatory `label` field. Game authors define their own labels. This overrides the initial F7 rule that labels were fixed in French. | 2026-05-12 |
 
 ## Change Log
 
@@ -284,3 +301,4 @@ F7 requires the deck-by-reference model. This is a refactor of F3 (Deck) that ch
 |---|---|---|
 | 2026-05-10 | Initial draft | AI |
 | 2026-05-11 | Major revision: deck-by-reference prerequisite, gesture-action coupling, card retains own actions, no runtime ID/action generation | AI |
+| 2026-05-12 | Labels now customizable in JSON (mandatory `label` field on every action entry). Actions are objects with `type` + `label` instead of plain strings. Added `draw-to-zone` to action catalogue (F8). Updated edge cases and validation rules. | AI |

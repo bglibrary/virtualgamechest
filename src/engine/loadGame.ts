@@ -52,24 +52,6 @@ function resolveImageUrls(game: GameDefinition, gameJsonUrl: string): GameDefini
             : undefined,
         };
       }
-      if (component.type === "deck") {
-        return {
-          ...component,
-          cards: component.cards.map((card) => ({
-            ...card,
-            face: {
-              ...card.face,
-              image: resolveImageUrl(card.face.image, gameJsonUrl),
-            },
-            back: card.back
-              ? {
-                  ...card.back,
-                  image: resolveImageUrl(card.back.image, gameJsonUrl),
-                }
-              : undefined,
-          })),
-        };
-      }
       return component;
     }),
   };

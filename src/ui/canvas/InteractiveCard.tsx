@@ -45,9 +45,10 @@ function InteractiveCard({
   }, [selectComponent, cardId]);
 
   const handleDblClick = useCallback(() => {
+    if (!component.actions.some((a) => a.type === "flip")) return;
     flipCard(cardId);
     selectComponent(null);
-  }, [flipCard, selectComponent, cardId]);
+  }, [component.actions, flipCard, selectComponent, cardId]);
 
   const { onClick, cancelPendingClick } = useClickOrDblClick({
     onClick: handleClick,

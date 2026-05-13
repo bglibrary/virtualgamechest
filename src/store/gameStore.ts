@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { GameDefinition, GameComponent } from "@/types/game";
+import type { GameDefinition, GameComponent, Position } from "@/types/game";
 
 interface GameStore {
   game: GameDefinition | null;
@@ -11,6 +11,7 @@ interface GameStore {
   replaceComponent: (id: string, newComponent: GameComponent) => void;
   removeComponent: (id: string) => void;
   addComponent: (component: GameComponent) => void;
+  updateComponentPosition: (id: string, position: Position) => void;
 }
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -49,6 +50,19 @@ export const useGameStore = create<GameStore>((set) => ({
         game: {
           ...state.game,
           components: [...state.game.components, component],
+        },
+      };
+    }),
+  updateComponentPosition: (id, position) =>
+    set((state) => {
+      if (!state.game) return state;
+      return {
+        game: {
+          ...state.game,
+          components: state.game.components.map((c) => {
+            if (c.id !== id || c.type !== "card") return c;
+            return { ...c, position };
+          }),
         },
       };
     }),

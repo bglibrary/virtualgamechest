@@ -5,6 +5,13 @@ import { useCardStateStore } from "@/store/cardStateStore";
 import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import { useCardPositionStore } from "@/store/cardPositionStore";
 
+const flipAction = { type: "flip" as const, label: "Retourner" };
+const deckActions = [
+  { type: "flip" as const, label: "Retourner" },
+  { type: "draw-face-up" as const, label: "Piocher face visible" },
+  { type: "draw-face-down" as const, label: "Piocher face cachée" },
+];
+
 beforeEach(() => {
   useGameStore.getState().setGame(null);
   useDeckStateStore.getState().resetDecks();
@@ -22,106 +29,63 @@ describe("full draw flow", () => {
     viewportHeight: 1080,
   };
 
-  it("draw face-up from deck of 3 → deck count = 2, new card in game state", () => {
+  it("draw face-up from deck of 3 → deck count = 2, card position updated", () => {
     useGameStore.getState().setGame({
       name: "Test",
       version: "1.0.0",
       components: [
-        {
-          type: "deck",
-          id: "draw-pile",
-          cards: [
-            { face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" } },
-            { face: { type: "text", text: "Dame" }, back: { type: "text", text: "Dos" } },
-            { face: { type: "text", text: "Valet" }, back: { type: "text", text: "Dos" } },
-          ],
-          position: { x: 0.7, y: 0.5 },
-          faceUp: false,
-        },
+        { type: "card", id: "c1", face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "card", id: "c2", face: { type: "text", text: "Dame" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "card", id: "c3", face: { type: "text", text: "Valet" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "deck", id: "draw-pile", cards: ["c1", "c2", "c3"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
       ],
     });
 
-    useDeckStateStore.getState().initDeck(
-      "draw-pile",
-      [
-        { face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" } },
-        { face: { type: "text", text: "Dame" }, back: { type: "text", text: "Dos" } },
-        { face: { type: "text", text: "Valet" }, back: { type: "text", text: "Dos" } },
-      ],
-      false,
-    );
-
+    useDeckStateStore.getState().initDeck("draw-pile", ["c1", "c2", "c3"], false);
     useCardZOrderStore.getState().initZOrder(["draw-pile"]);
 
-    const existingIds = useGameStore.getState().game!.components.map((c) => c.id);
-    const result = useDeckStateStore.getState().drawCard("draw-pile", true, offsetParams, existingIds);
+    const result = useDeckStateStore.getState().drawCard("draw-pile", true, offsetParams);
     expect(result).not.toBeNull();
 
-    useGameStore.getState().addComponent({
-      type: "card",
-      id: result!.newCardId,
-      face: result!.card.face,
-      back: result!.card.back,
-      position: result!.position,
-    });
-    useCardStateStore.getState().setFaceUp(result!.newCardId, true);
-    useCardPositionStore.getState().updateCardPosition(result!.newCardId, result!.position);
-    useCardZOrderStore.getState().insertAfter("draw-pile", result!.newCardId);
+    useGameStore.getState().updateComponentPosition(result!.cardId, result!.position);
+    useCardPositionStore.getState().updateCardPosition(result!.cardId, result!.position);
+    useCardStateStore.getState().setFaceUp(result!.cardId, true);
+    useCardZOrderStore.getState().insertAfter("draw-pile", result!.cardId);
 
     const game = useGameStore.getState().game!;
-    expect(game.components).toHaveLength(2);
-    expect(game.components[1].type).toBe("card");
-    if (game.components[1].type === "card") {
-      expect(game.components[1].face.text).toBe("Valet");
+    const drawnCard = game.components.find((c) => c.id === "c3");
+    expect(drawnCard).toBeDefined();
+    if (drawnCard && drawnCard.type === "card") {
+      expect(drawnCard.face.text).toBe("Valet");
+      expect(drawnCard.position).not.toBeNull();
     }
     expect(useDeckStateStore.getState().getCardCount("draw-pile")).toBe(2);
-    expect(useCardStateStore.getState().isFaceUp("draw-pile--1")).toBe(true);
-    expect(useCardZOrderStore.getState().zOrder).toEqual(["draw-pile", "draw-pile--1"]);
+    expect(useCardStateStore.getState().isFaceUp("c3")).toBe(true);
+    expect(useCardZOrderStore.getState().zOrder).toEqual(["draw-pile", "c3"]);
   });
 
-  it("draw face-down from deck → new card has faceUp false", () => {
+  it("draw face-down from deck → card has faceUp false", () => {
     useGameStore.getState().setGame({
       name: "Test",
       version: "1.0.0",
       components: [
-        {
-          type: "deck",
-          id: "d1",
-        cards: [
-          { face: { type: "text", text: "A" } },
-          { face: { type: "text", text: "B" } },
-        ],
-        position: { x: 0.7, y: 0.5 },
-        faceUp: false,
-      },
-    ],
+        { type: "card", id: "c1", face: { type: "text", text: "A" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "card", id: "c2", face: { type: "text", text: "B" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "deck", id: "d1", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
+      ],
     });
 
-    useDeckStateStore.getState().initDeck(
-      "d1",
-      [
-        { face: { type: "text", text: "A" } },
-        { face: { type: "text", text: "B" } },
-      ],
-      false,
-    );
-
+    useDeckStateStore.getState().initDeck("d1", ["c1", "c2"], false);
     useCardZOrderStore.getState().initZOrder(["d1"]);
 
-    const existingIds = useGameStore.getState().game!.components.map((c) => c.id);
-    const result = useDeckStateStore.getState().drawCard("d1", false, offsetParams, existingIds);
+    const result = useDeckStateStore.getState().drawCard("d1", false, offsetParams);
     expect(result).not.toBeNull();
 
-    useGameStore.getState().addComponent({
-      type: "card",
-      id: result!.newCardId,
-      face: result!.card.face,
-      back: result!.card.back,
-      position: result!.position,
-    });
-    useCardStateStore.getState().setFaceUp(result!.newCardId, false);
+    useGameStore.getState().updateComponentPosition(result!.cardId, result!.position);
+    useCardPositionStore.getState().updateCardPosition(result!.cardId, result!.position);
+    useCardStateStore.getState().setFaceUp(result!.cardId, false);
 
-    expect(useCardStateStore.getState().isFaceUp("d1--1")).toBe(false);
+    expect(useCardStateStore.getState().isFaceUp("c2")).toBe(false);
   });
 
   it("draw from deck of 2 → deck degenerates to card", () => {
@@ -129,97 +93,56 @@ describe("full draw flow", () => {
       name: "Test",
       version: "1.0.0",
       components: [
-        {
-          type: "deck",
-          id: "d1",
-          cards: [
-            { face: { type: "text", text: "A" }, back: { type: "text", text: "DosA" } },
-            { face: { type: "text", text: "B" }, back: { type: "text", text: "DosB" } },
-          ],
-          position: { x: 0.7, y: 0.5 },
-          faceUp: false,
-        },
+        { type: "card", id: "c1", face: { type: "text", text: "A" }, back: { type: "text", text: "DosA" }, position: null, actions: [flipAction] },
+        { type: "card", id: "c2", face: { type: "text", text: "B" }, back: { type: "text", text: "DosB" }, position: null, actions: [flipAction] },
+        { type: "deck", id: "d1", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
       ],
     });
 
-    useDeckStateStore.getState().initDeck(
-      "d1",
-      [
-        { face: { type: "text", text: "A" }, back: { type: "text", text: "DosA" } },
-        { face: { type: "text", text: "B" }, back: { type: "text", text: "DosB" } },
-      ],
-      false,
-    );
-
+    useDeckStateStore.getState().initDeck("d1", ["c1", "c2"], false);
     useCardZOrderStore.getState().initZOrder(["d1"]);
 
-    const existingIds = useGameStore.getState().game!.components.map((c) => c.id);
-    const result = useDeckStateStore.getState().drawCard("d1", true, offsetParams, existingIds);
+    const result = useDeckStateStore.getState().drawCard("d1", true, offsetParams);
     expect(result!.deckDegenerates).toBe(true);
 
-    useGameStore.getState().addComponent({
-      type: "card",
-      id: result!.newCardId,
-      face: result!.card.face,
-      back: result!.card.back,
-      position: result!.position,
-    });
-    useCardStateStore.getState().setFaceUp(result!.newCardId, true);
+    useGameStore.getState().updateComponentPosition(result!.cardId, result!.position);
+    useCardPositionStore.getState().updateCardPosition(result!.cardId, result!.position);
+    useCardStateStore.getState().setFaceUp(result!.cardId, true);
 
-    const lastCard = useDeckStateStore.getState().getCards("d1")[0];
+    const lastCardId = useDeckStateStore.getState().getCards("d1")[0];
+    const deckPosition = { x: 0.7, y: 0.5 };
     const deckFaceUp = useDeckStateStore.getState().isFaceUp("d1");
-    useGameStore.getState().replaceComponent("d1", {
-      type: "card",
-      id: "d1",
-      face: lastCard.face,
-      back: lastCard.back,
-      position: { x: 0.7, y: 0.5 },
-    });
-    useCardStateStore.getState().setFaceUp("d1", deckFaceUp);
+    useGameStore.getState().updateComponentPosition(lastCardId, deckPosition);
+    useCardStateStore.getState().setFaceUp(lastCardId, deckFaceUp);
+    useGameStore.getState().removeComponent("d1");
     useDeckStateStore.getState().removeDeck("d1");
 
     const game = useGameStore.getState().game!;
-    const cardComp = game.components.find((c) => c.id === "d1");
+    const cardComp = game.components.find((c) => c.id === "c1");
     expect(cardComp).toBeDefined();
     expect(cardComp!.type).toBe("card");
-    expect(useCardStateStore.getState().isFaceUp("d1")).toBe(false);
+    expect(useCardStateStore.getState().isFaceUp("c1")).toBe(false);
   });
 
-  it("draw from deck of 1 → deck removed", () => {
+  it("draw from deck of 1 → deck removed, card position updated", () => {
     useGameStore.getState().setGame({
       name: "Test",
       version: "1.0.0",
       components: [
-        {
-          type: "deck",
-          id: "d1",
-        cards: [{ face: { type: "text", text: "A" } }],
-        position: { x: 0.7, y: 0.5 },
-        faceUp: false,
-      },
-    ],
-});
+        { type: "card", id: "c1", face: { type: "text", text: "A" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "deck", id: "d1", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
+      ],
+    });
 
-  useDeckStateStore.getState().initDeck(
-      "d1",
-      [{ face: { type: "text", text: "A" } }],
-      false,
-    );
-
+    useDeckStateStore.getState().initDeck("d1", ["c1"], false);
     useCardZOrderStore.getState().initZOrder(["d1"]);
 
-    const existingIds = useGameStore.getState().game!.components.map((c) => c.id);
-    const result = useDeckStateStore.getState().drawCard("d1", true, offsetParams, existingIds);
+    const result = useDeckStateStore.getState().drawCard("d1", true, offsetParams);
     expect(result!.deckIsEmpty).toBe(true);
 
-    useGameStore.getState().addComponent({
-      type: "card",
-      id: result!.newCardId,
-      face: result!.card.face,
-      back: result!.card.back,
-      position: result!.position,
-    });
-    useCardStateStore.getState().setFaceUp(result!.newCardId, true);
+    useGameStore.getState().updateComponentPosition(result!.cardId, result!.position);
+    useCardPositionStore.getState().updateCardPosition(result!.cardId, result!.position);
+    useCardStateStore.getState().setFaceUp(result!.cardId, true);
 
     useGameStore.getState().removeComponent("d1");
     useDeckStateStore.getState().removeDeck("d1");
@@ -227,62 +150,34 @@ describe("full draw flow", () => {
     const game = useGameStore.getState().game!;
     expect(game.components.find((c) => c.id === "d1")).toBeUndefined();
     expect(game.components).toHaveLength(1);
+    expect(game.components[0].id).toBe("c1");
   });
 
-  it("multiple draws from same deck → counter increments, IDs unique", () => {
+  it("multiple draws from same deck → different cardIds each time", () => {
     useGameStore.getState().setGame({
       name: "Test",
       version: "1.0.0",
       components: [
-        {
-          type: "deck",
-          id: "d1",
-        cards: [
-          { face: { type: "text", text: "A" } },
-          { face: { type: "text", text: "B" } },
-          { face: { type: "text", text: "C" } },
-        ],
-        position: { x: 0.7, y: 0.5 },
-        faceUp: false,
-      },
+        { type: "card", id: "c1", face: { type: "text", text: "A" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "card", id: "c2", face: { type: "text", text: "B" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "card", id: "c3", face: { type: "text", text: "C" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
+        { type: "deck", id: "d1", cards: ["c1", "c2", "c3"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
       ],
     });
 
-    useDeckStateStore.getState().initDeck(
-      "d1",
-      [
-        { face: { type: "text", text: "A" } },
-        { face: { type: "text", text: "B" } },
-        { face: { type: "text", text: "C" } },
-      ],
-      false,
-    );
+    useDeckStateStore.getState().initDeck("d1", ["c1", "c2", "c3"], false);
 
-    const existingIds1 = useGameStore.getState().game!.components.map((c) => c.id);
-    const r1 = useDeckStateStore.getState().drawCard("d1", true, offsetParams, existingIds1);
-    useGameStore.getState().addComponent({
-      type: "card",
-      id: r1!.newCardId,
-      face: r1!.card.face,
-      back: r1!.card.back,
-      position: r1!.position,
-    });
+    const r1 = useDeckStateStore.getState().drawCard("d1", true, offsetParams);
+    useGameStore.getState().updateComponentPosition(r1!.cardId, r1!.position);
 
-    const existingIds2 = useGameStore.getState().game!.components.map((c) => c.id);
-    const r2 = useDeckStateStore.getState().drawCard("d1", true, offsetParams, existingIds2);
-    useGameStore.getState().addComponent({
-      type: "card",
-      id: r2!.newCardId,
-      face: r2!.card.face,
-      back: r2!.card.back,
-      position: r2!.position,
-    });
+    const r2 = useDeckStateStore.getState().drawCard("d1", true, offsetParams);
+    useGameStore.getState().updateComponentPosition(r2!.cardId, r2!.position);
 
-    expect(r1!.newCardId).toBe("d1--1");
-    expect(r2!.newCardId).toBe("d1--2");
+    expect(r1!.cardId).toBe("c3");
+    expect(r2!.cardId).toBe("c2");
+    expect(r1!.cardId).not.toBe(r2!.cardId);
 
     const game = useGameStore.getState().game!;
-    expect(game.components).toHaveLength(3);
     const ids = game.components.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
   });

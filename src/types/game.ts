@@ -2,9 +2,12 @@ export type {
   CardFace,
   CardBack,
   Position,
-  CardInDeck,
+  CardAction,
+  DeckAction,
   DeckComponent,
   CardComponent,
   GameComponent,
   GameDefinition,
+  CardActionType,
+  DeckActionType,
 } from "@/schemas/game";

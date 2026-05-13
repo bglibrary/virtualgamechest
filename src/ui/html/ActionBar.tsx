@@ -1,11 +1,15 @@
 import { RotateCw, Eye, EyeOff } from "lucide-react";
 
+export interface ActionButton {
+  id: string;
+  label: string;
+  onClick: () => void;
+}
+
 interface ActionBarProps {
   x: number;
   y: number;
-  onFlip: () => void;
-  onDrawFaceUp?: () => void;
-  onDrawFaceDown?: () => void;
+  actions: ActionButton[];
   visible: boolean;
   side: "left" | "right";
 }
@@ -20,10 +24,14 @@ const labelStyle: React.CSSProperties = {
   lineHeight: 1.25,
 };
 
-function ActionBar({ x, y, onFlip, onDrawFaceUp, onDrawFaceDown, visible, side }: ActionBarProps) {
-  if (!visible) return null;
+const ACTION_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
+  flip: RotateCw,
+  "draw-face-up": Eye,
+  "draw-face-down": EyeOff,
+};
 
-  const isDeck = onDrawFaceUp !== undefined && onDrawFaceDown !== undefined;
+function ActionBar({ x, y, actions, visible, side }: ActionBarProps) {
+  if (!visible || actions.length === 0) return null;
 
   const transform =
     side === "right"
@@ -39,35 +47,22 @@ function ActionBar({ x, y, onFlip, onDrawFaceUp, onDrawFaceDown, visible, side }
         transform,
       }}
     >
-      <button
-        onClick={onFlip}
-        title="Retourner"
-        className="flex flex-row items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-800 transition-colors hover:bg-gray-100 active:bg-gray-200"
-      >
-        <RotateCw size={ICON_SIZE} className="shrink-0" />
-        <span className="text-xs font-medium" style={labelStyle}>Retourner</span>
-      </button>
-      {isDeck && (
-        <>
-          <div className="mx-1 h-px bg-gray-300" />
-          <button
-            onClick={onDrawFaceUp}
-            title="Piocher face visible"
-            className="flex flex-row items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-800 transition-colors hover:bg-gray-100 active:bg-gray-200"
-          >
-            <Eye size={ICON_SIZE} className="shrink-0" />
-            <span className="text-xs font-medium" style={labelStyle}>Piocher face visible</span>
-          </button>
-          <button
-            onClick={onDrawFaceDown}
-            title="Piocher face cachée"
-            className="flex flex-row items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-800 transition-colors hover:bg-gray-100 active:bg-gray-200"
-          >
-            <EyeOff size={ICON_SIZE} className="shrink-0" />
-            <span className="text-xs font-medium" style={labelStyle}>Piocher face cachée</span>
-          </button>
-        </>
-      )}
+      {actions.map((action, index) => {
+        const IconComponent = ACTION_ICONS[action.id];
+        return (
+          <div key={action.id}>
+            {index > 0 && <div className="mx-1 h-px bg-gray-300" />}
+            <button
+              onClick={action.onClick}
+              title={action.label}
+              className="flex flex-row items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-800 transition-colors hover:bg-gray-100 active:bg-gray-200"
+            >
+              {IconComponent && <IconComponent size={ICON_SIZE} className="shrink-0" />}
+              <span className="text-xs font-medium" style={labelStyle}>{action.label}</span>
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -8,8 +8,8 @@ import { useDeckStateStore } from "@/store/deckStateStore";
 import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ActionBar from "@/ui/html/ActionBar";
+import type { ActionButton } from "@/ui/html/ActionBar";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
-import type { CardComponent } from "@/types/game";
 
 function TableCanvas() {
   const [size, setSize] = useState({
@@ -27,14 +27,16 @@ function TableCanvas() {
   const initZOrder = useCardZOrderStore((s) => s.initZOrder);
   const insertAfter = useCardZOrderStore((s) => s.insertAfter);
   const initDeck = useDeckStateStore((s) => s.initDeck);
-  const addComponent = useGameStore((s) => s.addComponent);
+  const updateComponentPosition = useGameStore((s) => s.updateComponentPosition);
   const getCardPosition = useCardPositionStore((s) => s.getCardPosition);
   const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
 
   useEffect(() => {
     if (game) {
       const currentDeckIds = Object.keys(useDeckStateStore.getState().cards);
-      const componentIds = game.components.map((c) => c.id);
+      const componentIds = game.components
+        .filter((c) => c.type !== "card" || c.position !== null)
+        .map((c) => c.id);
       initZOrder(componentIds);
       const newDeckIds = new Set(
         game.components.filter((c) => c.type === "deck").map((c) => c.id),
@@ -114,28 +116,32 @@ function TableCanvas() {
       const deckComp = selectedComponent;
       const deckPosition = getCardPosition(deckId) ?? deckComp.position;
 
-      const result = useDeckStateStore.getState().drawCard(deckId, faceUp, {
-        deckPosition,
-        cardWidthPx: cardWidth,
-        cardHeightPx: cardHeight,
-        viewportWidth: size.width,
-        viewportHeight: size.height,
-      }, game?.components.map((c) => c.id) ?? []);
+    const result = useDeckStateStore.getState().drawCard(deckId, faceUp, {
+      deckPosition,
+      cardWidthPx: cardWidth,
+      cardHeightPx: cardHeight,
+      viewportWidth: size.width,
+      viewportHeight: size.height,
+    });
 
-      if (!result) return;
+    if (!result) return;
 
-      const newCard: CardComponent = {
-        type: "card",
-        id: result.newCardId,
-        face: result.card.face,
-        back: result.card.back,
-        position: result.position,
-      };
+    updateComponentPosition(result.cardId, result.position);
+    updateCardPosition(result.cardId, result.position);
+    setFaceUp(result.cardId, faceUp);
+    insertAfter(deckId, result.cardId);
 
-    addComponent(newCard);
-    setFaceUp(result.newCardId, faceUp);
-    updateCardPosition(result.newCardId, result.position);
-    insertAfter(deckId, result.newCardId);
+    if (result.deckDegenerates) {
+      const lastCardId = useDeckStateStore.getState().getCards(deckId)[0];
+      if (lastCardId) {
+        updateComponentPosition(lastCardId, deckPosition);
+        updateCardPosition(lastCardId, deckPosition);
+        setFaceUp(lastCardId, useDeckStateStore.getState().isFaceUp(deckId));
+      }
+      useGameStore.getState().removeComponent(deckId);
+      useDeckStateStore.getState().removeDeck(deckId);
+    }
+
     selectComponent(null);
   },
   [
@@ -146,8 +152,7 @@ function TableCanvas() {
     cardHeight,
     size.width,
     size.height,
-    game,
-    addComponent,
+    updateComponentPosition,
     setFaceUp,
     updateCardPosition,
     insertAfter,
@@ -158,7 +163,33 @@ function TableCanvas() {
   const handleDrawFaceUp = useCallback(() => handleDraw(true), [handleDraw]);
   const handleDrawFaceDown = useCallback(() => handleDraw(false), [handleDraw]);
 
-  const isDeckSelected = selectedComponent?.type === "deck";
+  const actionButtons: ActionButton[] = (() => {
+    if (!selectedComponent) return [];
+    const buttons: ActionButton[] = [];
+    if (selectedComponent.type === "card") {
+      for (const action of selectedComponent.actions) {
+        if (action.type === "flip") {
+          buttons.push({ id: action.type, label: action.label, onClick: handleFlip });
+        }
+      }
+    } else if (selectedComponent.type === "deck") {
+      for (const action of selectedComponent.actions) {
+        if (action.type === "flip") {
+          buttons.push({ id: action.type, label: action.label, onClick: handleFlip });
+        } else if (action.type === "draw-face-up") {
+          buttons.push({ id: action.type, label: action.label, onClick: handleDrawFaceUp });
+        } else if (action.type === "draw-face-down") {
+          buttons.push({ id: action.type, label: action.label, onClick: handleDrawFaceDown });
+        }
+      }
+    }
+    return buttons;
+  })();
+
+  const visibleComponents = game?.components.filter((c) => {
+    if (c.type === "card") return c.position !== null;
+    return true;
+  }) ?? [];
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
@@ -175,7 +206,7 @@ function TableCanvas() {
           />
         </Layer>
         <Layer>
-          {game?.components.map((component) => {
+          {visibleComponents.map((component) => {
             if (component.type === "card") {
               return (
                 <InteractiveCard
@@ -202,15 +233,13 @@ function TableCanvas() {
           })}
         </Layer>
       </Stage>
-      <ActionBar
-        x={actionBarX}
-        y={actionBarY}
-        side={actionBarSide}
-        onFlip={handleFlip}
-        onDrawFaceUp={isDeckSelected ? handleDrawFaceUp : undefined}
-        onDrawFaceDown={isDeckSelected ? handleDrawFaceDown : undefined}
-        visible={showActionBar}
-      />
+        <ActionBar
+          x={actionBarX}
+          y={actionBarY}
+          side={actionBarSide}
+          actions={actionButtons}
+          visible={showActionBar}
+        />
     </div>
   );
 }

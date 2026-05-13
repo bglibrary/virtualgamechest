@@ -2,7 +2,8 @@ import { useRef, useEffect, useCallback } from "react";
 import { Rect, Text, Group } from "react-konva";
 import type Konva from "konva";
 import KonvaLib from "konva";
-import type { DeckComponent, CardInDeck, Position } from "@/types/game";
+import type { DeckComponent } from "@/types/game";
+import { useGameStore } from "@/store/gameStore";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 import {
   CARD_WIDTH_RATIO,
@@ -38,7 +39,7 @@ interface DeckRendererProps {
   component: DeckComponent;
   deckId: string;
   faceUp: boolean;
-  topCard: CardInDeck;
+  topCardId: string;
   cardCount: number;
   viewportWidth: number;
   viewportHeight: number;
@@ -47,14 +48,15 @@ interface DeckRendererProps {
   draggable?: boolean;
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
-  positionOverride?: Position;
+  positionOverride?: { x: number; y: number };
   zIndex?: number;
 }
 
 function DeckRenderer({
   component,
+  deckId,
   faceUp,
-  topCard,
+  topCardId,
   cardCount,
   viewportWidth,
   viewportHeight,
@@ -66,6 +68,10 @@ function DeckRenderer({
   positionOverride,
   zIndex,
 }: DeckRendererProps) {
+  const game = useGameStore((s) => s.game);
+  const topCard = game?.components.find(
+    (c) => c.id === topCardId && c.type === "card",
+  );
   const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
   const cardHeight = cardWidth * CARD_ASPECT;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
@@ -74,6 +80,8 @@ function DeckRenderer({
   const effectivePosition = positionOverride ?? component.position;
   const x = effectivePosition.x * viewportWidth - cardWidth / 2;
   const y = effectivePosition.y * viewportHeight - cardHeight / 2;
+
+  if (!topCard) return null;
 
   const groupRef = useRef<Konva.Group>(null);
 

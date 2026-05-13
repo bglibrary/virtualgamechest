@@ -2,7 +2,7 @@ import { useRef, useEffect, useCallback } from "react";
 import { Rect, Text, Group } from "react-konva";
 import type Konva from "konva";
 import KonvaLib from "konva";
-import type { CardComponent, Position } from "@/types/game";
+import type { CardComponent } from "@/types/game";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 
 const CARD_WIDTH_RATIO = 0.08;
@@ -37,7 +37,7 @@ interface CardRendererProps {
   draggable?: boolean;
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
-  positionOverride?: Position;
+  positionOverride?: { x: number; y: number };
   zIndex?: number;
 }
 
@@ -60,6 +60,7 @@ function CardRenderer({
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 
   const effectivePosition = positionOverride ?? component.position;
+  if (!effectivePosition) return null;
   const x = effectivePosition.x * viewportWidth - cardWidth / 2;
   const y = effectivePosition.y * viewportHeight - cardHeight / 2;
 

@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { useGameStore } from "@/store/gameStore";
 import { useDeckStateStore } from "@/store/deckStateStore";
 import { useCardStateStore } from "@/store/cardStateStore";
-import type { CardComponent } from "@/types/game";
 
 beforeEach(() => {
   useGameStore.getState().setGame(null);
@@ -11,55 +10,46 @@ beforeEach(() => {
 });
 
 describe("deck-to-card degeneration flow (US-5)", () => {
-  it("deck reduced to 1 card is replaced by a card component", () => {
+  it("deck reduced to 1 card is replaced by the remaining card component", () => {
     useGameStore.getState().setGame({
       name: "Test",
       version: "1.0.0",
       components: [
-        {
-          type: "deck",
-          id: "draw-pile",
-          cards: [
-            { face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" } },
-            { face: { type: "text", text: "Dame" }, back: { type: "text", text: "Dos" } },
-          ],
-          position: { x: 0.7, y: 0.5 },
-          faceUp: false,
-        },
+        { type: "card", id: "c1", face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" }, position: null, actions: ["flip"] },
+        { type: "card", id: "c2", face: { type: "text", text: "Dame" }, back: { type: "text", text: "Dos" }, position: null, actions: ["flip"] },
+        { type: "deck", id: "draw-pile", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: ["flip", "draw-face-up", "draw-face-down"] },
       ],
     });
 
-    useDeckStateStore.getState().initDeck("draw-pile", [
-      { face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" } },
-      { face: { type: "text", text: "Dame" }, back: { type: "text", text: "Dos" } },
-    ], false);
+    useDeckStateStore.getState().initDeck("draw-pile", ["c1", "c2"], false);
 
-    useDeckStateStore.getState().removeCardFromTop("draw-pile");
+    useDeckStateStore.getState().drawCard("draw-pile", true, {
+      deckPosition: { x: 0.7, y: 0.5 },
+      cardWidthPx: 80,
+      cardHeightPx: 112,
+      viewportWidth: 1920,
+      viewportHeight: 1080,
+    });
     expect(useDeckStateStore.getState().getCardCount("draw-pile")).toBe(1);
 
-    const lastCard = useDeckStateStore.getState().getCards("draw-pile")[0];
+    const lastCardId = useDeckStateStore.getState().getCards("draw-pile")[0];
+    const deckPosition = { x: 0.7, y: 0.5 };
     const deckFaceUp = useDeckStateStore.getState().isFaceUp("draw-pile");
 
-    const newCard: CardComponent = {
-      type: "card",
-      id: "draw-pile",
-      face: lastCard.face,
-      back: lastCard.back,
-      position: { x: 0.7, y: 0.5 },
-    };
-    useGameStore.getState().replaceComponent("draw-pile", newCard);
-    useCardStateStore.getState().setFaceUp("draw-pile", deckFaceUp);
+    useGameStore.getState().updateComponentPosition(lastCardId, deckPosition);
+    useCardStateStore.getState().setFaceUp(lastCardId, deckFaceUp);
+    useGameStore.getState().removeComponent("draw-pile");
     useDeckStateStore.getState().removeDeck("draw-pile");
 
     const game = useGameStore.getState().game!;
-    expect(game.components).toHaveLength(1);
-    expect(game.components[0].type).toBe("card");
-    expect(game.components[0].id).toBe("draw-pile");
-    if (game.components[0].type === "card") {
-      expect(game.components[0].face.text).toBe("Roi");
-      expect(game.components[0].back?.text).toBe("Dos");
+    const cardComp = game.components.find((c) => c.id === "c1");
+    expect(cardComp).toBeDefined();
+    expect(cardComp!.type).toBe("card");
+    if (cardComp!.type === "card") {
+      expect(cardComp!.face.text).toBe("Roi");
+      expect(cardComp!.back?.text).toBe("Dos");
     }
-    expect(useCardStateStore.getState().isFaceUp("draw-pile")).toBe(false);
+    expect(useCardStateStore.getState().isFaceUp("c1")).toBe(false);
     expect(useDeckStateStore.getState().getCardCount("draw-pile")).toBe(0);
   });
 
@@ -68,74 +58,52 @@ describe("deck-to-card degeneration flow (US-5)", () => {
       name: "Test",
       version: "1.0.0",
       components: [
-        {
-          type: "deck",
-          id: "draw-pile",
-          cards: [
-            { face: { type: "text", text: "Roi" } },
-            { face: { type: "text", text: "Dame" } },
-          ],
-          position: { x: 0.7, y: 0.5 },
-          faceUp: true,
-        },
+        { type: "card", id: "c1", face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" }, position: null, actions: ["flip"] },
+        { type: "card", id: "c2", face: { type: "text", text: "Dame" }, back: { type: "text", text: "Dos" }, position: null, actions: ["flip"] },
+        { type: "deck", id: "draw-pile", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: true, actions: ["flip", "draw-face-up", "draw-face-down"] },
       ],
     });
 
-    useDeckStateStore.getState().initDeck("draw-pile", [
-      { face: { type: "text", text: "Roi" } },
-      { face: { type: "text", text: "Dame" } },
-    ], true);
+    useDeckStateStore.getState().initDeck("draw-pile", ["c1", "c2"], true);
 
-    useDeckStateStore.getState().removeCardFromTop("draw-pile");
+    useDeckStateStore.getState().drawCard("draw-pile", true, {
+      deckPosition: { x: 0.7, y: 0.5 },
+      cardWidthPx: 80,
+      cardHeightPx: 112,
+      viewportWidth: 1920,
+      viewportHeight: 1080,
+    });
 
-    const lastCard = useDeckStateStore.getState().getCards("draw-pile")[0];
+    const lastCardId = useDeckStateStore.getState().getCards("draw-pile")[0];
+    const deckPosition = { x: 0.7, y: 0.5 };
     const deckFaceUp = useDeckStateStore.getState().isFaceUp("draw-pile");
 
-    const newCard: CardComponent = {
-      type: "card",
-      id: "draw-pile",
-      face: lastCard.face,
-      back: lastCard.back,
-      position: { x: 0.7, y: 0.5 },
-    };
-    useGameStore.getState().replaceComponent("draw-pile", newCard);
-    useCardStateStore.getState().setFaceUp("draw-pile", deckFaceUp);
+    useGameStore.getState().updateComponentPosition(lastCardId, deckPosition);
+    useCardStateStore.getState().setFaceUp(lastCardId, deckFaceUp);
+    useGameStore.getState().removeComponent("draw-pile");
     useDeckStateStore.getState().removeDeck("draw-pile");
 
-    expect(useCardStateStore.getState().isFaceUp("draw-pile")).toBe(true);
+    expect(useCardStateStore.getState().isFaceUp("c1")).toBe(true);
   });
 
-  it("degeneration reuses deck ID (no collision)", () => {
+  it("degeneration reuses deck position (no new component created)", () => {
     useGameStore.getState().setGame({
       name: "Test",
       version: "1.0.0",
       components: [
-        {
-          type: "deck",
-          id: "draw-pile",
-          cards: [
-            { face: { type: "text", text: "Roi" } },
-          ],
-          position: { x: 0.7, y: 0.5 },
-          faceUp: false,
-        },
+        { type: "card", id: "c1", face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" }, position: null, actions: ["flip"] },
+        { type: "deck", id: "draw-pile", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: ["flip", "draw-face-up", "draw-face-down"] },
       ],
     });
 
-    useDeckStateStore.getState().initDeck("draw-pile", [
-      { face: { type: "text", text: "Roi" } },
-    ], false);
+    useDeckStateStore.getState().initDeck("draw-pile", ["c1"], false);
 
-    const lastCard = useDeckStateStore.getState().getCards("draw-pile")[0];
-    const newCard: CardComponent = {
-      type: "card",
-      id: "draw-pile",
-      face: lastCard.face,
-      back: lastCard.back,
-      position: { x: 0.7, y: 0.5 },
-    };
-    useGameStore.getState().replaceComponent("draw-pile", newCard);
-    useCardStateStore.getState().setFaceUp("draw-pile", false);
+    const lastCardId = useDeckStateStore.getState().getCards("draw-pile")[0];
+    const deckPosition = { x: 0.7, y: 0.5 };
+
+    useGameStore.getState().updateComponentPosition(lastCardId, deckPosition);
+    useCardStateStore.getState().setFaceUp(lastCardId, false);
+    useGameStore.getState().removeComponent("draw-pile");
     useDeckStateStore.getState().removeDeck("draw-pile");
 
     const game = useGameStore.getState().game!;
@@ -150,41 +118,44 @@ describe("empty deck removal flow (US-6)", () => {
       name: "Test",
       version: "1.0.0",
       components: [
-        { type: "card", id: "c1", face: { type: "text", text: "A" }, position: { x: 0.3, y: 0.5 } },
-      {
-        type: "deck",
-        id: "draw-pile",
-        cards: [
-          { face: { type: "text", text: "Roi" } },
-        ],
-        position: { x: 0.7, y: 0.5 },
-        faceUp: false,
-      },
-    ],
-  });
+        { type: "card", id: "c0", face: { type: "text", text: "A" }, back: { type: "text", text: "Dos" }, position: { x: 0.3, y: 0.5 }, actions: ["flip"] },
+        { type: "card", id: "c1", face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" }, position: null, actions: ["flip"] },
+        { type: "deck", id: "draw-pile", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: ["flip", "draw-face-up", "draw-face-down"] },
+      ],
+    });
 
-  useDeckStateStore.getState().initDeck("draw-pile", [
-    { face: { type: "text", text: "Roi" } },
-  ], false);
+    useDeckStateStore.getState().initDeck("draw-pile", ["c1"], false);
 
-  useDeckStateStore.getState().removeCardFromTop("draw-pile");
+    useDeckStateStore.getState().drawCard("draw-pile", true, {
+      deckPosition: { x: 0.7, y: 0.5 },
+      cardWidthPx: 80,
+      cardHeightPx: 112,
+      viewportWidth: 1920,
+      viewportHeight: 1080,
+    });
     expect(useDeckStateStore.getState().getCardCount("draw-pile")).toBe(0);
 
     useGameStore.getState().removeComponent("draw-pile");
     useDeckStateStore.getState().removeDeck("draw-pile");
 
     const game = useGameStore.getState().game!;
-    expect(game.components).toHaveLength(1);
-    expect(game.components[0].id).toBe("c1");
+    expect(game.components.find((c) => c.id === "draw-pile")).toBeUndefined();
+    expect(game.components).toHaveLength(2);
+    expect(game.components.find((c) => c.id === "c0")).toBeDefined();
+    expect(game.components.find((c) => c.id === "c1")).toBeDefined();
     expect(useDeckStateStore.getState().getCardCount("draw-pile")).toBe(0);
   });
 
   it("empty deck removal cleans up deck state", () => {
-    useDeckStateStore.getState().initDeck("draw-pile", [
-      { face: { type: "text", text: "Roi" } },
-    ], false);
+    useDeckStateStore.getState().initDeck("draw-pile", ["c1"], false);
 
-    useDeckStateStore.getState().removeCardFromTop("draw-pile");
+    useDeckStateStore.getState().drawCard("draw-pile", true, {
+      deckPosition: { x: 0.7, y: 0.5 },
+      cardWidthPx: 80,
+      cardHeightPx: 112,
+      viewportWidth: 1920,
+      viewportHeight: 1080,
+    });
     useDeckStateStore.getState().removeDeck("draw-pile");
 
     expect(useDeckStateStore.getState().isFaceUp("draw-pile")).toBe(false);

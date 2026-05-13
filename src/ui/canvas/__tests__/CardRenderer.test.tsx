@@ -38,6 +38,7 @@ const defaultCard: CardComponent = {
   id: "test-card",
   face: { type: "text", text: "As Cœur" },
   position: { x: 0.5, y: 0.5 },
+  actions: ["flip"],
 };
 
 const cardWithFrontImage: CardComponent = {
@@ -45,6 +46,7 @@ const cardWithFrontImage: CardComponent = {
   id: "test-card-img",
   face: { type: "text", text: "As Cœur", image: "https://example.com/ace.png" },
   position: { x: 0.5, y: 0.5 },
+  actions: ["flip"],
 };
 
 const cardWithBack: CardComponent = {
@@ -53,6 +55,7 @@ const cardWithBack: CardComponent = {
   face: { type: "text", text: "As Cœur" },
   back: { type: "text", text: "Mon Jeu", image: "https://example.com/back.svg" },
   position: { x: 0.5, y: 0.5 },
+  actions: ["flip"],
 };
 
 describe("CardRenderer", () => {
