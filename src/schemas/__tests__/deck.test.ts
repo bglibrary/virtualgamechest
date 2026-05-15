@@ -165,7 +165,7 @@ type: "deck",
 id: "draw-pile",
 cards: ["card-1"],
 position: { x: 0.5, y: 0.5 },
-actions: [{ type: "shuffle", label: "Mélanger" }],
+actions: [{ type: "unknown-action", label: "Test" }],
 });
 expect(result.success).toBe(false);
 });

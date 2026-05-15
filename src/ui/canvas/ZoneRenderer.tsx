@@ -1,9 +1,9 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import { Rect, Text, Group } from "react-konva";
 import type Konva from "konva";
 import KonvaLib from "konva";
-import type { DeckComponent } from "@/types/game";
-import { useGameStore } from "@/store/gameStore";
+import type { ZoneComponent } from "@/types/game";
+import type { ZoneCardEntry } from "@/store/zoneStateStore";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 import CountBadge from "@/ui/canvas/CountBadge";
 import {
@@ -27,58 +27,53 @@ import {
   BOUNCE_DURATION,
 } from "@/ui/canvas/CardRenderer";
 
-const WIGGLE_DISTANCE = 3;
-const WIGGLE_HALF_CYCLES = 3;
-const WIGGLE_HALF_DURATION = 67;
-export const WIGGLE_TOTAL_DURATION = WIGGLE_HALF_CYCLES * WIGGLE_HALF_DURATION * 2;
+const DASH_PATTERN = [8, 4];
+const LABEL_FONT_SIZE = 12;
+const LABEL_BOTTOM_PADDING = 6;
+const HIGHLIGHT_STROKE = "#FFD700";
+const HIGHLIGHT_FILL = "rgba(255, 215, 0, 0.08)";
+const EMPTY_FILL = "rgba(255, 255, 255, 0.05)";
+const DEFAULT_STROKE = "rgba(255, 255, 255, 0.3)";
 
-interface DeckRendererProps {
-  component: DeckComponent;
-  deckId: string;
-  faceUp: boolean;
-  topCardId: string;
+interface ZoneRendererProps {
+  component: ZoneComponent;
+  topCard: ZoneCardEntry | undefined;
+  topCardFaceUp: boolean | undefined;
   cardCount: number;
+  highlighted: boolean;
   viewportWidth: number;
   viewportHeight: number;
   onClick?: () => void;
-  onBounceRef?: React.MutableRefObject<(() => void) | null>;
-  onWiggleRef?: React.MutableRefObject<(() => void) | null>;
-  draggable?: boolean;
-  onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
-  onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
-  positionOverride?: Position;
+  onDblClick?: () => void;
+  onTopCardDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onTopCardDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onTopCardDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
 }
 
-function DeckRenderer({
+function ZoneRenderer({
   component,
-  deckId,
-  faceUp,
-  topCardId,
+  topCard,
+  topCardFaceUp,
   cardCount,
+  highlighted,
   viewportWidth,
   viewportHeight,
   onClick,
-  onBounceRef,
-  onWiggleRef,
-  draggable = false,
-  onDragStart,
-  onDragEnd,
-  positionOverride,
-}: DeckRendererProps) {
-  const game = useGameStore((s) => s.game);
-  const topCard = game?.components.find(
-    (c) => c.id === topCardId && c.type === "card",
-  );
+  onDblClick,
+  onTopCardDragStart,
+  onTopCardDragMove,
+  onTopCardDragEnd,
+}: ZoneRendererProps) {
   const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
   const cardHeight = cardWidth * CARD_ASPECT;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 
-  const effectivePosition = positionOverride ?? component.position;
-  const x = effectivePosition.x * viewportWidth - cardWidth / 2;
-  const y = effectivePosition.y * viewportHeight - cardHeight / 2;
+  const x = component.position.x * viewportWidth - cardWidth / 2;
+  const y = component.position.y * viewportHeight - cardHeight / 2;
 
   const groupRef = useRef<Konva.Group>(null);
+  const bounceRef = useRef<(() => void) | null>(null);
 
   const triggerBounce = useCallback(() => {
     const node = groupRef.current;
@@ -89,38 +84,7 @@ function DeckRenderer({
     }, BOUNCE_DURATION);
   }, []);
 
-  useEffect(() => {
-    if (onBounceRef) onBounceRef.current = triggerBounce;
-  }, [onBounceRef, triggerBounce]);
-
-  const triggerWiggle = useCallback(() => {
-    const node = groupRef.current;
-    if (!node) return;
-
-    const halfDuration = WIGGLE_HALF_DURATION / 1000;
-    let cycle = 0;
-    const runCycle = () => {
-      if (cycle >= WIGGLE_HALF_CYCLES) {
-        node.to({ offsetX: 0, duration: halfDuration, easing: KonvaLib.Easings.EaseInOut });
-        return;
-      }
-      const direction = cycle % 2 === 0 ? -WIGGLE_DISTANCE : WIGGLE_DISTANCE;
-      node.to({
-        offsetX: direction,
-        duration: halfDuration,
-        easing: KonvaLib.Easings.EaseInOut,
-        onFinish: () => {
-          cycle++;
-          runCycle();
-        },
-      });
-    };
-    runCycle();
-  }, []);
-
-  useEffect(() => {
-    if (onWiggleRef) onWiggleRef.current = triggerWiggle;
-  }, [onWiggleRef, triggerWiggle]);
+  const isEmpty = cardCount === 0 || !topCard;
 
   const dragBoundFunc = useCallback(
     (pos: Konva.Vector2d) => {
@@ -147,16 +111,16 @@ function DeckRenderer({
       node.moveToTop();
       const layer = node.getLayer();
       if (layer) layer.batchDraw();
-      onDragStart?.(e);
+      onTopCardDragStart?.(e);
     },
-    [onDragStart],
+    [onTopCardDragStart],
   );
 
   const handleDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
       const node = groupRef.current;
       if (!node) {
-        onDragEnd?.(e);
+        onTopCardDragEnd?.(e);
         return;
       }
       node.to({
@@ -167,13 +131,47 @@ function DeckRenderer({
         duration: SETTLE_DURATION,
         easing: KonvaLib.Easings.EaseOut,
       });
-      onDragEnd?.(e);
+      onTopCardDragEnd?.(e);
     },
-    [onDragEnd],
+    [onTopCardDragEnd],
   );
 
-  if (!topCard) return null;
+  const handleDragMove = useCallback(
+    (e: Konva.KonvaEventObject<DragEvent>) => {
+      onTopCardDragMove?.(e);
+    },
+    [onTopCardDragMove],
+  );
 
+  if (isEmpty) {
+    return (
+      <Group x={x} y={y}>
+        <Rect
+          width={cardWidth}
+          height={cardHeight}
+          cornerRadius={cornerRadius}
+          fill={highlighted ? HIGHLIGHT_FILL : EMPTY_FILL}
+          stroke={highlighted ? HIGHLIGHT_STROKE : DEFAULT_STROKE}
+          strokeWidth={highlighted ? 3 : 2}
+          dash={highlighted ? undefined : DASH_PATTERN}
+        />
+        {component.label && (
+          <Text
+            text={component.label}
+            fontSize={LABEL_FONT_SIZE}
+            fontFamily="sans-serif"
+            fill="rgba(255, 255, 255, 0.6)"
+            width={cardWidth}
+            x={0}
+            y={cardHeight + LABEL_BOTTOM_PADDING}
+            align="center"
+          />
+        )}
+      </Group>
+    );
+  }
+
+  const faceUp = topCardFaceUp ?? true;
   const fill = faceUp ? CARD_FRONT_FILL : CARD_BACK_FILL;
   const backText = topCard.back?.text ?? CARD_BACK_TEXT;
   const text = faceUp ? topCard.face.text : backText;
@@ -223,24 +221,48 @@ function DeckRenderer({
       y={y}
       onClick={onClick}
       onTap={onClick}
-      draggable={draggable}
+      onDblClick={onDblClick}
+      draggable
       dragBoundFunc={dragBoundFunc}
       onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
       shadowBlur={DEFAULT_SHADOW_BLUR}
     >
+      {highlighted && (
+        <Rect
+          width={cardWidth}
+          height={cardHeight}
+          cornerRadius={cornerRadius}
+          fill={HIGHLIGHT_FILL}
+          stroke={HIGHLIGHT_STROKE}
+          strokeWidth={3}
+        />
+      )}
       <Rect
         width={cardWidth}
         height={cardHeight}
         cornerRadius={cornerRadius}
         fill={fill}
-        stroke="#333333"
-        strokeWidth={BORDER_WIDTH}
+        stroke={highlighted ? HIGHLIGHT_STROKE : "#333333"}
+        strokeWidth={highlighted ? 3 : BORDER_WIDTH}
       />
       {renderFaceContent()}
       <CountBadge count={cardCount} cardWidth={cardWidth} cardHeight={cardHeight} />
+      {component.label && (
+        <Text
+          text={component.label}
+          fontSize={LABEL_FONT_SIZE}
+          fontFamily="sans-serif"
+          fill="rgba(255, 255, 255, 0.6)"
+          width={cardWidth}
+          x={0}
+          y={cardHeight + LABEL_BOTTOM_PADDING}
+          align="center"
+        />
+      )}
     </Group>
   );
 }
 
-export default DeckRenderer;
+export default ZoneRenderer;

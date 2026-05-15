@@ -15,7 +15,7 @@
 | F9 | Deck Shuffle | F3, F7 | Medium | S | No |
 | F10 | Card/Deck Merge & Split (drag) | F3, F5, F7 | High | L | No |
 | F11 | Composite Actions (combo buttons) | F7 | Low | M | No |
-| F12 | Startup Sequence (auto-actions) | F7, F8 | Medium | M | No |
+| F12 | Startup Sequence (auto-actions) | F7, F8, F11 | Medium | M | No |
 
 ## Future Ideas (not yet scoped)
 
@@ -35,9 +35,10 @@ F1 (Card Drag & Drop) ─► F2 (Multi-Card) ─► F3 (Deck) ─► F4 (Draw) �
 │ │ │
 └─► F7 (Configurable Actions + Deck-by-Ref) ◄─────┘ │
 │ │ │ │
-│ │ └─► F11 (Composite Actions) │
-│ └─► F9 (Deck Shuffle) │
-└─► F8 (Draw-to-Zone) ─► F12 (Startup Sequence) │
+│ │ └─► F11 (Composite Actions)                    │
+│ │         │                                       │
+│ │         └─► F12 (Startup Sequence)              │
+│ └─► F9 (Deck Shuffle)                             │
 │
 F3 + F5 + F7 ─► F10 (Card/Deck Merge & Split) ◄─────────────────────┘
 
@@ -256,14 +257,15 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 | Priority | Medium |
 | Status | Specs drafted |
 | Created | 2026-05-10 |
-| Last Updated | 2026-05-11 |
+| Last Updated | 2026-05-12 |
 
 **Problem Statement**: Currently, actions available on each component type are hardcoded: cards always show "Retourner", decks always show "Retourner" + "Tirer face visible" + "Tirer face cachée". Game authors should be able to define which actions are available on each component in the game JSON. For example: a deck without draw (flip-only), a card with a custom action, or a deck that only draws face-down.
 
 **Clarified Requirements**:
 - Mandatory `actions` field on every card and deck component in the game JSON — no implicit defaults
-- Three available actions: `flip` (card + deck), `draw-face-up` (deck only), `draw-face-down` (deck only)
-- Labels are fixed (hardcoded in French). Game authors choose which actions to enable, not their names
+- Available action types: `flip` (card + deck), `draw-face-up` (deck only), `draw-face-down` (deck only), `draw-to-zone` (deck only, introduced by F8)
+- **Action labels are customizable in the game JSON**. Every action entry has a mandatory `label` field. Game authors define their own button text. This overrides the initial F7 rule that labels were fixed/hardcoded.
+- Actions are defined as objects with `type` and `label` fields (not plain strings). `draw-to-zone` entries also have `targetZone` and `faceUp` parameters.
 - The order of actions in the `actions` array determines the button order in the action bar
 - Empty or missing `actions` is a Zod validation error
 - **Gesture-action coupling**: double-click to flip is only available when `flip` is in the component's `actions`. If `flip` is not configured, the gesture is suppressed.
@@ -281,7 +283,7 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 **Risks**:
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Schema breaking change | `actions` is mandatory + deck-by-reference breaks old JSON format | Only one game JSON exists (poker_patience.json); update it directly. No backward compatibility. |
+| Schema breaking change | `actions` is mandatory + deck-by-reference + action objects (not strings) breaks old JSON format | Only one game JSON exists (poker_patience.json); update it directly. No backward compatibility. |
 | Deck-by-reference refactor scope | Changes schema, deckStateStore, draw flow, degeneration logic, all test data. Touches nearly every file. | Careful incremental implementation: US-8 (deck-by-ref) first, then actions. |
 | Action bar UI complexity | Dynamic number of buttons based on configuration | Refactor ActionBar to accept `actions: ActionButton[]` instead of individual callback props |
 | Cards with `position: null` not in any container | Invisible, unreachable card in game state | TBD: Zod validation to reject unreferenced null-position cards, or accept as game author error |
@@ -294,34 +296,41 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 |---|---|
 | Feature | Draw-to-Zone Action |
 | Priority | Medium |
-| Status | Proposed |
+| Status | Specs drafted |
 | Created | 2026-05-10 |
-| Last Updated | 2026-05-10 |
+| Last Updated | 2026-05-12 |
 
 **Problem Statement**: F4 (Draw from Deck) places drawn cards on the table at a free offset position. Many games require drawn cards to go directly into a specific zone (e.g., a "hand" zone, a "discard" zone). Without this, the player must manually drag each drawn card to the zone.
 
 **Clarified Requirements**:
-- New deck action: `draw-to-zone` (available on deck only). Draws the top card and places it directly into a predefined zone instead of on the free table.
-- The target zone is specified in the action configuration in the game JSON (e.g., `draw-to-zone: "discard-zone"`). Always the same zone for a given action — no runtime zone selection.
-- The drawn card snaps into the zone following the same snap logic as F5 (US-4): card becomes the top card of the zone.
-- This creates two new action IDs: `draw-face-up-to-zone` and `draw-face-down-to-zone` (or a single `draw-to-zone` with a `targetZone` parameter — TBD in spec).
-- If the target zone does not exist in the game JSON, the game JSON is rejected by Zod validation.
-- The drawn card's faceUp state follows the same rules as F4 (face-up or face-down depending on which button).
-- All other draw behavior (deck auto-conversion, empty deck removal, ID generation) follows F4 rules.
+- New deck action type: `draw-to-zone` (available on deck only). Draws the top card and places it directly into a predefined zone instead of on the free table.
+- The target zone is specified in the action configuration (`targetZone` field). Always the same zone for a given action — no runtime zone selection.
+- A `draw-to-zone` action entry has: `type: "draw-to-zone"`, `targetZone` (zone ID), `faceUp` (boolean), and `label` (custom button text).
+- The drawn card snaps into the zone with ease-out animation (~150ms), same as F5 US-4.
+- A deck may have both free-draw actions and draw-to-zone actions.
+- A deck may have multiple draw-to-zone actions targeting different zones.
+- After a draw-to-zone action, the action bar disappears (deck deselected).
+- If the target zone does not exist in the game JSON, Zod rejects the game JSON at load time.
+- If the target zone is missing at runtime (defensive edge case), fallback to free-draw (F4 behavior).
+- No zone capacity limit.
+- All action labels are customizable in the game JSON (not just draw-to-zone). This overrides F7's hardcoded labels rule. Every action entry has a mandatory `label` field.
+- All other draw behavior (deck auto-conversion, empty deck removal) follows F4 and F7 (deck-by-reference) rules.
+- **Specs**: `docs/specs/product_requirements/draw-to-zone.md`
 
 **Open Questions**:
 | # | Question | Resolution | Date |
 |---|---|---|---|
-| 1 | One action ID with a `targetZone` parameter, or two action IDs (`draw-face-up-to-zone`, `draw-face-down-to-zone`)? | Pending | |
-| 2 | Should the action label include the zone name (e.g., "Tirer face visible → Défausse")? | Pending | |
-| 3 | Can the same deck have both free-draw and draw-to-zone actions? | Pending | |
-| 4 | Can a deck draw to multiple different zones (multiple draw-to-zone buttons)? | Pending | |
+| 1 | One action ID with a `targetZone` parameter, or two action IDs (`draw-face-up-to-zone`, `draw-face-down-to-zone`)? | Single action type `draw-to-zone` with `targetZone` and `faceUp` parameters. | 2026-05-12 |
+| 2 | Should the action label include the zone name? | Labels are customizable by the game author. They decide what is clearest. | 2026-05-12 |
+| 3 | Can the same deck have both free-draw and draw-to-zone actions? | Yes. Any combination of actions is allowed. | 2026-05-12 |
+| 4 | Can a deck draw to multiple different zones? | Yes. Multiple draw-to-zone actions, each with its own button. | 2026-05-12 |
 
 **Risks**:
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Schema complexity — parameterized actions | Actions currently have no parameters. Adding `targetZone` requires a new action schema shape | Either: (a) parameterized action objects, or (b) generate unique action IDs per zone at parse time |
-| Target zone removed at runtime | Deck references a zone that was not defined | Zod validation ensures zone exists at load time |
+| Schema complexity — parameterized actions | Actions are now objects with `type` + `label` + optional parameters instead of plain strings | Consistent object schema for all action types; Zod discriminated union on `type` field |
+| Target zone removed at runtime | Deck references a zone that no longer exists | Zod validation ensures zone exists at load time; runtime fallback to free-draw |
+| F7 labels change is a breaking schema change | All existing game JSONs with plain-string actions must be updated | Only one game JSON exists (poker_patience.json); update it directly. No backward compatibility. |
 
 ---
 
@@ -408,9 +417,9 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 |---|---|
 | Feature | Composite Actions |
 | Priority | Low |
-| Status | Proposed |
+| Status | Specs drafted |
 | Created | 2026-05-10 |
-| Last Updated | 2026-05-10 |
+| Last Updated | 2026-05-12 |
 
 **Problem Statement**: Some game operations require multiple sequential actions (e.g., "shuffle then draw 3 face-down"). Currently, the player must click each action button individually. Composite actions let game authors define single buttons that execute a sequence of unit actions.
 
@@ -445,9 +454,9 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 |---|---|
 | Feature | Startup Sequence |
 | Priority | Low |
-| Status | Proposed |
+| Status | Specs drafted |
 | Created | 2026-05-10 |
-| Last Updated | 2026-05-10 |
+| Last Updated | 2026-05-12 |
 
 **Problem Statement**: Some games require setup actions when the game loads (e.g., shuffle the draw pile, deal cards to zones, flip certain cards face-up). Currently, the player must perform these actions manually every time the game starts.
 
@@ -483,7 +492,39 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 9. **F9** (Deck Shuffle) — Requires F3 + F7. Simple standalone action. Can be done in parallel with F8.
 10. **F10** (Card/Deck Merge & Split) — Requires F3 + F5 + F7. High complexity, high risk. Must come after F5 (snap animation reuse) and F7 (action system).
 11. **F11** (Composite Actions) — Requires F7. Extends action schema with sequences. Should come after F8 and F9 so all unit actions exist first.
-12. **F12** (Startup Sequence) — Requires F7 + F8. Game-level auto-execution. Should come last so all actions (including composite) are available in startup steps.
+12. **F12** (Startup Sequence) — Requires F7 + F8 + F11. Game-level auto-execution. Should come last so all actions (including composite) are available in startup steps.
+
+## Implementation Plan (2026-05-12)
+
+### Implemented (7/12)
+
+| Feature | Status |
+|---|---|
+| F1 Card Drag & Drop | ✅ Done |
+| F2 Multi-Card Independent | ✅ Done |
+| F3 Deck (stack, move, flip) | ✅ Done |
+| F4 Draw from Deck | ✅ Done |
+| F6 Card Image Face | ✅ Done |
+| F7 Configurable Actions + Deck-by-Ref | ✅ Done |
+
+### Remaining (6/12) — Ordered by priority & dependencies
+
+| # | Feature | Depends On | Complexity | Parallelizable |
+|---|---|---|---|---|
+| 1 | F5 Snap Zone | F4 ✅ | L | With F9 |
+| 1 | F9 Deck Shuffle | F3 ✅, F7 ✅ | S | With F5 |
+| 3 | F8 Draw-to-Zone | F5, F7 ✅ | S | After F5 |
+| 4 | F10 Card/Deck Merge | F5, F3 ✅, F7 ✅ | L | After F5 |
+| 5 | F11 Composite Actions | F7 ✅, F8, F9 | M | After F8+F9 |
+| 6 | F12 Startup Sequence | F7 ✅, F8, F11 | M | After F11 |
+
+### Parallelization Strategy
+
+- **Phase 1 (parallel)**: F5 + F9 — no overlap (F5 = zone/snap/rendering, F9 = shuffle action/store)
+- **Phase 2 (sequential)**: F8 (after F5) — small, unblocks F10+F11+F12
+- **Phase 3**: F10 (after F5) — large, high risk
+- **Phase 4**: F11 (after F8+F9) — medium
+- **Phase 5**: F12 (after F11) — last
 
 ## Change Log
 
@@ -495,3 +536,5 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 | 2026-05-10 | Added F7 (Configurable Actions), subsumed I5 into F7 | AI |
 | 2026-05-10 | Added F8-F12, removed I2 (subsumed by F9), updated F7 with validated requirements, updated dependency graph and implementation order | AI |
 | 2026-05-11 | Updated F7 with deck-by-reference prerequisite, gesture-action coupling, updated dependency graph | AI |
+| 2026-05-12 | F8 specs drafted: draw-to-zone action with parameterized schema, customizable labels for all actions (F7 update), F8 open questions resolved | AI |
+| 2026-05-12 | F11 specs drafted: composite actions (combo buttons). F12 specs drafted: startup sequence (auto-actions). Updated dependency graph (F12 now depends on F11) | AI |

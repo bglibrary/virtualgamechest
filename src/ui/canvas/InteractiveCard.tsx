@@ -14,6 +14,8 @@ interface InteractiveCardProps {
   cardId: string;
   viewportWidth: number;
   viewportHeight: number;
+  onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onDragEndCallback?: (cardId: string) => void;
 }
 
 function InteractiveCard({
@@ -21,6 +23,8 @@ function InteractiveCard({
   cardId,
   viewportWidth,
   viewportHeight,
+  onDragMove,
+  onDragEndCallback,
 }: InteractiveCardProps) {
   const faceUpRaw = useCardStateStore((s) => s.faceUp[cardId]);
   const isFaceUp = faceUpRaw === undefined ? true : faceUpRaw;
@@ -80,8 +84,17 @@ function InteractiveCard({
 
       updateCardPosition(cardId, clampedPosition);
       setDragging(false);
+
+      onDragEndCallback?.(cardId);
     },
-    [cardId, viewportWidth, viewportHeight, updateCardPosition, setDragging],
+    [cardId, viewportWidth, viewportHeight, updateCardPosition, setDragging, onDragEndCallback],
+  );
+
+  const handleDragMove = useCallback(
+    (e: Konva.KonvaEventObject<DragEvent>) => {
+      onDragMove?.(e);
+    },
+    [onDragMove],
   );
 
   return (
@@ -95,6 +108,7 @@ function InteractiveCard({
       onBounceRef={bounceRef}
       draggable
       onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
       positionOverride={positionOverride}
     />

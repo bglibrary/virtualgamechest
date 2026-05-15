@@ -1,4 +1,4 @@
-import { RotateCw, Eye, EyeOff } from "lucide-react";
+import { RotateCw, Eye, EyeOff, Shuffle } from "lucide-react";
 
 export interface ActionButton {
   id: string;
@@ -28,6 +28,7 @@ const ACTION_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
   flip: RotateCw,
   "draw-face-up": Eye,
   "draw-face-down": EyeOff,
+  shuffle: Shuffle,
 };
 
 function ActionBar({ x, y, actions, visible, side }: ActionBarProps) {

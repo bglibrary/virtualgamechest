@@ -178,4 +178,66 @@ describe("deckStateStore", () => {
       expect(result!.position.x).toBeGreaterThan(0.7);
     });
   });
+
+  describe("shuffleDeck", () => {
+    it("preserves all card IDs after shuffle", () => {
+      const cardIds = ["c1", "c2", "c3", "c4", "c5"];
+      useDeckStateStore.getState().initDeck("d1", cardIds, false);
+      useDeckStateStore.getState().shuffleDeck("d1");
+
+      const after = useDeckStateStore.getState().getCards("d1");
+      expect(after.sort()).toEqual(cardIds.sort());
+    });
+
+    it("does not change deck faceUp state", () => {
+      const cardIds = ["c1", "c2", "c3"];
+      useDeckStateStore.getState().initDeck("d1", cardIds, false);
+      useDeckStateStore.getState().shuffleDeck("d1");
+
+      expect(useDeckStateStore.getState().isFaceUp("d1")).toBe(false);
+    });
+
+    it("does not change card count", () => {
+      const cardIds = ["c1", "c2", "c3"];
+      useDeckStateStore.getState().initDeck("d1", cardIds, false);
+      useDeckStateStore.getState().shuffleDeck("d1");
+
+      expect(useDeckStateStore.getState().getCardCount("d1")).toBe(3);
+    });
+
+    it("shuffles a 2-card deck (one of two possible orderings)", () => {
+      const cardIds = ["c1", "c2"];
+      useDeckStateStore.getState().initDeck("d1", cardIds, false);
+      useDeckStateStore.getState().shuffleDeck("d1");
+
+      const after = useDeckStateStore.getState().getCards("d1");
+      expect(after).toContain("c1");
+      expect(after).toContain("c2");
+      expect(after.length).toBe(2);
+    });
+
+    it("is a no-op on non-existent deck", () => {
+      expect(() => useDeckStateStore.getState().shuffleDeck("nonexistent")).not.toThrow();
+    });
+
+    it("updates shuffledAtMs after shuffle", () => {
+      const cardIds = ["c1", "c2", "c3"];
+      useDeckStateStore.getState().initDeck("d1", cardIds, false);
+
+      const before = useDeckStateStore.getState().shuffledAtMs["d1"];
+      useDeckStateStore.getState().shuffleDeck("d1");
+      const after = useDeckStateStore.getState().shuffledAtMs["d1"];
+
+      expect(after).toBeGreaterThan(before);
+    });
+
+    it("resetDecks clears shuffledAtMs", () => {
+      const cardIds = ["c1", "c2"];
+      useDeckStateStore.getState().initDeck("d1", cardIds, false);
+      useDeckStateStore.getState().shuffleDeck("d1");
+      useDeckStateStore.getState().resetDecks();
+
+      expect(useDeckStateStore.getState().shuffledAtMs).toEqual({});
+    });
+  });
 });

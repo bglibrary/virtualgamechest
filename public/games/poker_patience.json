@@ -64,7 +64,8 @@
         "type": "text",
         "text": "10 Cœur"
       },
-      "position": { "x": 0.2, "y": 0.7 },
+      "back": { "type": "text", "text": "Dos10C" },
+      "position": null,
       "actions": [{ "type": "flip", "label": "Retourner" }]
     },
     {
@@ -94,10 +95,10 @@
     {
       "type": "deck",
       "id": "draw-pile",
-      "cards": ["rp-1", "rp-2", "rp-3"],
+      "cards": ["rp-1", "rp-2", "rp-3", "ten-hearts"],
       "position": { "x": 0.8, "y": 0.5 },
       "faceUp": false,
-      "actions": [{ "type": "flip", "label": "Retourner" }, { "type": "draw-face-up", "label": "Piocher face visible" }, { "type": "draw-face-down", "label": "Piocher face cachée" }]
+      "actions": [{ "type": "shuffle", "label": "Mélanger" }, { "type": "flip", "label": "Retourner" }, { "type": "draw-face-up", "label": "Piocher face visible" }, { "type": "draw-face-down", "label": "Piocher face cachée" }]
     }
   ]
 }

@@ -10,6 +10,7 @@ export const DeckActionType = {
   flip: "flip",
   "draw-face-up": "draw-face-up",
   "draw-face-down": "draw-face-down",
+  shuffle: "shuffle",
 } as const;
 
 export type DeckActionType = (typeof DeckActionType)[keyof typeof DeckActionType];
@@ -20,7 +21,7 @@ const cardActionSchema = z.object({
 });
 
 const deckActionSchema = z.object({
-  type: z.enum(["flip", "draw-face-up", "draw-face-down"]),
+  type: z.enum(["flip", "draw-face-up", "draw-face-down", "shuffle"]),
   label: z.string().min(1),
 });
 
@@ -74,9 +75,18 @@ export const deckComponentSchema = z.object({
   ),
 });
 
+export const zoneComponentSchema = z.object({
+  type: z.literal("zone"),
+  id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
+  position: positionSchema,
+  label: z.string().max(30).optional(),
+  snapRadius: z.number().positive().optional(),
+});
+
 export const componentSchema = z.discriminatedUnion("type", [
   cardComponentSchema,
   deckComponentSchema,
+  zoneComponentSchema,
 ]);
 
 export const gameDefinitionSchema = z.object({
@@ -116,6 +126,7 @@ export type CardAction = z.infer<typeof cardActionSchema>;
 export type DeckAction = z.infer<typeof deckActionSchema>;
 export type DeckComponent = z.infer<typeof deckComponentSchema>;
 export type CardComponent = z.infer<typeof cardComponentSchema>;
+export type ZoneComponent = z.infer<typeof zoneComponentSchema>;
 export type GameComponent = z.infer<typeof componentSchema>;
 export type GameDefinition = z.infer<typeof gameDefinitionSchema>;
 export type { CardActionType, DeckActionType };

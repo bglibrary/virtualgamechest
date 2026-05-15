@@ -2,7 +2,7 @@ import { useRef, useEffect, useCallback } from "react";
 import { Rect, Text, Group } from "react-konva";
 import type Konva from "konva";
 import KonvaLib from "konva";
-import type { CardComponent } from "@/types/game";
+import type { CardComponent, Position } from "@/types/game";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 
 const CARD_WIDTH_RATIO = 0.08;
@@ -36,6 +36,7 @@ interface CardRendererProps {
   onBounceRef?: React.MutableRefObject<(() => void) | null>;
   draggable?: boolean;
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   positionOverride?: Position;
 }
@@ -50,6 +51,7 @@ function CardRenderer({
   onBounceRef,
   draggable = false,
   onDragStart,
+  onDragMove,
   onDragEnd,
   positionOverride,
 }: CardRendererProps) {
@@ -180,6 +182,7 @@ function CardRenderer({
       draggable={draggable}
       dragBoundFunc={dragBoundFunc}
       onDragStart={handleDragStart}
+      onDragMove={onDragMove}
       onDragEnd={handleDragEnd}
       shadowBlur={DEFAULT_SHADOW_BLUR}
     >

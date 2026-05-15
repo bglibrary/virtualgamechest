@@ -12,6 +12,7 @@ export interface DrawResult {
 interface DeckStateStore {
   faceUp: Record<string, boolean>;
   cards: Record<string, string[]>;
+  shuffledAtMs: Record<string, number>;
   flipDeck: (id: string) => void;
   isFaceUp: (id: string) => boolean;
   getCards: (id: string) => string[];
@@ -19,6 +20,7 @@ interface DeckStateStore {
   initDeck: (id: string, cards: string[], faceUp: boolean) => void;
   removeDeck: (id: string) => void;
   resetDecks: () => void;
+  shuffleDeck: (id: string) => void;
   drawCard: (
     id: string,
     faceUp: boolean,
@@ -35,6 +37,7 @@ interface DeckStateStore {
 export const useDeckStateStore = create<DeckStateStore>((set, get) => ({
   faceUp: {},
   cards: {},
+  shuffledAtMs: {},
 
   flipDeck: (id: string) =>
     set((state) => {
@@ -65,21 +68,45 @@ export const useDeckStateStore = create<DeckStateStore>((set, get) => ({
     set((state) => ({
       cards: { ...state.cards, [id]: cards },
       faceUp: { ...state.faceUp, [id]: faceUp },
+      shuffledAtMs: { ...state.shuffledAtMs, [id]: 0 },
     })),
 
   removeDeck: (id: string) =>
     set((state) => {
       const newCards = { ...state.cards };
       const newFaceUp = { ...state.faceUp };
+      const newShuffledAtMs = { ...state.shuffledAtMs };
       delete newCards[id];
       delete newFaceUp[id];
+      delete newShuffledAtMs[id];
       return {
         cards: newCards,
         faceUp: newFaceUp,
+        shuffledAtMs: newShuffledAtMs,
       };
     }),
 
-  resetDecks: () => set({ cards: {}, faceUp: {} }),
+  resetDecks: () => set({ cards: {}, faceUp: {}, shuffledAtMs: {} }),
+
+  shuffleDeck: (id: string) => {
+    const state = get();
+    const deckCards = state.cards[id];
+    if (!deckCards || deckCards.length < 2) return;
+
+    const shuffled = [...deckCards];
+    const array = new Uint32Array(shuffled.length - 1);
+    crypto.getRandomValues(array);
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = array[i - 1] % (i + 1);
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    set({
+      cards: { ...state.cards, [id]: shuffled },
+      shuffledAtMs: { ...state.shuffledAtMs, [id]: Date.now() },
+    });
+  },
 
   drawCard: (id, _faceUp, offsetParams) => {
     const state = get();

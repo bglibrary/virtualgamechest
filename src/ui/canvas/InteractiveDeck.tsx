@@ -7,6 +7,7 @@ import { useCardPositionStore } from "@/store/cardPositionStore";
 import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import { useGameStore } from "@/store/gameStore";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
+import { WIGGLE_TOTAL_DURATION } from "@/ui/canvas/DeckRenderer";
 import DeckRenderer from "@/ui/canvas/DeckRenderer";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
 import { logZOrder } from "@/utils/debugZOrder";
@@ -29,6 +30,7 @@ function InteractiveDeck({
   const cards = useMemo(() => deckCards ?? [], [deckCards]);
   const cardCount = deckCards?.length ?? 0;
   const isInitialized = deckCards !== undefined;
+  const shuffledAtMs = useDeckStateStore((s) => s.shuffledAtMs[deckId] ?? 0);
   const selectComponent = useCardStateStore((s) => s.selectComponent);
   const flipDeck = useDeckStateStore((s) => s.flipDeck);
   const removeDeck = useDeckStateStore((s) => s.removeDeck);
@@ -38,7 +40,10 @@ function InteractiveDeck({
   const bringToTop = useCardZOrderStore((s) => s.bringToTop);
   const removeComponent = useGameStore((s) => s.removeComponent);
   const bounceRef = useRef<(() => void) | null>(null);
+  const wiggleRef = useRef<(() => void) | null>(null);
+  const shufflingRef = useRef(false);
   const prevFaceUp = useRef(isFaceUp);
+  const prevShuffledAtMs = useRef(shuffledAtMs);
 
   logZOrder(`render:InteractiveDeck[${deckId}] count=${cardCount} rendered=${!(cardCount === 0 || cardCount === 1)}`);
 
@@ -59,7 +64,20 @@ function InteractiveDeck({
     }
   }, [isFaceUp]);
 
+  useEffect(() => {
+    if (prevShuffledAtMs.current !== shuffledAtMs) {
+      // Changement détecté (init ou shuffle réel) → animation wiggle
+      shufflingRef.current = true;
+      wiggleRef.current?.();
+      setTimeout(() => {
+        shufflingRef.current = false;
+      }, WIGGLE_TOTAL_DURATION);
+      prevShuffledAtMs.current = shuffledAtMs;
+    }
+  }, [shuffledAtMs]);
+
   const handleClick = useCallback(() => {
+    if (shufflingRef.current) return;
     selectComponent(deckId);
   }, [selectComponent, deckId]);
 
@@ -74,6 +92,7 @@ function InteractiveDeck({
   });
 
   const handleDragStart = useCallback(() => {
+    if (shufflingRef.current) return;
     bringToTop(deckId);
     setDragging(true);
     selectComponent(null);
@@ -115,6 +134,7 @@ function InteractiveDeck({
       viewportHeight={viewportHeight}
       onClick={onClick}
       onBounceRef={bounceRef}
+      onWiggleRef={wiggleRef}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}

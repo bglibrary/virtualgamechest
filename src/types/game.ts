@@ -6,6 +6,7 @@ export type {
   DeckAction,
   DeckComponent,
   CardComponent,
+  ZoneComponent,
   GameComponent,
   GameDefinition,
   CardActionType,
