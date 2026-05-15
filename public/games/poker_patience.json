@@ -99,6 +99,12 @@
       "position": { "x": 0.8, "y": 0.5 },
       "faceUp": false,
       "actions": [{ "type": "shuffle", "label": "Mélanger" }, { "type": "flip", "label": "Retourner" }, { "type": "draw-face-up", "label": "Piocher face visible" }, { "type": "draw-face-down", "label": "Piocher face cachée" }]
+    },
+    {
+      "type": "zone",
+      "id": "discard",
+      "position": { "x": 0.2, "y": 0.4 },
+      "label": "Défausse"
     }
   ]
 }
