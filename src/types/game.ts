@@ -9,6 +9,4 @@ export type {
   ZoneComponent,
   GameComponent,
   GameDefinition,
-  CardActionType,
-  DeckActionType,
 } from "@/schemas/game";

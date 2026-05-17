@@ -176,6 +176,76 @@ const handleDraw = useCallback(
   const handleDrawFaceUp = useCallback(() => handleDraw(true), [handleDraw]);
   const handleDrawFaceDown = useCallback(() => handleDraw(false), [handleDraw]);
 
+  const handleDrawToZoneGen = useCallback(
+    (zoneId: string, faceUp: boolean) => {
+      const deckId = selectedComponentId;
+      if (!deckId) return;
+      const gameState = useGameStore.getState().game;
+      if (!gameState) return;
+      const selectedComponent = gameState.components.find((c) => c.id === deckId);
+      if (!selectedComponent || selectedComponent.type !== "deck") return;
+
+      // Vérifier si la zone existe (fallback to free-draw si absente)
+      const zoneComponent = gameState.components.find(
+        (c) => c.type === "zone" && c.id === zoneId,
+      );
+      if (!zoneComponent || zoneComponent.type !== "zone") {
+        // Fallback to free-draw
+        handleDraw(faceUp);
+        return;
+      }
+
+      const deckComp = selectedComponent;
+      const deckPosition = useCardPositionStore.getState().getCardPosition(deckId) ?? deckComp.position;
+      const size = { width: window.innerWidth, height: window.innerHeight };
+      const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
+      const cardHeight = cardWidth * CARD_ASPECT;
+
+      const result = useDeckStateStore.getState().drawCard(deckId, faceUp, {
+        deckPosition,
+        cardWidthPx: cardWidth,
+        cardHeightPx: cardHeight,
+        viewportWidth: size.width,
+        viewportHeight: size.height,
+      });
+
+      if (!result) return;
+
+      // Placer la carte directement dans la zone
+      const cardComponent = gameState.components.find((c) => c.id === result.cardId);
+      if (cardComponent && cardComponent.type === "card") {
+        const cardEntry = {
+          id: result.cardId,
+          face: cardComponent.face,
+          back: cardComponent.back,
+        };
+        addCard(zoneId, cardEntry);
+        useGameStore.getState().removeComponent(result.cardId);
+        // Supprimer la position de la carte puisqu'elle est dans la zone
+        useCardPositionStore.getState().updateCardPosition(result.cardId, { x: 0, y: 0 });
+      }
+
+      useCardStateStore.getState().setFaceUp(result.cardId, faceUp);
+      useCardZOrderStore.getState().bringToTop(result.cardId);
+
+      if (result.deckDegenerates) {
+        const lastCardId = useDeckStateStore.getState().getCards(deckId)[0];
+        if (lastCardId) {
+          const deckPosition = useCardPositionStore.getState().getCardPosition(deckId) ?? deckComp.position;
+          useGameStore.getState().updateComponentPosition(lastCardId, deckPosition);
+          useCardPositionStore.getState().updateCardPosition(lastCardId, deckPosition);
+          useCardStateStore.getState().setFaceUp(lastCardId, useDeckStateStore.getState().isFaceUp(deckId));
+          useCardZOrderStore.getState().replace(deckId, lastCardId);
+        }
+        useGameStore.getState().removeComponent(deckId);
+        useDeckStateStore.getState().removeDeck(deckId);
+      }
+
+      useCardStateStore.getState().selectComponent(null);
+    },
+    [selectedComponentId, addCard, handleDraw],
+  );
+
   const handleShuffle = useCallback(() => {
     if (!selectedComponentId) return;
     const game = useGameStore.getState().game;
@@ -260,6 +330,13 @@ const handleDraw = useCallback(
           buttons.push({ id: action.type, label: action.label, onClick: handleDrawFaceDown });
         } else if (action.type === "shuffle") {
           buttons.push({ id: action.type, label: action.label, onClick: handleShuffle });
+        } else if (action.type === "draw-to-zone") {
+          const drawToZoneAction = action as { type: "draw-to-zone"; label: string; targetZone: string; faceUp: boolean };
+          buttons.push({
+            id: action.type,
+            label: drawToZoneAction.label,
+            onClick: () => handleDrawToZoneGen(drawToZoneAction.targetZone, drawToZoneAction.faceUp),
+          });
         }
       }
     }

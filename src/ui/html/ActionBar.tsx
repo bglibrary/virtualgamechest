@@ -1,4 +1,4 @@
-import { RotateCw, Eye, EyeOff, Shuffle } from "lucide-react";
+import { RotateCw, Eye, EyeOff, Shuffle, Target } from "lucide-react";
 
 export interface ActionButton {
   id: string;
@@ -29,6 +29,7 @@ const ACTION_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
   "draw-face-up": Eye,
   "draw-face-down": EyeOff,
   shuffle: Shuffle,
+  "draw-to-zone": Target,
 };
 
 function ActionBar({ x, y, actions, visible, side }: ActionBarProps) {
@@ -58,7 +59,7 @@ function ActionBar({ x, y, actions, visible, side }: ActionBarProps) {
               title={action.label}
               className="flex flex-row items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-800 transition-colors hover:bg-gray-100 active:bg-gray-200"
             >
-              {IconComponent && <IconComponent size={ICON_SIZE} className="shrink-0" />}
+              {IconComponent && <span className="shrink-0"><IconComponent size={ICON_SIZE} /></span>}
               <span className="text-xs font-medium" style={labelStyle}>{action.label}</span>
             </button>
           </div>

@@ -11,6 +11,7 @@ export const DeckActionType = {
   "draw-face-up": "draw-face-up",
   "draw-face-down": "draw-face-down",
   shuffle: "shuffle",
+  "draw-to-zone": "draw-to-zone",
 } as const;
 
 export type DeckActionType = (typeof DeckActionType)[keyof typeof DeckActionType];
@@ -20,10 +21,22 @@ const cardActionSchema = z.object({
   label: z.string().min(1),
 });
 
-const deckActionSchema = z.object({
+const drawToZoneActionSchema = z.object({
+  type: z.literal("draw-to-zone"),
+  label: z.string().min(1),
+  targetZone: z.string().min(1),
+  faceUp: z.boolean(),
+});
+
+const simpleDeckActionSchema = z.object({
   type: z.enum(["flip", "draw-face-up", "draw-face-down", "shuffle"]),
   label: z.string().min(1),
 });
+
+export const deckActionSchema = z.discriminatedUnion("type", [
+  simpleDeckActionSchema,
+  drawToZoneActionSchema,
+]);
 
 export const imageUrlSchema = z.string().min(1).refine(
   (url) => {
@@ -70,7 +83,7 @@ export const deckComponentSchema = z.object({
   position: positionSchema,
   faceUp: z.boolean().optional().default(false),
   actions: z.array(deckActionSchema).min(1).refine(
-    (arr) => new Set(arr.map((a) => a.type)).size === arr.length,
+    (arr) => new Set(arr.map((a) => "targetZone" in a ? `${a.type}:${a.targetZone}` : a.type)).size === arr.length,
     { message: "Duplicate actions are not allowed" },
   ),
 });
@@ -117,6 +130,18 @@ export const gameDefinitionSchema = z.object({
     return new Set(allReferencedIds).size === allReferencedIds.length;
   },
   { message: "A card cannot be referenced by multiple decks", path: ["components"] },
+).refine(
+  (data) => {
+    const zoneIds = new Set(
+      data.components.filter((c) => c.type === "zone").map((c) => c.id),
+    );
+    return data.components
+      .filter((c) => c.type === "deck")
+      .flatMap((deck) => deck.actions)
+      .filter((action) => action.type === "draw-to-zone")
+      .every((action) => zoneIds.has((action as { targetZone: string }).targetZone));
+  },
+  { message: "draw-to-zone action references a zone ID that does not exist in components", path: ["components"] },
 );
 
 export type CardFace = z.infer<typeof cardFaceSchema>;
@@ -129,4 +154,3 @@ export type CardComponent = z.infer<typeof cardComponentSchema>;
 export type ZoneComponent = z.infer<typeof zoneComponentSchema>;
 export type GameComponent = z.infer<typeof componentSchema>;
 export type GameDefinition = z.infer<typeof gameDefinitionSchema>;
-export type { CardActionType, DeckActionType };
