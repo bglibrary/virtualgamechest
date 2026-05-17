@@ -31,9 +31,11 @@ const DASH_PATTERN = [8, 4];
 const LABEL_FONT_SIZE = 12;
 const LABEL_BOTTOM_PADDING = 6;
 const HIGHLIGHT_STROKE = "#FFD700";
-const HIGHLIGHT_FILL = "rgba(255, 215, 0, 0.08)";
+const HIGHLIGHT_FILL = "rgba(255, 215, 0, 0.12)";
+const HIGHLIGHT_STROKE_WIDTH = 4;
 const EMPTY_FILL = "rgba(255, 255, 255, 0.05)";
 const DEFAULT_STROKE = "rgba(255, 255, 255, 0.3)";
+const ZONE_SCALE = 1.15;
 
 interface ZoneRendererProps {
   component: ZoneComponent;
@@ -69,8 +71,14 @@ function ZoneRenderer({
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 
-  const x = component.position.x * viewportWidth - cardWidth / 2;
-  const y = component.position.y * viewportHeight - cardHeight / 2;
+  const zoneWidth = cardWidth * ZONE_SCALE;
+  const zoneHeight = cardHeight * ZONE_SCALE;
+  const zoneCornerRadius = cornerRadius * ZONE_SCALE;
+  const offsetX = (zoneWidth - cardWidth) / 2;
+  const offsetY = (zoneHeight - cardHeight) / 2;
+
+  const x = component.position.x * viewportWidth - zoneWidth / 2;
+  const y = component.position.y * viewportHeight - zoneHeight / 2;
 
   const groupRef = useRef<Konva.Group>(null);
   const bounceRef = useRef<(() => void) | null>(null);
@@ -143,30 +151,36 @@ function ZoneRenderer({
     [onTopCardDragMove],
   );
 
+  const backgroundRect = (dashed: boolean) => (
+    <Rect
+      width={zoneWidth}
+      height={zoneHeight}
+      cornerRadius={zoneCornerRadius}
+      fill={highlighted ? HIGHLIGHT_FILL : EMPTY_FILL}
+      stroke={highlighted ? HIGHLIGHT_STROKE : DEFAULT_STROKE}
+      strokeWidth={highlighted ? 3 : 2}
+      dash={dashed ? DASH_PATTERN : undefined}
+    />
+  );
+
+  const labelElement = component.label ? (
+    <Text
+      text={component.label}
+      fontSize={LABEL_FONT_SIZE}
+      fontFamily="sans-serif"
+      fill="rgba(255, 255, 255, 0.6)"
+      width={zoneWidth}
+      x={0}
+      y={zoneHeight + LABEL_BOTTOM_PADDING}
+      align="center"
+    />
+  ) : null;
+
   if (isEmpty) {
     return (
       <Group x={x} y={y}>
-        <Rect
-          width={cardWidth}
-          height={cardHeight}
-          cornerRadius={cornerRadius}
-          fill={highlighted ? HIGHLIGHT_FILL : EMPTY_FILL}
-          stroke={highlighted ? HIGHLIGHT_STROKE : DEFAULT_STROKE}
-          strokeWidth={highlighted ? 3 : 2}
-          dash={highlighted ? undefined : DASH_PATTERN}
-        />
-        {component.label && (
-          <Text
-            text={component.label}
-            fontSize={LABEL_FONT_SIZE}
-            fontFamily="sans-serif"
-            fill="rgba(255, 255, 255, 0.6)"
-            width={cardWidth}
-            x={0}
-            y={cardHeight + LABEL_BOTTOM_PADDING}
-            align="center"
-          />
-        )}
+        {backgroundRect(true)}
+        {labelElement}
       </Group>
     );
   }
@@ -224,38 +238,35 @@ function ZoneRenderer({
       onDblClick={onDblClick}
       shadowBlur={DEFAULT_SHADOW_BLUR}
     >
-      {highlighted && (
+      {/* Toujours le fond en pointillés, même avec des cartes */}
+      {backgroundRect(true)}
+      <Group x={offsetX} y={offsetY}>
+        {highlighted && (
+          <Rect
+            width={cardWidth}
+            height={cardHeight}
+            cornerRadius={cornerRadius}
+            fill={HIGHLIGHT_FILL}
+            stroke={HIGHLIGHT_STROKE}
+            strokeWidth={HIGHLIGHT_STROKE_WIDTH}
+            shadowBlur={12}
+            shadowColor={HIGHLIGHT_STROKE}
+            shadowOpacity={0.6}
+            shadowEnabled={true}
+          />
+        )}
         <Rect
           width={cardWidth}
           height={cardHeight}
           cornerRadius={cornerRadius}
-          fill={HIGHLIGHT_FILL}
-          stroke={HIGHLIGHT_STROKE}
-          strokeWidth={3}
+          fill={fill}
+          stroke={highlighted ? HIGHLIGHT_STROKE : "#333333"}
+          strokeWidth={highlighted ? 3 : BORDER_WIDTH}
         />
-      )}
-      <Rect
-        width={cardWidth}
-        height={cardHeight}
-        cornerRadius={cornerRadius}
-        fill={fill}
-        stroke={highlighted ? HIGHLIGHT_STROKE : "#333333"}
-        strokeWidth={highlighted ? 3 : BORDER_WIDTH}
-      />
-      {renderFaceContent()}
-      <CountBadge count={cardCount} cardWidth={cardWidth} cardHeight={cardHeight} />
-      {component.label && (
-        <Text
-          text={component.label}
-          fontSize={LABEL_FONT_SIZE}
-          fontFamily="sans-serif"
-          fill="rgba(255, 255, 255, 0.6)"
-          width={cardWidth}
-          x={0}
-          y={cardHeight + LABEL_BOTTOM_PADDING}
-          align="center"
-        />
-      )}
+        {renderFaceContent()}
+        <CountBadge count={cardCount} cardWidth={cardWidth} cardHeight={cardHeight} />
+      </Group>
+      {labelElement}
     </Group>
   );
 }

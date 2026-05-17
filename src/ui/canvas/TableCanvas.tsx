@@ -98,7 +98,7 @@ useEffect(() => {
     return zoneComponents.map((zone, index) => {
       const zoneX = zone.position.x * size.width;
       const zoneY = zone.position.y * size.height;
-      const snapRadius = zone.snapRadius ?? (Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH) / 2);
+      const snapRadius = zone.snapRadius ?? (Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH) * 0.75);
       return {
         zoneId: zone.id,
         centerX: zoneX,
@@ -222,9 +222,9 @@ const handleDraw = useCallback(
       const node = e.target;
       const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
       const cardHeight = cardWidth * CARD_ASPECT;
-      const nx = (node.x() + cardWidth / 2) / size.width;
-      const ny = (node.y() + cardHeight / 2) / size.height;
-      const result = findNearestSnapZone(nx, ny, zoneSnapInfos);
+      const cx = node.x() + cardWidth / 2;
+      const cy = node.y() + cardHeight / 2;
+      const result = findNearestSnapZone(cx, cy, zoneSnapInfos);
       setHighlightedZoneId(result?.zoneId ?? null);
     },
     [zoneSnapInfos, size],
