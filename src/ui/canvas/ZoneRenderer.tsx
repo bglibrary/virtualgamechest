@@ -222,11 +222,6 @@ function ZoneRenderer({
       onClick={onClick}
       onTap={onClick}
       onDblClick={onDblClick}
-      draggable
-      dragBoundFunc={dragBoundFunc}
-      onDragStart={handleDragStart}
-      onDragMove={handleDragMove}
-      onDragEnd={handleDragEnd}
       shadowBlur={DEFAULT_SHADOW_BLUR}
     >
       {highlighted && (
