@@ -2,6 +2,7 @@ import { z } from "zod/v4";
 
 export const CardActionType = {
   flip: "flip",
+  composite: "composite",
 } as const;
 
 export type CardActionType = (typeof CardActionType)[keyof typeof CardActionType];
@@ -12,6 +13,7 @@ export const DeckActionType = {
   "draw-face-down": "draw-face-down",
   shuffle: "shuffle",
   "draw-to-zone": "draw-to-zone",
+  composite: "composite",
 } as const;
 
 export type DeckActionType = (typeof DeckActionType)[keyof typeof DeckActionType];

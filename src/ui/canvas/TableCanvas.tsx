@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { useGameStore } from "@/store/gameStore";
 import { useCardStateStore } from "@/store/cardStateStore";
@@ -28,6 +28,7 @@ function TableCanvas() {
   });
   const [highlightedZoneId, setHighlightedZoneId] = useState<string | null>(null);
 const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string | null>(null);
+  const executingActionRef = useRef(false);
   const game = useGameStore((s) => s.game);
   const selectedComponentId = useCardStateStore((s) => s.selectedComponentId);
   const selectComponent = useCardStateStore((s) => s.selectComponent);
@@ -258,12 +259,17 @@ const handleDraw = useCallback(
     (steps: { type: string; targetZone?: string; faceUp?: boolean }[]) => {
       const componentId = selectedComponentId;
       if (!componentId) return;
+      if (executingActionRef.current) return;
+      executingActionRef.current = true;
+
+      const unlock = () => { executingActionRef.current = false; };
 
       // Execute steps directly against stores, not via handlers that deselect.
       // Only deselect at the end.
       let stepIndex = 0;
       const runStep = () => {
         if (stepIndex >= steps.length) {
+          unlock();
           selectComponent(null);
           return;
         }
@@ -272,6 +278,7 @@ const handleDraw = useCallback(
 
         const gameState = useGameStore.getState().game;
         if (!gameState) {
+          unlock();
           selectComponent(null);
           return;
         }
@@ -279,6 +286,7 @@ const handleDraw = useCallback(
         // Check if component still exists (e.g., deck removed by degeneration)
         const comp = gameState.components.find((c) => c.id === componentId);
         if (!comp) {
+          unlock();
           selectComponent(null);
           return;
         }
@@ -294,10 +302,6 @@ const handleDraw = useCallback(
             viewportWidth: s.width,
             viewportHeight: s.height,
           };
-        };
-
-        const localSelect = () => {
-          useCardStateStore.getState().selectComponent(null);
         };
 
         switch (step.type) {
