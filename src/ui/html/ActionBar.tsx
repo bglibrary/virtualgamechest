@@ -1,4 +1,4 @@
-import { RotateCw, Eye, EyeOff, Shuffle, Target, Hand } from "lucide-react";
+import { RotateCw, Eye, EyeOff, Shuffle, Target, Hand, Combine } from "lucide-react";
 
 export interface ActionButton {
   id: string;
@@ -32,6 +32,7 @@ const ACTION_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
   "draw-from-merge": Hand,
   shuffle: Shuffle,
   "draw-to-zone": Target,
+  composite: Combine,
 };
 
 function ActionBar({ x, y, actions, visible, side }: ActionBarProps) {

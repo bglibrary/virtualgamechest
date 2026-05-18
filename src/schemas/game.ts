@@ -16,7 +16,9 @@ export const DeckActionType = {
 
 export type DeckActionType = (typeof DeckActionType)[keyof typeof DeckActionType];
 
-const cardActionSchema = z.object({
+// ─── Unit action schemas ───
+
+const cardUnitActionSchema = z.object({
   type: z.enum(["flip"]),
   label: z.string().min(1),
 });
@@ -28,14 +30,66 @@ const drawToZoneActionSchema = z.object({
   faceUp: z.boolean(),
 });
 
-const simpleDeckActionSchema = z.object({
+const simpleDeckUnitActionSchema = z.object({
   type: z.enum(["flip", "draw-face-up", "draw-face-down", "shuffle"]),
   label: z.string().min(1),
 });
 
-export const deckActionSchema = z.discriminatedUnion("type", [
-  simpleDeckActionSchema,
+export const deckUnitActionSchema = z.discriminatedUnion("type", [
+  simpleDeckUnitActionSchema,
   drawToZoneActionSchema,
+]);
+
+// ─── Composite action schemas (F11) ───
+
+// Draw-to-zone step (no label — steps inherit from the composite)
+const compositeDrawToZoneStepSchema = z.object({
+  type: z.literal("draw-to-zone"),
+  targetZone: z.string().min(1),
+  faceUp: z.boolean(),
+});
+
+// Simple step (no label)
+const compositeSimpleStepSchema = z.object({
+  type: z.enum(["flip", "draw-face-up", "draw-face-down", "shuffle"]),
+});
+
+// Card step: only flip
+const cardCompositeStepSchema = compositeSimpleStepSchema;
+
+// Deck step: all deck action types including draw-to-zone
+const deckCompositeStepSchema = z.discriminatedUnion("type", [
+  compositeSimpleStepSchema,
+  compositeDrawToZoneStepSchema,
+]);
+
+// Card composite: restricts steps via discriminatedUnion
+const cardCompositeSchema = z.object({
+  type: z.literal("composite"),
+  label: z.string().min(1),
+  steps: z.array(cardCompositeStepSchema).min(1).max(20),
+});
+
+// Deck composite: allows all valid deck steps, validates shuffle limit + no nesting
+const deckCompositeSchema = z.object({
+  type: z.literal("composite"),
+  label: z.string().min(1),
+  steps: z.array(deckCompositeStepSchema).min(1).max(20).refine(
+    (steps: { type: string }[]) => steps.filter((s) => s.type === "shuffle").length <= 1,
+    { message: "A composite action can contain at most one shuffle step" },
+  ),
+});
+
+// Combined action schemas for components
+const cardActionSchema = z.discriminatedUnion("type", [
+  cardUnitActionSchema,
+  cardCompositeSchema,
+]);
+
+const deckActionSchema = z.discriminatedUnion("type", [
+  simpleDeckUnitActionSchema,
+  drawToZoneActionSchema,
+  deckCompositeSchema,
 ]);
 
 export const imageUrlSchema = z.string().min(1).refine(
@@ -135,11 +189,22 @@ export const gameDefinitionSchema = z.object({
     const zoneIds = new Set(
       data.components.filter((c) => c.type === "zone").map((c) => c.id),
     );
-    return data.components
+    // Check unit draw-to-zone actions
+    const unitZoneRefs = data.components
       .filter((c) => c.type === "deck")
       .flatMap((deck) => deck.actions)
-      .filter((action) => action.type === "draw-to-zone")
-      .every((action) => zoneIds.has((action as { targetZone: string }).targetZone));
+      .filter((action): action is { type: "draw-to-zone"; targetZone: string; faceUp: boolean; label: string } => action.type === "draw-to-zone")
+      .map((action) => action.targetZone);
+    // Check draw-to-zone steps inside composite actions
+    const compositeZoneRefs = data.components
+      .filter((c) => c.type === "deck")
+      .flatMap((deck) => deck.actions)
+      .filter((action) => action.type === "composite")
+      .flatMap((comp) => (comp as { steps: { type: string; targetZone?: string }[] }).steps)
+      .filter((step) => step.type === "draw-to-zone")
+      .map((step) => (step as { type: "draw-to-zone"; targetZone: string }).targetZone);
+    const allZoneRefs = [...unitZoneRefs, ...compositeZoneRefs];
+    return allZoneRefs.every((zoneId) => zoneIds.has(zoneId));
   },
   { message: "draw-to-zone action references a zone ID that does not exist in components", path: ["components"] },
 );
