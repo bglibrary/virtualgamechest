@@ -20,6 +20,8 @@ interface DeckStateStore {
   initDeck: (id: string, cards: string[], faceUp: boolean) => void;
   removeDeck: (id: string) => void;
   resetDecks: () => void;
+  addCardToTop: (id: string, cardId: string) => void;
+  addCardsToTop: (id: string, cardIds: string[]) => void;
   shuffleDeck: (id: string) => void;
   drawCard: (
     id: string,
@@ -83,6 +85,30 @@ export const useDeckStateStore = create<DeckStateStore>((set, get) => ({
         cards: newCards,
         faceUp: newFaceUp,
         shuffledAtMs: newShuffledAtMs,
+      };
+    }),
+
+  addCardToTop: (id: string, cardId: string) =>
+    set((state) => {
+      const deckCards = state.cards[id];
+      if (!deckCards) return state;
+      return {
+        cards: {
+          ...state.cards,
+          [id]: [...deckCards, cardId],
+        },
+      };
+    }),
+
+  addCardsToTop: (id: string, cardIds: string[]) =>
+    set((state) => {
+      const deckCards = state.cards[id];
+      if (!deckCards) return state;
+      return {
+        cards: {
+          ...state.cards,
+          [id]: [...deckCards, ...cardIds],
+        },
       };
     }),
 

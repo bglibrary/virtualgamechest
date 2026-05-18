@@ -9,6 +9,7 @@ interface CardZOrderStore {
   resetZOrder: () => void;
   insertAfter: (afterId: string, newId: string) => void;
   replace: (oldId: string, newId: string) => void;
+  removeFromZOrder: (id: string) => void;
 }
 
 export const useCardZOrderStore = create<CardZOrderStore>((set, get) => ({
@@ -64,4 +65,13 @@ export const useCardZOrderStore = create<CardZOrderStore>((set, get) => ({
     logZOrder(`insertAfter("${afterId}", "${newId}")`, "pos:", idx + 1);
     return { zOrder: next };
   }),
+  removeFromZOrder: (id: string) =>
+    set((state) => {
+      const idx = state.zOrder.indexOf(id);
+      if (idx === -1) return state;
+      const next = [...state.zOrder];
+      next.splice(idx, 1);
+      logZOrder(`removeFromZOrder("${id}")`, "pos:", idx);
+      return { zOrder: next };
+    }),
 }));

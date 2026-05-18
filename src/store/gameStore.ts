@@ -5,6 +5,7 @@ interface GameStore {
   game: GameDefinition | null;
   loading: boolean;
   error: string | null;
+  mergeCounter: number;
   setGame: (game: GameDefinition | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -12,13 +13,15 @@ interface GameStore {
   removeComponent: (id: string) => void;
   addComponent: (component: GameComponent) => void;
   updateComponentPosition: (id: string, position: Position) => void;
+  getNextMergeId: () => string;
 }
 
-export const useGameStore = create<GameStore>((set) => ({
+export const useGameStore = create<GameStore>((set, get) => ({
   game: null,
   loading: false,
   error: null,
-  setGame: (game) => set({ game, loading: false, error: null }),
+  mergeCounter: 0,
+  setGame: (game) => set({ game, loading: false, error: null, mergeCounter: 0 }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error, loading: false }),
   replaceComponent: (id, newComponent) =>
@@ -66,4 +69,16 @@ export const useGameStore = create<GameStore>((set) => ({
         },
       };
     }),
+
+  getNextMergeId: () => {
+    const state = get();
+    const existingIds = new Set(state.game?.components.map((c) => c.id) ?? []);
+    let candidate = `merge--${state.mergeCounter}`;
+    while (existingIds.has(candidate)) {
+      set({ mergeCounter: state.mergeCounter + 1 });
+      candidate = `merge--${get().mergeCounter}`;
+    }
+    set({ mergeCounter: get().mergeCounter + 1 });
+    return candidate;
+  },
 }));

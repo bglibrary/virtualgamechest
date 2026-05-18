@@ -17,6 +17,9 @@ interface InteractiveDeckProps {
   deckId: string;
   viewportWidth: number;
   viewportHeight: number;
+  highlighted?: boolean;
+  onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onDragEndCallback?: (deckId: string) => void;
 }
 
 function InteractiveDeck({
@@ -24,6 +27,9 @@ function InteractiveDeck({
   deckId,
   viewportWidth,
   viewportHeight,
+  highlighted = false,
+  onDragMove,
+  onDragEndCallback,
 }: InteractiveDeckProps) {
   const isFaceUp = useDeckStateStore((s) => s.faceUp[deckId] ?? false);
   const deckCards = useDeckStateStore((s) => s.cards[deckId]);
@@ -99,6 +105,13 @@ function InteractiveDeck({
     cancelPendingClick();
   }, [bringToTop, deckId, setDragging, selectComponent, cancelPendingClick]);
 
+  const handleDragMove = useCallback(
+    (e: Konva.KonvaEventObject<DragEvent>) => {
+      onDragMove?.(e);
+    },
+    [onDragMove],
+  );
+
   const handleDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
       const node = e.target;
@@ -115,8 +128,9 @@ function InteractiveDeck({
 
       updateCardPosition(deckId, clampedPosition);
       setDragging(false);
+      onDragEndCallback?.(deckId);
     },
-    [deckId, viewportWidth, viewportHeight, updateCardPosition, setDragging],
+    [deckId, viewportWidth, viewportHeight, updateCardPosition, setDragging, onDragEndCallback],
   );
 
   if (!isInitialized || cardCount === 0 || cardCount === 1) return null;
@@ -135,8 +149,10 @@ function InteractiveDeck({
       onClick={onClick}
       onBounceRef={bounceRef}
       onWiggleRef={wiggleRef}
+      highlighted={highlighted}
       draggable
       onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
       positionOverride={positionOverride}
     />

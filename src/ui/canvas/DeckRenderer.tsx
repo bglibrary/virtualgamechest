@@ -27,6 +27,10 @@ import {
   BOUNCE_DURATION,
 } from "@/ui/canvas/CardRenderer";
 
+const HIGHLIGHT_STROKE = "#FFD700";
+const HIGHLIGHT_STROKE_WIDTH = 4;
+const HIGHLIGHT_FILL = "rgba(255, 215, 0, 0.12)";
+
 const WIGGLE_DISTANCE = 3;
 const WIGGLE_HALF_CYCLES = 3;
 const WIGGLE_HALF_DURATION = 67;
@@ -43,8 +47,10 @@ interface DeckRendererProps {
   onClick?: () => void;
   onBounceRef?: React.MutableRefObject<(() => void) | null>;
   onWiggleRef?: React.MutableRefObject<(() => void) | null>;
+  highlighted?: boolean;
   draggable?: boolean;
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   positionOverride?: Position;
 }
@@ -60,8 +66,10 @@ function DeckRenderer({
   onClick,
   onBounceRef,
   onWiggleRef,
+  highlighted = false,
   draggable = false,
   onDragStart,
+  onDragMove,
   onDragEnd,
   positionOverride,
 }: DeckRendererProps) {
@@ -226,9 +234,24 @@ function DeckRenderer({
       draggable={draggable}
       dragBoundFunc={dragBoundFunc}
       onDragStart={handleDragStart}
+      onDragMove={onDragMove}
       onDragEnd={handleDragEnd}
       shadowBlur={DEFAULT_SHADOW_BLUR}
     >
+      {highlighted && (
+        <Rect
+          width={cardWidth}
+          height={cardHeight}
+          cornerRadius={cornerRadius}
+          fill={HIGHLIGHT_FILL}
+          stroke={HIGHLIGHT_STROKE}
+          strokeWidth={HIGHLIGHT_STROKE_WIDTH}
+          shadowBlur={12}
+          shadowColor={HIGHLIGHT_STROKE}
+          shadowOpacity={0.6}
+          shadowEnabled={true}
+        />
+      )}
       <Rect
         width={cardWidth}
         height={cardHeight}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { useGameStore } from "@/store/gameStore";
 import { useCardStateStore } from "@/store/cardStateStore";
@@ -9,14 +9,17 @@ import { useZoneStateStore } from "@/store/zoneStateStore";
 import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ZoneRenderer from "@/ui/canvas/ZoneRenderer";
+import { Hand } from "lucide-react";
 import ActionBar from "@/ui/html/ActionBar";
 import type { ActionButton } from "@/ui/html/ActionBar";
 import { logZOrder, initZOrderDebug } from "@/utils/debugZOrder";
 import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
 import type { ZoneSnapInfo } from "@/utils/snapDetection";
 import { findNearestSnapZone } from "@/utils/snapDetection";
+import type { MergeTargetInfo } from "@/utils/mergeDetection";
+import { findNearestMergeTarget } from "@/utils/mergeDetection";
 import type Konva from "konva";
-import type { ZoneComponent } from "@/types/game";
+import type { DeckComponent } from "@/types/game";
 
 function TableCanvas() {
   const [size, setSize] = useState({
@@ -24,28 +27,21 @@ function TableCanvas() {
     height: window.innerHeight,
   });
   const [highlightedZoneId, setHighlightedZoneId] = useState<string | null>(null);
+const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string | null>(null);
   const game = useGameStore((s) => s.game);
   const selectedComponentId = useCardStateStore((s) => s.selectedComponentId);
-  const isDragging = useCardPositionStore((s) => s.isDragging);
-  const positions = useCardPositionStore((s) => s.positions);
   const selectComponent = useCardStateStore((s) => s.selectComponent);
   const flipCard = useCardStateStore((s) => s.flipCard);
-  const setFaceUp = useCardStateStore((s) => s.setFaceUp);
   const flipDeck = useDeckStateStore((s) => s.flipDeck);
   const initZOrder = useCardZOrderStore((s) => s.initZOrder);
-  const bringToTop = useCardZOrderStore((s) => s.bringToTop);
-  const replace = useCardZOrderStore((s) => s.replace);
   const zOrder = useCardZOrderStore((s) => s.zOrder);
   const initDeck = useDeckStateStore((s) => s.initDeck);
-  const updateComponentPosition = useGameStore((s) => s.updateComponentPosition);
   const getCardPosition = useCardPositionStore((s) => s.getCardPosition);
-  const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
+  
   const initZone = useZoneStateStore((s) => s.initZone);
   const getTopCard = useZoneStateStore((s) => s.getTopCard);
   const getCardCount = useZoneStateStore((s) => s.getCardCount);
   const addCard = useZoneStateStore((s) => s.addCard);
-  const removeTopCard = useZoneStateStore((s) => s.removeTopCard);
-  const getCardZone = useZoneStateStore((s) => s.getCardZone);
   const cardStateIsFaceUp = useCardStateStore((s) => s.isFaceUp);
 
 useEffect(() => {
@@ -149,7 +145,10 @@ const handleDraw = useCallback(
 
       useGameStore.getState().updateComponentPosition(result.cardId, result.position);
       useCardPositionStore.getState().updateCardPosition(result.cardId, result.position);
-      useCardStateStore.getState().setFaceUp(result.cardId, faceUp);
+      // Merge-created decks (merge--N): preserve card's existing faceUp (don't override)
+      if (!deckId.startsWith("merge--")) {
+        useCardStateStore.getState().setFaceUp(result.cardId, faceUp);
+      }
 
       logZOrder(`TableCanvas handleDraw → bringToTop("${result.cardId}") deckDegenerates=${result.deckDegenerates}`);
       useCardZOrderStore.getState().bringToTop(result.cardId);
@@ -185,12 +184,10 @@ const handleDraw = useCallback(
       const selectedComponent = gameState.components.find((c) => c.id === deckId);
       if (!selectedComponent || selectedComponent.type !== "deck") return;
 
-      // Vérifier si la zone existe (fallback to free-draw si absente)
       const zoneComponent = gameState.components.find(
         (c) => c.type === "zone" && c.id === zoneId,
       );
       if (!zoneComponent || zoneComponent.type !== "zone") {
-        // Fallback to free-draw
         handleDraw(faceUp);
         return;
       }
@@ -211,7 +208,6 @@ const handleDraw = useCallback(
 
       if (!result) return;
 
-      // Placer la carte directement dans la zone
       const cardComponent = gameState.components.find((c) => c.id === result.cardId);
       if (cardComponent && cardComponent.type === "card") {
         const cardEntry = {
@@ -221,11 +217,13 @@ const handleDraw = useCallback(
         };
         addCard(zoneId, cardEntry);
         useGameStore.getState().removeComponent(result.cardId);
-        // Supprimer la position de la carte puisqu'elle est dans la zone
         useCardPositionStore.getState().updateCardPosition(result.cardId, { x: 0, y: 0 });
       }
 
-      useCardStateStore.getState().setFaceUp(result.cardId, faceUp);
+      // Merge-created decks (merge--N): preserve card's existing faceUp
+      if (!deckId.startsWith("merge--")) {
+        useCardStateStore.getState().setFaceUp(result.cardId, faceUp);
+      }
       useCardZOrderStore.getState().bringToTop(result.cardId);
 
       if (result.deckDegenerates) {
@@ -256,6 +254,168 @@ const handleDraw = useCallback(
     selectComponent(null);
   }, [selectedComponentId, selectComponent]);
 
+  const getDraggedFaceUp = useCallback((id: string): boolean => {
+    const component = useGameStore.getState().game?.components.find((c) => c.id === id);
+    if (!component) return true;
+    if (component.type === "card") return useCardStateStore.getState().isFaceUp(id);
+    if (component.type === "deck") return useDeckStateStore.getState().isFaceUp(id);
+    return true;
+  }, []);
+
+  const buildMergeTargetInfos = useCallback(
+    (excludeId: string): MergeTargetInfo[] => {
+      const state = useGameStore.getState();
+      if (!state.game) return [];
+      const cardW = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
+      const r = cardW / 2;
+      const result: MergeTargetInfo[] = [];
+      for (const c of state.game.components) {
+        if (c.id === excludeId) continue;
+        if (c.type === "card" && c.position !== null) {
+          const pos = getCardPosition(c.id) ?? c.position;
+          result.push({
+            componentId: c.id,
+            type: "card",
+            centerX: pos.x * size.width,
+            centerY: pos.y * size.height,
+            mergeRadius: r,
+            faceUp: useCardStateStore.getState().isFaceUp(c.id),
+          });
+        } else if (c.type === "deck") {
+          const count = useDeckStateStore.getState().getCardCount(c.id);
+          if (count >= 2) {
+            const pos = getCardPosition(c.id) ?? c.position;
+            result.push({
+              componentId: c.id,
+              type: "deck",
+              centerX: pos.x * size.width,
+              centerY: pos.y * size.height,
+              mergeRadius: r,
+              faceUp: useDeckStateStore.getState().isFaceUp(c.id),
+            });
+          }
+        }
+      }
+      return result;
+    },
+    [size, getCardPosition],
+  );
+
+  const handleDragMoveCommon = useCallback(
+    (e: Konva.KonvaEventObject<DragEvent>, draggedId: string) => {
+      const cardW = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
+      const cardH = cardW * CARD_ASPECT;
+      const cx = e.target.x() + cardW / 2;
+      const cy = e.target.y() + cardH / 2;
+
+      const zoneResult = zoneSnapInfos.length > 0
+        ? findNearestSnapZone(cx, cy, zoneSnapInfos)
+        : null;
+
+      if (zoneResult) {
+        setHighlightedZoneId(zoneResult.zoneId);
+        setHighlightedMergeTargetId(null);
+        return;
+      }
+      setHighlightedZoneId(null);
+
+      const draggedFaceUp = getDraggedFaceUp(draggedId);
+      const targets = buildMergeTargetInfos(draggedId);
+      const mergeResult = findNearestMergeTarget(cx, cy, draggedFaceUp, targets);
+      setHighlightedMergeTargetId(mergeResult?.componentId ?? null);
+    },
+    [zoneSnapInfos, size, buildMergeTargetInfos, getDraggedFaceUp],
+  );
+
+  const handleMerge = useCallback(
+    (draggedId: string) => {
+      const pos = getCardPosition(draggedId) ?? { x: 0.5, y: 0.5 };
+      const draggedFaceUp = getDraggedFaceUp(draggedId);
+      const targets = buildMergeTargetInfos(draggedId);
+
+      const mergeResult = findNearestMergeTarget(
+        pos.x * size.width,
+        pos.y * size.height,
+        draggedFaceUp,
+        targets,
+      );
+      if (!mergeResult) return;
+
+      const gameState = useGameStore.getState().game;
+      if (!gameState) return;
+
+      const targetComp = gameState.components.find((c) => c.id === mergeResult.componentId);
+      if (!targetComp) return;
+
+      if (mergeResult.type === "deck") {
+        if (targetComp.type !== "deck") return;
+        const targetDeck = targetComp;
+
+        if (draggedId === targetDeck.id) return;
+
+        const draggedComp = gameState.components.find((c) => c.id === draggedId);
+        if (!draggedComp) return;
+
+        if (draggedComp.type === "card") {
+          useDeckStateStore.getState().addCardToTop(targetDeck.id, draggedId);
+          // Keep card in gameStore.components for DeckRenderer topCard/face lookup.
+          // Replace with position:null so unsortedVisible filter hides it.
+          useGameStore.getState().replaceComponent(draggedId, { ...draggedComp, position: null });
+          useCardStateStore.getState().setFaceUp(draggedId, useDeckStateStore.getState().isFaceUp(targetDeck.id));
+          useCardZOrderStore.getState().removeFromZOrder(draggedId);
+          useCardPositionStore.getState().updateCardPosition(draggedId, { x: 0, y: 0 });
+        } else if (draggedComp.type === "deck") {
+          if (draggedComp.id === targetDeck.id) return;
+          const draggedCards = useDeckStateStore.getState().getCards(draggedComp.id);
+          if (draggedCards.length === 0) return;
+          useDeckStateStore.getState().addCardsToTop(targetDeck.id, draggedCards);
+          useGameStore.getState().removeComponent(draggedComp.id);
+          useDeckStateStore.getState().removeDeck(draggedComp.id);
+          useCardZOrderStore.getState().removeFromZOrder(draggedComp.id);
+        }
+      } else if (mergeResult.type === "card") {
+        if (targetComp.type !== "card") return;
+        const targetCard = targetComp;
+
+        const draggedComp = gameState.components.find((c) => c.id === draggedId);
+        if (!draggedComp || draggedComp.type !== "card") return;
+
+        const targetPos = getCardPosition(targetCard.id) ?? targetCard.position ?? { x: 0.5, y: 0.5 };
+        const sharedFaceUp = useCardStateStore.getState().isFaceUp(targetCard.id);
+
+        const newDeckId = useGameStore.getState().getNextMergeId();
+        const newDeck: DeckComponent = {
+          type: "deck",
+          id: newDeckId,
+          cards: [targetCard.id, draggedComp.id],
+          position: targetPos,
+          faceUp: sharedFaceUp,
+          actions: [{ type: "draw-face-down", label: "Piocher" }],
+        };
+
+        useGameStore.getState().addComponent(newDeck);
+        useDeckStateStore.getState().initDeck(newDeckId, [targetCard.id, draggedComp.id], sharedFaceUp);
+        useCardStateStore.getState().setFaceUp(draggedComp.id, sharedFaceUp);
+        useCardStateStore.getState().setFaceUp(targetCard.id, sharedFaceUp);
+        useCardZOrderStore.getState().removeFromZOrder(draggedComp.id);
+        useCardZOrderStore.getState().removeFromZOrder(targetCard.id);
+        useCardZOrderStore.getState().bringToTop(newDeckId);
+        useCardPositionStore.getState().updateCardPosition(newDeckId, targetPos);
+        // Set both cards' position to null (filtered from visible by unsortedVisible)
+        // but keep in gameStore.components for DeckRenderer topCard/face lookup
+        useGameStore.getState().replaceComponent(draggedComp.id, { ...draggedComp, position: null });
+        useGameStore.getState().replaceComponent(targetCard.id, { ...targetCard, position: null });
+        useCardPositionStore.getState().updateCardPosition(draggedComp.id, { x: 0, y: 0 });
+        useCardPositionStore.getState().updateCardPosition(targetCard.id, { x: 0, y: 0 });
+      }
+
+      setHighlightedMergeTargetId(null);
+      setHighlightedZoneId(null);
+      useCardStateStore.getState().selectComponent(null);
+    },
+    [size, buildMergeTargetInfos, getCardPosition, getDraggedFaceUp],
+  );
+
   const handleSnapToZone = useCallback(
     (cardId: string) => {
       const pos = getCardPosition(cardId) ?? { x: 0.5, y: 0.5 };
@@ -264,16 +424,14 @@ const handleDraw = useCallback(
         pos.y * size.height,
         zoneSnapInfos,
       );
-      if (!snapResult) return;
+      if (!snapResult) return false;
 
       const gameState = useGameStore.getState().game;
-      if (!gameState) return;
+      if (!gameState) return false;
       const cardComponent = gameState.components.find((c) => c.id === cardId);
-      if (!cardComponent || cardComponent.type !== "card") return;
+      if (!cardComponent || cardComponent.type !== "card") return false;
 
       const zoneId = snapResult.zoneId;
-      const isFaceUp = useCardStateStore.getState().isFaceUp(cardId);
-
       const cardEntry = {
         id: cardId,
         face: cardComponent.face,
@@ -282,29 +440,33 @@ const handleDraw = useCallback(
       addCard(zoneId, cardEntry);
       useGameStore.getState().removeComponent(cardId);
       setHighlightedZoneId(null);
+      setHighlightedMergeTargetId(null);
+      return true;
     },
     [zoneSnapInfos, getCardPosition, addCard],
   );
 
-  const handleCardDragMove = useCallback(
-    (e: Konva.KonvaEventObject<DragEvent>) => {
-      if (zoneSnapInfos.length === 0) return;
-      const node = e.target;
-      const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-      const cardHeight = cardWidth * CARD_ASPECT;
-      const cx = node.x() + cardWidth / 2;
-      const cy = node.y() + cardHeight / 2;
-      const result = findNearestSnapZone(cx, cy, zoneSnapInfos);
-      setHighlightedZoneId(result?.zoneId ?? null);
+  const makeDragMoveHandler = useCallback(
+    (componentId: string) => (e: Konva.KonvaEventObject<DragEvent>) => {
+      handleDragMoveCommon(e, componentId);
     },
-    [zoneSnapInfos, size],
+    [handleDragMoveCommon],
   );
 
   const handleCardDragEnd = useCallback(
     (cardId: string) => {
-      handleSnapToZone(cardId);
+      const snapped = handleSnapToZone(cardId);
+      if (snapped) return;
+      handleMerge(cardId);
     },
-    [handleSnapToZone],
+    [handleSnapToZone, handleMerge],
+  );
+
+  const handleDeckDragEnd = useCallback(
+    (deckId: string) => {
+      handleMerge(deckId);
+    },
+    [handleMerge],
   );
 
   const actionButtons: ActionButton[] = (() => {
@@ -327,7 +489,13 @@ const handleDraw = useCallback(
         } else if (action.type === "draw-face-up") {
           buttons.push({ id: action.type, label: action.label, onClick: handleDrawFaceUp });
         } else if (action.type === "draw-face-down") {
-          buttons.push({ id: action.type, label: action.label, onClick: handleDrawFaceDown });
+          const isMergeDeck = selectedComponentId.startsWith("merge--");
+          buttons.push({
+            id: action.type,
+            label: action.label,
+            onClick: handleDrawFaceDown,
+            ...(isMergeDeck ? { iconOverride: Hand } : {}),
+          });
         } else if (action.type === "shuffle") {
           buttons.push({ id: action.type, label: action.label, onClick: handleShuffle });
         } else if (action.type === "draw-to-zone") {
@@ -363,7 +531,6 @@ const handleDraw = useCallback(
     ? game?.components.find((c) => c.id === selectedComponentId)
     : null;
 
-  const isSelectedDeck = selectedComponent?.type === "deck";
   const selectedPosition = selectedComponentId
     ? (getCardPosition(selectedComponentId) ?? selectedComponent?.position)
     : null;
@@ -373,7 +540,6 @@ const handleDraw = useCallback(
     selectedComponent !== undefined;
 
   const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-  const cardHeight = cardWidth * CARD_ASPECT;
 
   const ACTION_BAR_GAP = 8;
   const ACTION_BAR_MARGIN = 4;
@@ -386,12 +552,10 @@ const handleDraw = useCallback(
     const cx = selectedPosition.x * size.width;
     const cy = selectedPosition.y * size.height;
     if (cx > size.width / 2) {
-      // Deck à droite → barre à gauche
       actionBarSide = "left";
       actionBarX = Math.max(ACTION_BAR_MARGIN, cx - cardWidth / 2 - ACTION_BAR_GAP);
       actionBarY = cy;
     } else {
-      // Deck à gauche → barre à droite
       actionBarSide = "right";
       actionBarX = Math.min(size.width - ACTION_BAR_MARGIN, cx + cardWidth / 2 + ACTION_BAR_GAP);
       actionBarY = cy;
@@ -440,6 +604,7 @@ const handleDraw = useCallback(
           })}
           {visibleComponents.map((component) => {
             if (component.type === "card") {
+              if (component.position === null) return null;
               return (
                 <InteractiveCard
                   key={component.id}
@@ -447,7 +612,8 @@ const handleDraw = useCallback(
                   cardId={component.id}
                   viewportWidth={size.width}
                   viewportHeight={size.height}
-                  onDragMove={handleCardDragMove}
+                  highlighted={highlightedMergeTargetId === component.id}
+                  onDragMove={makeDragMoveHandler(component.id)}
                   onDragEndCallback={handleCardDragEnd}
                 />
               );
@@ -460,6 +626,9 @@ const handleDraw = useCallback(
                   deckId={component.id}
                   viewportWidth={size.width}
                   viewportHeight={size.height}
+                  highlighted={highlightedMergeTargetId === component.id}
+                  onDragMove={makeDragMoveHandler(component.id)}
+                  onDragEndCallback={handleDeckDragEnd}
                 />
               );
             }

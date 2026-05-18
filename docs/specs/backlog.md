@@ -13,7 +13,7 @@
 | F7 | Configurable Actions | F4 | Medium | M | No |
 | F8 | Draw-to-Zone Action | F4, F5, F7 | Low | S | No |
 | F9 | Deck Shuffle | F3, F7 | Medium | S | No |
-| F10 | Card/Deck Merge & Split (drag) | F3, F5, F7 | High | L | No |
+| F10 | Card/Deck Merge & Split (drag) | F3, F5, F7 | ✅ Done | L | No |
 | F11 | Composite Actions (combo buttons) | F7 | Low | M | No |
 | F12 | Startup Sequence (auto-actions) | F7, F8, F11 | Medium | M | No |
 
@@ -374,40 +374,41 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 |---|---|
 | Feature | Card/Deck Merge & Split (drag) |
 | Priority | Medium |
-| Status | Proposed |
+| Status | Implemented |
 | Created | 2026-05-10 |
-| Last Updated | 2026-05-10 |
+| Last Updated | 2026-05-18 |
 
 **Problem Statement**: Need to form decks from individual cards, add cards to existing decks, and merge decks together — all via drag interactions. This is the reverse of drawing (F4) and is essential for games where players build stacks.
 
-**Clarified Requirements**:
-- **Card → Card merge (form deck)**: Dragging a card onto another card with the same `face.text` value creates a new deck containing both cards. The dragged card becomes the top card. The new deck uses the snap animation from F5 (~150ms ease-out). The dragged card takes the same face orientation as the other cards in the deck (it adopts the deck's faceUp state, not its own).
-- **Card → Deck merge (add to top)**: Dragging a card onto a deck adds it as the new top card of the deck, with snap animation. The card takes the deck's faceUp state. The deck's count badge increments. Valid only if the card's `face.text` matches the deck's top card's `face.text`.
-- **Deck → Card merge (add to bottom)**: Dragging a deck onto a card adds the card as the bottom card of the deck (first element of `cards` array), with snap animation. The card takes the deck's faceUp state. The deck's count badge increments. Valid only if the card's `face.text` matches the deck's top card's `face.text`.
-- **Deck → Deck merge**: Dragging a deck onto another deck merges them (all cards from the dragged deck are added on top of the target deck). Snap animation. Cards from the dragged deck adopt the target deck's faceUp state. Valid only if the top cards' `face.text` values match. The dragged deck is removed after merge.
+**Implemented Behavior**:
+- **Card → Card merge (form deck)**: Dragging a card onto another card with the same faceUp state creates a new deck containing both cards (bottom = target card, top = dragged card). The new deck has a single action: `draw-face-down` (labeled "Piocher") — this is a "split deck" action that preserves each card's existing faceUp state when drawn. Merge is instant (no snap animation). Both original card IDs are retained and referenced by the new deck.
+- **Card → Deck merge (add to top)**: Dragging a card onto a deck adds it as the new top card of the deck. The card adopts the deck's faceUp state. The deck's existing actions are preserved. Merge is instant.
+- **Deck → Deck merge**: Dragging a deck onto another deck merges them (all cards from the dragged deck are added on top of the target deck). The target deck's existing actions are preserved. The dragged deck is removed. Merge is instant.
+- **Merge is only allowed when both components have the same faceUp state** (face-up↔face-up, face-down↔face-down).
+- **Zone snap takes priority over merge**: if the dragged component is within both zone snap range and merge range, it snaps to the zone.
+- **Merge highlight**: during drag, the nearest compatible target within merge radius gets a gold glow (same as zone highlight). Zone highlight takes priority.
+- **Merge radius** = half card width (same as F5 zone snap default).
+- **No content-based matching**: merge compatibility is determined by faceUp state only (no `face.text` check).
+- **Merge IDs**: Generated with pattern `merge--{counter}` via `getNextMergeId()` in gameStore.
 
 **Key design decisions**:
-- The matching criterion is `face.text` equality — this determines if two components can merge. TBD: should this be configurable (e.g., match on a custom field)?
-- When a card joins a deck, it loses its independence — it adopts the deck's faceUp state (like all cards in a deck share one orientation).
-- Snap animation on merge follows F5 UX (ease-out ~150ms).
-- After merge, the resulting deck remains at the target's position.
+- Merge uses instant state change (not snap animation) — the dragged card disappears, the target updates immediately.
+- When a card joins a deck, it stays in `gameStore.components` (for DeckRenderer's topCard face/back lookup) but its position is set to `null` (hidden from rendering via `unsortedVisible` filter: `if (c.type === "card") return c.position !== null`).
+- Merge-created decks use a `Hand` icon in the action bar (instead of `EyeOff`) to indicate it's a split action, not a face override.
+- Drawing from a merge-created deck preserves each card's existing faceUp state (does not force face-down).
 
 **Open Questions**:
 | # | Question | Resolution | Date |
 |---|---|---|---|
-| 1 | Is `face.text` the right matching criterion, or should matching be configurable (e.g., a `group` field on components)? | Pending | |
-| 2 | What happens to the dragged component's ID after merge? | Pending | |
-| 3 | Should merge be reversible (undo)? | Pending | |
-| 4 | Visual feedback during drag: how to indicate a valid merge target (like zone highlight)? | Pending | |
-| 5 | Can a deck of 1 card be dragged onto another card (should it convert to card first, then card→card merge)? | Pending | |
+| 1 | Should merge be reversible (undo)? | Deferred — instant merge accepted for now. | 2026-05-18 |
+| 2 | Should merge support animation in the future? | Deferred — instant is acceptable. | 2026-05-18 |
 
 **Risks**:
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Complex drag interaction logic | Multiple drop targets (zone, card, deck) with different behaviors | Clear priority: zone snap (F5) > merge > free drop |
-| face.text matching too rigid | Some games need different grouping rules | Start with face.text; make matching configurable in a future iteration |
-| Deck→Deck merge z-order | Which deck stays on the table? | Target deck stays; dragged deck is removed after merge |
-| State consistency during merge animation | User interacts during animation | Same mitigation as F5: `snappingCardId` flag prevents re-interaction |
+| DeckRenderer needs card components for face/back data | Removing cards from gameStore on merge breaks deck rendering | Use `replaceComponent` with `position:null` instead of `removeComponent` |
+| Merge-created deck draw overrides faceUp | Confused users — "oeil barré" icon but face stays visible | `merge--N` decks skip forced faceUp on draw; use Hand icon |
 
 ---
 
@@ -494,9 +495,9 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 11. **F11** (Composite Actions) — Requires F7. Extends action schema with sequences. Should come after F8 and F9 so all unit actions exist first.
 12. **F12** (Startup Sequence) — Requires F7 + F8 + F11. Game-level auto-execution. Should come last so all actions (including composite) are available in startup steps.
 
-## Implementation Plan (2026-05-12)
+## Implementation Plan
 
-### Implemented (7/12)
+### Implemented (10/12)
 
 | Feature | Status |
 |---|---|
@@ -504,27 +505,28 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 | F2 Multi-Card Independent | ✅ Done |
 | F3 Deck (stack, move, flip) | ✅ Done |
 | F4 Draw from Deck | ✅ Done |
+| F5 Snap Zone | ✅ Done |
 | F6 Card Image Face | ✅ Done |
 | F7 Configurable Actions + Deck-by-Ref | ✅ Done |
+| F8 Draw-to-Zone | ✅ Done |
+| F9 Deck Shuffle | ✅ Done |
+| F10 Card/Deck Merge & Split (drag) | ✅ Done |
 
-### Remaining (6/12) — Ordered by priority & dependencies
+### Remaining (2/12) — Ordered by priority & dependencies
 
-| # | Feature | Depends On | Complexity | Parallelizable |
-|---|---|---|---|---|
-| 1 | F5 Snap Zone | F4 ✅ | L | With F9 |
-| 1 | F9 Deck Shuffle | F3 ✅, F7 ✅ | S | With F5 |
-| 3 | F8 Draw-to-Zone | F5, F7 ✅ | S | After F5 |
-| 4 | F10 Card/Deck Merge | F5, F3 ✅, F7 ✅ | L | After F5 |
-| 5 | F11 Composite Actions | F7 ✅, F8, F9 | M | After F8+F9 |
-| 6 | F12 Startup Sequence | F7 ✅, F8, F11 | M | After F11 |
+| # | Feature | Depends On | Complexity |
+|---|---|---|---|
+| 1 | F11 Composite Actions (combo buttons) | F7 ✅, F8, F9 | M |
+| 2 | F12 Startup Sequence (auto-actions) | F7 ✅, F8, F11 | M |
 
-### Parallelization Strategy
+### Implementation Order
 
-- **Phase 1 (parallel)**: F5 + F9 — no overlap (F5 = zone/snap/rendering, F9 = shuffle action/store)
-- **Phase 2 (sequential)**: F8 (after F5) — small, unblocks F10+F11+F12
-- **Phase 3**: F10 (after F5) — large, high risk
-- **Phase 4**: F11 (after F8+F9) — medium
-- **Phase 5**: F12 (after F11) — last
+- **Phase 1 (done)**: F1 → F2 → F3 → F4 (foundation)
+- **Phase 2 (done)**: F5 (snap zone) + F6 (image face) + F9 (shuffle) in parallel
+- **Phase 3 (done)**: F7 (configurable actions) → F8 (draw-to-zone)
+- **Phase 4 (done)**: F10 (card/deck merge & split)
+- **Phase 5**: F11 (composite actions)
+- **Phase 6**: F12 (startup sequence)
 
 ## Change Log
 
@@ -538,3 +540,4 @@ F7 refactor: deck-by-reference changes deckComponentSchema, deckStateStore, draw
 | 2026-05-11 | Updated F7 with deck-by-reference prerequisite, gesture-action coupling, updated dependency graph | AI |
 | 2026-05-12 | F8 specs drafted: draw-to-zone action with parameterized schema, customizable labels for all actions (F7 update), F8 open questions resolved | AI |
 | 2026-05-12 | F11 specs drafted: composite actions (combo buttons). F12 specs drafted: startup sequence (auto-actions). Updated dependency graph (F12 now depends on F11) | AI |
+| 2026-05-18 | F10 implemented: Card/Deck Merge & Split with faceUp compatibility, draw-face-down for merge decks, Hand icon, instant merge, position:null for hidden cards. Tests: 264 pass (20 files). | AI |

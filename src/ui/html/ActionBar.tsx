@@ -1,9 +1,10 @@
-import { RotateCw, Eye, EyeOff, Shuffle, Target } from "lucide-react";
+import { RotateCw, Eye, EyeOff, Shuffle, Target, Hand } from "lucide-react";
 
 export interface ActionButton {
   id: string;
   label: string;
   onClick: () => void;
+  iconOverride?: React.ComponentType<{ size?: number }>;
 }
 
 interface ActionBarProps {
@@ -28,6 +29,7 @@ const ACTION_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
   flip: RotateCw,
   "draw-face-up": Eye,
   "draw-face-down": EyeOff,
+  "draw-from-merge": Hand,
   shuffle: Shuffle,
   "draw-to-zone": Target,
 };
@@ -50,7 +52,7 @@ function ActionBar({ x, y, actions, visible, side }: ActionBarProps) {
       }}
     >
       {actions.map((action, index) => {
-        const IconComponent = ACTION_ICONS[action.id];
+        const IconComponent = action.iconOverride ?? ACTION_ICONS[action.id];
         return (
           <div key={action.id}>
             {index > 0 && <div className="mx-1 h-px bg-gray-300" />}

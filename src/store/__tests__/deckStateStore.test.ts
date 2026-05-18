@@ -46,6 +46,44 @@ describe("deckStateStore", () => {
     });
   });
 
+  describe("addCardToTop", () => {
+    it("appends a single card ID to the deck's cards array", () => {
+      useDeckStateStore.getState().initDeck("d1", ["c1", "c2"], false);
+      useDeckStateStore.getState().addCardToTop("d1", "c3");
+      expect(useDeckStateStore.getState().getCards("d1")).toEqual(["c1", "c2", "c3"]);
+    });
+
+    it("is a no-op on non-existent deck", () => {
+      expect(() => useDeckStateStore.getState().addCardToTop("nonexistent", "c1")).not.toThrow();
+      expect(useDeckStateStore.getState().getCardCount("nonexistent")).toBe(0);
+    });
+
+    it("appends to an empty deck", () => {
+      useDeckStateStore.getState().initDeck("d1", [], false);
+      useDeckStateStore.getState().addCardToTop("d1", "c1");
+      expect(useDeckStateStore.getState().getCards("d1")).toEqual(["c1"]);
+    });
+  });
+
+  describe("addCardsToTop", () => {
+    it("appends multiple card IDs to the deck's cards array", () => {
+      useDeckStateStore.getState().initDeck("d1", ["c1"], false);
+      useDeckStateStore.getState().addCardsToTop("d1", ["c2", "c3"]);
+      expect(useDeckStateStore.getState().getCards("d1")).toEqual(["c1", "c2", "c3"]);
+    });
+
+    it("is a no-op on non-existent deck", () => {
+      expect(() => useDeckStateStore.getState().addCardsToTop("nonexistent", ["c1", "c2"])).not.toThrow();
+      expect(useDeckStateStore.getState().getCardCount("nonexistent")).toBe(0);
+    });
+
+    it("appends multiple cards to an empty deck", () => {
+      useDeckStateStore.getState().initDeck("d1", [], false);
+      useDeckStateStore.getState().addCardsToTop("d1", ["c1", "c2", "c3"]);
+      expect(useDeckStateStore.getState().getCards("d1")).toEqual(["c1", "c2", "c3"]);
+    });
+  });
+
   describe("flipDeck", () => {
     it("reverses card IDs and toggles faceUp", () => {
       const cardIds = ["c1", "c2", "c3"];

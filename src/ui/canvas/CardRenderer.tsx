@@ -5,6 +5,10 @@ import KonvaLib from "konva";
 import type { CardComponent, Position } from "@/types/game";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 
+const HIGHLIGHT_STROKE = "#FFD700";
+const HIGHLIGHT_STROKE_WIDTH = 4;
+const HIGHLIGHT_FILL = "rgba(255, 215, 0, 0.12)";
+
 const CARD_WIDTH_RATIO = 0.08;
 const CARD_MIN_WIDTH = 55;
 const CARD_ASPECT = 1.4;
@@ -34,6 +38,7 @@ interface CardRendererProps {
   viewportHeight: number;
   onClick?: () => void;
   onBounceRef?: React.MutableRefObject<(() => void) | null>;
+  highlighted?: boolean;
   draggable?: boolean;
   onDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
@@ -49,6 +54,7 @@ function CardRenderer({
   viewportHeight,
   onClick,
   onBounceRef,
+  highlighted = false,
   draggable = false,
   onDragStart,
   onDragMove,
@@ -186,6 +192,20 @@ function CardRenderer({
       onDragEnd={handleDragEnd}
       shadowBlur={DEFAULT_SHADOW_BLUR}
     >
+      {highlighted && (
+        <Rect
+          width={cardWidth}
+          height={cardHeight}
+          cornerRadius={cornerRadius}
+          fill={HIGHLIGHT_FILL}
+          stroke={HIGHLIGHT_STROKE}
+          strokeWidth={HIGHLIGHT_STROKE_WIDTH}
+          shadowBlur={12}
+          shadowColor={HIGHLIGHT_STROKE}
+          shadowOpacity={0.6}
+          shadowEnabled={true}
+        />
+      )}
       <Rect
         width={cardWidth}
         height={cardHeight}
