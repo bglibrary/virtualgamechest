@@ -6,7 +6,11 @@ import { useDeckStateStore } from "@/store/deckStateStore";
 import { useCardPositionStore } from "@/store/cardPositionStore";
 import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import { useGameStore } from "@/store/gameStore";
-import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
+import CardRenderer, {
+  DEFAULT_CARD_WIDTH_RATIO,
+  DEFAULT_CARD_MIN_WIDTH,
+  DEFAULT_CARD_ASPECT,
+} from "@/ui/canvas/CardRenderer";
 import { WIGGLE_TOTAL_DURATION } from "@/ui/canvas/DeckRenderer";
 import DeckRenderer from "@/ui/canvas/DeckRenderer";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
@@ -45,6 +49,10 @@ function InteractiveDeck({
   const setDragging = useCardPositionStore((s) => s.setDragging);
   const bringToTop = useCardZOrderStore((s) => s.bringToTop);
   const removeComponent = useGameStore((s) => s.removeComponent);
+  const cardSizeConfig = useGameStore((state) => state.game?.cardSize);
+  const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+  const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+  const cardAspectRatio = cardSizeConfig?.aspectRatio ?? DEFAULT_CARD_ASPECT;
   const bounceRef = useRef<(() => void) | null>(null);
   const wiggleRef = useRef<(() => void) | null>(null);
   const shufflingRef = useRef(false);
@@ -115,8 +123,8 @@ function InteractiveDeck({
   const handleDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
       const node = e.target;
-      const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-      const cardHeight = cardWidth * CARD_ASPECT;
+      const cardWidth = Math.max(viewportWidth * cardWidthRatio, cardMinWidth);
+      const cardHeight = cardWidth * cardAspectRatio;
 
       const nx = (node.x() + cardWidth / 2) / viewportWidth;
       const ny = (node.y() + cardHeight / 2) / viewportHeight;
@@ -130,7 +138,7 @@ function InteractiveDeck({
       setDragging(false);
       onDragEndCallback?.(deckId);
     },
-    [deckId, viewportWidth, viewportHeight, updateCardPosition, setDragging, onDragEndCallback],
+    [deckId, viewportWidth, viewportHeight, cardWidthRatio, cardMinWidth, cardAspectRatio, updateCardPosition, setDragging, onDragEndCallback],
   );
 
   if (!isInitialized || cardCount === 0 || cardCount === 1) return null;

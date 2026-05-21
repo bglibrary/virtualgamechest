@@ -6,10 +6,11 @@ import type { ZoneComponent } from "@/types/game";
 import type { ZoneCardEntry } from "@/store/zoneStateStore";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 import CountBadge from "@/ui/canvas/CountBadge";
+import { useGameStore } from "@/store/gameStore";
 import {
-  CARD_WIDTH_RATIO,
-  CARD_MIN_WIDTH,
-  CARD_ASPECT,
+  DEFAULT_CARD_WIDTH_RATIO as CARD_WIDTH_RATIO,
+  DEFAULT_CARD_MIN_WIDTH as CARD_MIN_WIDTH,
+  DEFAULT_CARD_ASPECT as CARD_ASPECT,
   CORNER_RADIUS_RATIO,
   FONT_SIZE_RATIO,
   BORDER_WIDTH,
@@ -66,8 +67,13 @@ function ZoneRenderer({
   onTopCardDragMove,
   onTopCardDragEnd,
 }: ZoneRendererProps) {
-  const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-  const cardHeight = cardWidth * CARD_ASPECT;
+  const cardSizeConfig = useGameStore((state) => state.game?.cardSize);
+  const cardWidthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
+  const cardMinWidth = cardSizeConfig?.minWidth ?? CARD_MIN_WIDTH;
+  const cardAspectRatio = cardSizeConfig?.aspectRatio ?? CARD_ASPECT;
+
+  const cardWidth = Math.max(viewportWidth * cardWidthRatio, cardMinWidth);
+  const cardHeight = cardWidth * cardAspectRatio;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 

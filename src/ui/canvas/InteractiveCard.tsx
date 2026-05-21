@@ -4,8 +4,12 @@ import type { CardComponent } from "@/types/game";
 import { useCardStateStore } from "@/store/cardStateStore";
 import { useCardPositionStore } from "@/store/cardPositionStore";
 import { useCardZOrderStore } from "@/store/cardZOrderStore";
-import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
-import CardRenderer from "@/ui/canvas/CardRenderer";
+import CardRenderer, {
+  DEFAULT_CARD_WIDTH_RATIO,
+  DEFAULT_CARD_MIN_WIDTH,
+  DEFAULT_CARD_ASPECT,
+} from "@/ui/canvas/CardRenderer";
+import { useGameStore } from "@/store/gameStore";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
 import { logZOrder } from "@/utils/debugZOrder";
 
@@ -31,6 +35,10 @@ function InteractiveCard({
   const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
   const setDragging = useCardPositionStore((s) => s.setDragging);
   const bringToTop = useCardZOrderStore((s) => s.bringToTop);
+  const cardSizeConfig = useGameStore((state) => state.game?.cardSize);
+  const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+  const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+  const cardAspectRatio = cardSizeConfig?.aspectRatio ?? DEFAULT_CARD_ASPECT;
   const bounceRef = useRef<(() => void) | null>(null);
   const prevFaceUp = useRef(isFaceUp);
 
@@ -68,8 +76,8 @@ function InteractiveCard({
   const handleDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
       const node = e.target;
-      const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-      const cardHeight = cardWidth * CARD_ASPECT;
+      const cardWidth = Math.max(viewportWidth * cardWidthRatio, cardMinWidth);
+      const cardHeight = cardWidth * cardAspectRatio;
 
       const nx = (node.x() + cardWidth / 2) / viewportWidth;
       const ny = (node.y() + cardHeight / 2) / viewportHeight;
@@ -84,7 +92,7 @@ function InteractiveCard({
 
       onDragEndCallback?.(cardId);
     },
-    [cardId, viewportWidth, viewportHeight, updateCardPosition, setDragging, onDragEndCallback],
+    [cardId, viewportWidth, viewportHeight, cardWidthRatio, cardMinWidth, cardAspectRatio, updateCardPosition, setDragging, onDragEndCallback],
   );
 
   const handleDragMove = useCallback(

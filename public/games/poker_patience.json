@@ -1,110 +1,108 @@
 {
   "name": "Poker Patience",
   "version": "1.0.0",
+  "cardSize": {
+    "widthRatio": 0.05,
+    "minWidth": 60,
+    "aspectRatio": 1.4
+  },
+  "startup": [
+    { "type": "shuffle", "target": "draw-pile" }
+  ],
   "components": [
-    {
-      "type": "card",
-      "id": "ace-hearts",
-      "face": {
-        "type": "text",
-        "text": "As Cœur",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/01_of_hearts_A.svg/langfr-1280px-01_of_hearts_A.svg.png"
-      },
-      "back": {
-        "type": "text",
-        "text": "Dosdos",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Back09.svg/1280px-Back09.svg.png"
-      },
-      "position": { "x": 0.35, "y": 0.45 },
-      "actions": [{ "type": "flip", "label": "Retourner" }]
-    },
-    {
-      "type": "card",
-      "id": "king-spades",
-      "face": {
-        "type": "text",
-        "text": "Roi Pique"
-      },
-      "back": {
-        "type": "text",
-        "text": "Dosdos",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Back09.svg/1280px-Back09.svg.png"
-      },
-      "position": { "x": 0.38, "y": 0.48 },
-      "actions": [{ "type": "flip", "label": "Retourner" }]
-    },
-    {
-      "type": "card",
-      "id": "queen-diamonds",
-      "face": {
-        "type": "text",
-        "text": "Dame Carreau"
-      },
-      "position": { "x": 0.65, "y": 0.5 },
-      "actions": [{ "type": "flip", "label": "Retourner" }]
-    },
-    {
-      "type": "card",
-      "id": "jack-clubs",
-      "face": {
-        "type": "text",
-        "text": "Valet Trèfle"
-      },
-      "back": {
-        "type": "text",
-        "text": "Dos"
-      },
-      "position": { "x": 0.5, "y": 0.35 },
-      "actions": [{ "type": "flip", "label": "Retourner" }]
-    },
-    {
-      "type": "card",
-      "id": "ten-hearts",
-      "face": {
-        "type": "text",
-        "text": "10 Cœur"
-      },
-      "back": { "type": "text", "text": "Dos10C" },
-      "position": null,
-      "actions": [{ "type": "flip", "label": "Retourner" }]
-    },
-    {
-      "type": "card",
-      "id": "rp-1",
-      "face": { "type": "text", "text": "Roi Pique" },
-      "back": { "type": "text", "text": "DosRP" },
-      "position": null,
-      "actions": [{ "type": "flip", "label": "Retourner" }]
-    },
-    {
-      "type": "card",
-      "id": "rp-2",
-      "face": { "type": "text", "text": "Dame Carreau" },
-      "back": { "type": "text", "text": "DosDC" },
-      "position": null,
-      "actions": [{ "type": "flip", "label": "Retourner" }]
-    },
-    {
-      "type": "card",
-      "id": "rp-3",
-      "face": { "type": "text", "text": "Valet Trèfle" },
-      "back": { "type": "text", "text": "DosVT" },
-      "position": null,
-      "actions": [{ "type": "flip", "label": "Retourner" }]
-    },
+    { "type": "card", "id": "2-hearts", "face": { "type": "text", "text": "2 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "3-hearts", "face": { "type": "text", "text": "3 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "4-hearts", "face": { "type": "text", "text": "4 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "5-hearts", "face": { "type": "text", "text": "5 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "6-hearts", "face": { "type": "text", "text": "6 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "7-hearts", "face": { "type": "text", "text": "7 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "8-hearts", "face": { "type": "text", "text": "8 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "9-hearts", "face": { "type": "text", "text": "9 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "10-hearts", "face": { "type": "text", "text": "10 Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "jack-hearts", "face": { "type": "text", "text": "Valet Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "queen-hearts", "face": { "type": "text", "text": "Dame Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "king-hearts", "face": { "type": "text", "text": "Roi Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "ace-hearts", "face": { "type": "text", "text": "As Cœur" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "2-diamonds", "face": { "type": "text", "text": "2 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "3-diamonds", "face": { "type": "text", "text": "3 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "4-diamonds", "face": { "type": "text", "text": "4 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "5-diamonds", "face": { "type": "text", "text": "5 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "6-diamonds", "face": { "type": "text", "text": "6 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "7-diamonds", "face": { "type": "text", "text": "7 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "8-diamonds", "face": { "type": "text", "text": "8 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "9-diamonds", "face": { "type": "text", "text": "9 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "10-diamonds", "face": { "type": "text", "text": "10 Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "jack-diamonds", "face": { "type": "text", "text": "Valet Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "queen-diamonds", "face": { "type": "text", "text": "Dame Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "king-diamonds", "face": { "type": "text", "text": "Roi Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "ace-diamonds", "face": { "type": "text", "text": "As Carreau" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "2-clubs", "face": { "type": "text", "text": "2 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "3-clubs", "face": { "type": "text", "text": "3 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "4-clubs", "face": { "type": "text", "text": "4 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "5-clubs", "face": { "type": "text", "text": "5 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "6-clubs", "face": { "type": "text", "text": "6 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "7-clubs", "face": { "type": "text", "text": "7 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "8-clubs", "face": { "type": "text", "text": "8 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "9-clubs", "face": { "type": "text", "text": "9 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "10-clubs", "face": { "type": "text", "text": "10 Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "jack-clubs", "face": { "type": "text", "text": "Valet Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "queen-clubs", "face": { "type": "text", "text": "Dame Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "king-clubs", "face": { "type": "text", "text": "Roi Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "ace-clubs", "face": { "type": "text", "text": "As Trèfle" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "2-spades", "face": { "type": "text", "text": "2 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "3-spades", "face": { "type": "text", "text": "3 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "4-spades", "face": { "type": "text", "text": "4 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "5-spades", "face": { "type": "text", "text": "5 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "6-spades", "face": { "type": "text", "text": "6 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "7-spades", "face": { "type": "text", "text": "7 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "8-spades", "face": { "type": "text", "text": "8 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "9-spades", "face": { "type": "text", "text": "9 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "10-spades", "face": { "type": "text", "text": "10 Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "jack-spades", "face": { "type": "text", "text": "Valet Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "queen-spades", "face": { "type": "text", "text": "Dame Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "king-spades", "face": { "type": "text", "text": "Roi Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "card", "id": "ace-spades", "face": { "type": "text", "text": "As Pique" }, "position": null, "actions": [{ "type": "flip", "label": "Retourner" }] },
+    { "type": "zone", "id": "z-1-1", "position": { "x": 0.30, "y": 0.10 } },
+    { "type": "zone", "id": "z-1-2", "position": { "x": 0.40, "y": 0.10 } },
+    { "type": "zone", "id": "z-1-3", "position": { "x": 0.50, "y": 0.10 } },
+    { "type": "zone", "id": "z-1-4", "position": { "x": 0.60, "y": 0.10 } },
+    { "type": "zone", "id": "z-1-5", "position": { "x": 0.70, "y": 0.10 } },
+    { "type": "zone", "id": "z-2-1", "position": { "x": 0.30, "y": 0.30 } },
+    { "type": "zone", "id": "z-2-2", "position": { "x": 0.40, "y": 0.30 } },
+    { "type": "zone", "id": "z-2-3", "position": { "x": 0.50, "y": 0.30 } },
+    { "type": "zone", "id": "z-2-4", "position": { "x": 0.60, "y": 0.30 } },
+    { "type": "zone", "id": "z-2-5", "position": { "x": 0.70, "y": 0.30 } },
+    { "type": "zone", "id": "z-3-1", "position": { "x": 0.30, "y": 0.50 } },
+    { "type": "zone", "id": "z-3-2", "position": { "x": 0.40, "y": 0.50 } },
+    { "type": "zone", "id": "z-3-3", "position": { "x": 0.50, "y": 0.50 } },
+    { "type": "zone", "id": "z-3-4", "position": { "x": 0.60, "y": 0.50 } },
+    { "type": "zone", "id": "z-3-5", "position": { "x": 0.70, "y": 0.50 } },
+    { "type": "zone", "id": "z-4-1", "position": { "x": 0.30, "y": 0.70 } },
+    { "type": "zone", "id": "z-4-2", "position": { "x": 0.40, "y": 0.70 } },
+    { "type": "zone", "id": "z-4-3", "position": { "x": 0.50, "y": 0.70 } },
+    { "type": "zone", "id": "z-4-4", "position": { "x": 0.60, "y": 0.70 } },
+    { "type": "zone", "id": "z-4-5", "position": { "x": 0.70, "y": 0.70 } },
+    { "type": "zone", "id": "z-5-1", "position": { "x": 0.30, "y": 0.90 } },
+    { "type": "zone", "id": "z-5-2", "position": { "x": 0.40, "y": 0.90 } },
+    { "type": "zone", "id": "z-5-3", "position": { "x": 0.50, "y": 0.90 } },
+    { "type": "zone", "id": "z-5-4", "position": { "x": 0.60, "y": 0.90 } },
+    { "type": "zone", "id": "z-5-5", "position": { "x": 0.70, "y": 0.90 } },
     {
       "type": "deck",
       "id": "draw-pile",
-      "cards": ["rp-1", "rp-2", "rp-3", "ten-hearts"],
-      "position": { "x": 0.8, "y": 0.5 },
+      "cards": [
+        "2-hearts", "3-hearts", "4-hearts", "5-hearts", "6-hearts", "7-hearts", "8-hearts", "9-hearts", "10-hearts", "jack-hearts", "queen-hearts", "king-hearts", "ace-hearts",
+        "2-diamonds", "3-diamonds", "4-diamonds", "5-diamonds", "6-diamonds", "7-diamonds", "8-diamonds", "9-diamonds", "10-diamonds", "jack-diamonds", "queen-diamonds", "king-diamonds", "ace-diamonds",
+        "2-clubs", "3-clubs", "4-clubs", "5-clubs", "6-clubs", "7-clubs", "8-clubs", "9-clubs", "10-clubs", "jack-clubs", "queen-clubs", "king-clubs", "ace-clubs",
+        "2-spades", "3-spades", "4-spades", "5-spades", "6-spades", "7-spades", "8-spades", "9-spades", "10-spades", "jack-spades", "queen-spades", "king-spades", "ace-spades"
+      ],
+      "position": { "x": 0.1, "y": 0.5 },
       "faceUp": false,
-      "actions": [{ "type": "shuffle", "label": "Mélanger" }, { "type": "flip", "label": "Retourner" }, { "type": "draw-face-up", "label": "Piocher face visible" }, { "type": "draw-face-down", "label": "Piocher face cachée" }, { "type": "draw-to-zone", "targetZone": "discard", "faceUp": true, "label": "Défausser" }, { "type": "composite", "label": "Mél. + pioche 2", "steps": [{ "type": "shuffle" }, { "type": "draw-face-down" }, { "type": "draw-face-down" }] }]
-    },
-    {
-      "type": "zone",
-      "id": "discard",
-      "position": { "x": 0.2, "y": 0.4 },
-      "label": "Défausse"
+      "actions": [
+        { "type": "shuffle", "label": "Mélanger" },
+        { "type": "flip", "label": "Retourner" },
+        { "type": "draw-face-up", "label": "Piocher" }
+      ]
     }
   ]
 }

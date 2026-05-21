@@ -9,9 +9,9 @@ const HIGHLIGHT_STROKE = "#FFD700";
 const HIGHLIGHT_STROKE_WIDTH = 4;
 const HIGHLIGHT_FILL = "rgba(255, 215, 0, 0.12)";
 
-const CARD_WIDTH_RATIO = 0.08;
-const CARD_MIN_WIDTH = 55;
-const CARD_ASPECT = 1.4;
+export const DEFAULT_CARD_WIDTH_RATIO = 0.08;
+export const DEFAULT_CARD_MIN_WIDTH = 55;
+export const DEFAULT_CARD_ASPECT = 1.4;
 const CORNER_RADIUS_RATIO = 0.05;
 const FONT_SIZE_RATIO = 0.22;
 const BORDER_WIDTH = 2;
@@ -46,6 +46,8 @@ interface CardRendererProps {
   positionOverride?: Position;
 }
 
+import { useGameStore } from "@/store/gameStore";
+
 function CardRenderer({
   component,
   cardId,
@@ -61,8 +63,13 @@ function CardRenderer({
   onDragEnd,
   positionOverride,
 }: CardRendererProps) {
-  const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-  const cardHeight = cardWidth * CARD_ASPECT;
+  const cardSizeConfig = useGameStore((state) => state.game?.cardSize);
+  const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+  const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+  const cardAspectRatio = cardSizeConfig?.aspectRatio ?? DEFAULT_CARD_ASPECT;
+
+  const cardWidth = Math.max(viewportWidth * cardWidthRatio, cardMinWidth);
+  const cardHeight = cardWidth * cardAspectRatio;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 
@@ -221,9 +228,9 @@ function CardRenderer({
 
 export default CardRenderer;
 export {
-  CARD_WIDTH_RATIO,
-  CARD_MIN_WIDTH,
-  CARD_ASPECT,
+  DEFAULT_CARD_WIDTH_RATIO as CARD_WIDTH_RATIO,
+  DEFAULT_CARD_MIN_WIDTH as CARD_MIN_WIDTH,
+  DEFAULT_CARD_ASPECT as CARD_ASPECT,
   CORNER_RADIUS_RATIO,
   FONT_SIZE_RATIO,
   BORDER_WIDTH,

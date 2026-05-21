@@ -10,10 +10,15 @@ import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ZoneRenderer from "@/ui/canvas/ZoneRenderer";
 import { Hand, Combine } from "lucide-react";
+import { executeAction, executeCompositeAction } from "@/engine/actionExecutor";
 import ActionBar from "@/ui/html/ActionBar";
 import type { ActionButton } from "@/ui/html/ActionBar";
 import { logZOrder, initZOrderDebug } from "@/utils/debugZOrder";
-import { CARD_WIDTH_RATIO, CARD_MIN_WIDTH, CARD_ASPECT } from "@/ui/canvas/CardRenderer";
+import {
+  CARD_WIDTH_RATIO as DEFAULT_CARD_WIDTH_RATIO,
+  CARD_MIN_WIDTH as DEFAULT_CARD_MIN_WIDTH,
+  CARD_ASPECT as DEFAULT_CARD_ASPECT,
+} from "@/ui/canvas/CardRenderer";
 import type { ZoneSnapInfo } from "@/utils/snapDetection";
 import { findNearestSnapZone } from "@/utils/snapDetection";
 import type { MergeTargetInfo } from "@/utils/mergeDetection";
@@ -48,35 +53,13 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
 useEffect(() => {
     initZOrderDebug();
     if (game) {
-      const currentDeckIds = Object.keys(useDeckStateStore.getState().cards);
-      const currentZoneIds = Object.keys(useZoneStateStore.getState().cards);
       const componentIds = game.components
         .filter((c) => c.type !== "card" || c.position !== null)
         .map((c) => c.id);
       logZOrder("TableCanvas initZOrder", componentIds);
       initZOrder(componentIds);
-      const newDeckIds = new Set(
-        game.components.filter((c) => c.type === "deck").map((c) => c.id),
-      );
-      const staleDeckIds = currentDeckIds.filter((id) => !newDeckIds.has(id));
-      for (const id of staleDeckIds) {
-        useDeckStateStore.getState().removeDeck(id);
-      }
-      const staleZoneIds = currentZoneIds.filter(
-        (id) => !game.components.some((c) => c.type === "zone" && c.id === id),
-      );
-      for (const id of staleZoneIds) {
-        useZoneStateStore.getState().removeZone(id);
-      }
-      game.components.forEach((component) => {
-        if (component.type === "deck" && !currentDeckIds.includes(component.id)) {
-          initDeck(component.id, component.cards, component.faceUp ?? false);
-        } else if (component.type === "zone" && !currentZoneIds.includes(component.id)) {
-          initZone(component.id);
-        }
-      });
     }
-  }, [game, initZOrder, initDeck, initZone]);
+  }, [game, initZOrder]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -92,10 +75,14 @@ useEffect(() => {
 
   const zoneComponents = game?.components.filter((c) => c.type === "zone") ?? [];
   const zoneSnapInfos: ZoneSnapInfo[] = useMemo(() => {
+    const cardSizeConfig = game?.cardSize;
+    const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+    const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+
     return zoneComponents.map((zone, index) => {
       const zoneX = zone.position.x * size.width;
       const zoneY = zone.position.y * size.height;
-      const snapRadius = zone.snapRadius ?? (Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH) * 0.75);
+      const snapRadius = zone.snapRadius ?? (Math.max(size.width * cardWidthRatio, cardMinWidth) * 0.75);
       return {
         zoneId: zone.id,
         centerX: zoneX,
@@ -104,292 +91,31 @@ useEffect(() => {
         componentIndex: index,
       };
     });
-  }, [zoneComponents, size]);
+  }, [zoneComponents, size, game?.cardSize]);
 
-  const handleFlip = useCallback(() => {
-    if (selectedComponentId === null) return;
-    const selectedComponent = game?.components.find(
-      (c) => c.id === selectedComponentId,
-    );
-    if (selectedComponent?.type === "card") {
-      flipCard(selectedComponentId);
-    } else if (selectedComponent?.type === "deck") {
-      flipDeck(selectedComponentId);
-    }
-    selectComponent(null);
-  }, [selectedComponentId, flipCard, flipDeck, selectComponent, game]);
-
-const handleDraw = useCallback(
-    (faceUp: boolean) => {
-      const deckId = selectedComponentId;
-      if (!deckId) return;
-      const game = useGameStore.getState().game;
-      if (!game) return;
-      const selectedComponent = game.components.find((c) => c.id === deckId);
-      if (!selectedComponent || selectedComponent.type !== "deck") return;
-
-      const deckComp = selectedComponent;
-      const deckPosition = useCardPositionStore.getState().getCardPosition(deckId) ?? deckComp.position;
-      const size = { width: window.innerWidth, height: window.innerHeight };
-      const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-      const cardHeight = cardWidth * CARD_ASPECT;
-
-      const result = useDeckStateStore.getState().drawCard(deckId, faceUp, {
-        deckPosition,
-        cardWidthPx: cardWidth,
-        cardHeightPx: cardHeight,
-        viewportWidth: size.width,
-        viewportHeight: size.height,
-      });
-
-      if (!result) return;
-
-      useGameStore.getState().updateComponentPosition(result.cardId, result.position);
-      useCardPositionStore.getState().updateCardPosition(result.cardId, result.position);
-      // Merge-created decks (merge--N): preserve card's existing faceUp (don't override)
-      if (!deckId.startsWith("merge--")) {
-        useCardStateStore.getState().setFaceUp(result.cardId, faceUp);
-      }
-
-      logZOrder(`TableCanvas handleDraw → bringToTop("${result.cardId}") deckDegenerates=${result.deckDegenerates}`);
-      useCardZOrderStore.getState().bringToTop(result.cardId);
-
-      if (result.deckDegenerates) {
-        const lastCardId = useDeckStateStore.getState().getCards(deckId)[0];
-        if (lastCardId) {
-          const deckPosition = useCardPositionStore.getState().getCardPosition(deckId) ?? deckComp.position;
-          useGameStore.getState().updateComponentPosition(lastCardId, deckPosition);
-          useCardPositionStore.getState().updateCardPosition(lastCardId, deckPosition);
-          useCardStateStore.getState().setFaceUp(lastCardId, useDeckStateStore.getState().isFaceUp(deckId));
-          logZOrder(`TableCanvas handleDraw deckDegenerates → replace("${deckId}", "${lastCardId}")`);
-          useCardZOrderStore.getState().replace(deckId, lastCardId);
-        }
-        useGameStore.getState().removeComponent(deckId);
-        useDeckStateStore.getState().removeDeck(deckId);
-      }
-
-      useCardStateStore.getState().selectComponent(null);
-    },
-    [selectedComponentId],
-  );
-
-  const handleDrawFaceUp = useCallback(() => handleDraw(true), [handleDraw]);
-  const handleDrawFaceDown = useCallback(() => handleDraw(false), [handleDraw]);
-
-  const handleDrawToZoneGen = useCallback(
-    (zoneId: string, faceUp: boolean) => {
-      const deckId = selectedComponentId;
-      if (!deckId) return;
-      const gameState = useGameStore.getState().game;
-      if (!gameState) return;
-      const selectedComponent = gameState.components.find((c) => c.id === deckId);
-      if (!selectedComponent || selectedComponent.type !== "deck") return;
-
-      const zoneComponent = gameState.components.find(
-        (c) => c.type === "zone" && c.id === zoneId,
-      );
-      if (!zoneComponent || zoneComponent.type !== "zone") {
-        handleDraw(faceUp);
-        return;
-      }
-
-      const deckComp = selectedComponent;
-      const deckPosition = useCardPositionStore.getState().getCardPosition(deckId) ?? deckComp.position;
-      const size = { width: window.innerWidth, height: window.innerHeight };
-      const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-      const cardHeight = cardWidth * CARD_ASPECT;
-
-      const result = useDeckStateStore.getState().drawCard(deckId, faceUp, {
-        deckPosition,
-        cardWidthPx: cardWidth,
-        cardHeightPx: cardHeight,
-        viewportWidth: size.width,
-        viewportHeight: size.height,
-      });
-
-      if (!result) return;
-
-      const cardComponent = gameState.components.find((c) => c.id === result.cardId);
-      if (cardComponent && cardComponent.type === "card") {
-        const cardEntry = {
-          id: result.cardId,
-          face: cardComponent.face,
-          back: cardComponent.back,
-        };
-        addCard(zoneId, cardEntry);
-        useGameStore.getState().removeComponent(result.cardId);
-        useCardPositionStore.getState().updateCardPosition(result.cardId, { x: 0, y: 0 });
-      }
-
-      // Merge-created decks (merge--N): preserve card's existing faceUp
-      if (!deckId.startsWith("merge--")) {
-        useCardStateStore.getState().setFaceUp(result.cardId, faceUp);
-      }
-      useCardZOrderStore.getState().bringToTop(result.cardId);
-
-      if (result.deckDegenerates) {
-        const lastCardId = useDeckStateStore.getState().getCards(deckId)[0];
-        if (lastCardId) {
-          const deckPosition = useCardPositionStore.getState().getCardPosition(deckId) ?? deckComp.position;
-          useGameStore.getState().updateComponentPosition(lastCardId, deckPosition);
-          useCardPositionStore.getState().updateCardPosition(lastCardId, deckPosition);
-          useCardStateStore.getState().setFaceUp(lastCardId, useDeckStateStore.getState().isFaceUp(deckId));
-          useCardZOrderStore.getState().replace(deckId, lastCardId);
-        }
-        useGameStore.getState().removeComponent(deckId);
-        useDeckStateStore.getState().removeDeck(deckId);
-      }
-
-      useCardStateStore.getState().selectComponent(null);
-    },
-    [selectedComponentId, addCard, handleDraw],
-  );
-
-  const handleShuffle = useCallback(() => {
-    if (!selectedComponentId) return;
-    const game = useGameStore.getState().game;
-    if (!game) return;
-    const selectedComponent = game.components.find((c) => c.id === selectedComponentId);
-    if (selectedComponent?.type !== "deck") return;
-    useDeckStateStore.getState().shuffleDeck(selectedComponentId);
+  const handleAction = useCallback(async (action: { type: string; targetZone?: string; faceUp?: boolean }) => {
+    const componentId = selectedComponentId;
+    if (!componentId) return;
+    
+    await executeAction(componentId, action);
     selectComponent(null);
   }, [selectedComponentId, selectComponent]);
 
   const handleComposite = useCallback(
-    (steps: { type: string; targetZone?: string; faceUp?: boolean }[]) => {
+    async (action: { type: "composite"; steps: any[] }) => {
       const componentId = selectedComponentId;
       if (!componentId) return;
       if (executingActionRef.current) return;
       executingActionRef.current = true;
 
-      const unlock = () => { executingActionRef.current = false; };
-
-      // Execute steps directly against stores, not via handlers that deselect.
-      // Only deselect at the end.
-      let stepIndex = 0;
-      const runStep = () => {
-        if (stepIndex >= steps.length) {
-          unlock();
-          selectComponent(null);
-          return;
-        }
-        const step = steps[stepIndex];
-        stepIndex++;
-
-        const gameState = useGameStore.getState().game;
-        if (!gameState) {
-          unlock();
-          selectComponent(null);
-          return;
-        }
-
-        // Check if component still exists (e.g., deck removed by degeneration)
-        const comp = gameState.components.find((c) => c.id === componentId);
-        if (!comp) {
-          unlock();
-          selectComponent(null);
-          return;
-        }
-
-        const offsetParams = () => {
-          const s = { width: window.innerWidth, height: window.innerHeight };
-          const cardW = Math.max(s.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-          const deckPos = comp.type === "deck" ? comp.position : { x: 0.5, y: 0.5 };
-          return {
-            deckPosition: deckPos,
-            cardWidthPx: cardW,
-            cardHeightPx: cardW * CARD_ASPECT,
-            viewportWidth: s.width,
-            viewportHeight: s.height,
-          };
-        };
-
-        switch (step.type) {
-          case "flip": {
-            if (comp.type === "card") {
-              flipCard(componentId);
-            } else if (comp.type === "deck") {
-              flipDeck(componentId);
-            }
-            break;
-          }
-          case "draw-face-up":
-          case "draw-face-down": {
-            if (comp.type !== "deck") break;
-            const faceUp = step.type === "draw-face-up";
-            const result = useDeckStateStore.getState().drawCard(componentId, faceUp, offsetParams());
-            if (!result) break;
-            useGameStore.getState().updateComponentPosition(result.cardId, result.position);
-            useCardPositionStore.getState().updateCardPosition(result.cardId, result.position);
-            const isMergeDeck = componentId.startsWith("merge--");
-            if (!isMergeDeck) {
-              useCardStateStore.getState().setFaceUp(result.cardId, faceUp);
-            }
-            useCardZOrderStore.getState().bringToTop(result.cardId);
-            if (result.deckDegenerates) {
-              const lastCardId = useDeckStateStore.getState().getCards(componentId)[0];
-              if (lastCardId) {
-                const dp = comp.position;
-                useGameStore.getState().updateComponentPosition(lastCardId, dp);
-                useCardPositionStore.getState().updateCardPosition(lastCardId, dp);
-                useCardStateStore.getState().setFaceUp(lastCardId, useDeckStateStore.getState().isFaceUp(componentId));
-                useCardZOrderStore.getState().replace(componentId, lastCardId);
-              }
-              useGameStore.getState().removeComponent(componentId);
-              useDeckStateStore.getState().removeDeck(componentId);
-            }
-            break;
-          }
-          case "draw-to-zone": {
-            if (comp.type !== "deck" || step.targetZone === undefined) break;
-            const zoneComp = gameState.components.find((c) => c.type === "zone" && c.id === step.targetZone);
-            if (!zoneComp || zoneComp.type !== "zone") break;
-            const dzFaceUp = step.faceUp ?? true;
-            const dzResult = useDeckStateStore.getState().drawCard(componentId, dzFaceUp, offsetParams());
-            if (!dzResult) break;
-            const cardComp = gameState.components.find((c) => c.id === dzResult.cardId);
-            if (cardComp && cardComp.type === "card") {
-              const entry = { id: dzResult.cardId, face: cardComp.face, back: cardComp.back };
-              addCard(step.targetZone, entry);
-              useGameStore.getState().removeComponent(dzResult.cardId);
-              useCardPositionStore.getState().updateCardPosition(dzResult.cardId, { x: 0, y: 0 });
-            }
-            const isMergeDeck = componentId.startsWith("merge--");
-            if (!isMergeDeck) {
-              useCardStateStore.getState().setFaceUp(dzResult.cardId, dzFaceUp);
-            }
-            useCardZOrderStore.getState().bringToTop(dzResult.cardId);
-            if (dzResult.deckDegenerates) {
-              const lastCardId = useDeckStateStore.getState().getCards(componentId)[0];
-              if (lastCardId) {
-                const dp = comp.position;
-                useGameStore.getState().updateComponentPosition(lastCardId, dp);
-                useCardPositionStore.getState().updateCardPosition(lastCardId, dp);
-                useCardStateStore.getState().setFaceUp(lastCardId, useDeckStateStore.getState().isFaceUp(componentId));
-                useCardZOrderStore.getState().replace(componentId, lastCardId);
-              }
-              useGameStore.getState().removeComponent(componentId);
-              useDeckStateStore.getState().removeDeck(componentId);
-            }
-            break;
-          }
-          case "shuffle": {
-            if (comp.type === "deck") {
-              useDeckStateStore.getState().shuffleDeck(componentId);
-            }
-            break;
-          }
-          default:
-            break;
-        }
-
-        // Schedule next step after delay for animations
-        setTimeout(runStep, 150);
-      };
-
-      runStep();
+      try {
+        await executeCompositeAction(componentId, action);
+      } finally {
+        executingActionRef.current = false;
+        selectComponent(null);
+      }
     },
-    [selectedComponentId, selectComponent, flipCard, flipDeck, addCard],
+    [selectedComponentId, selectComponent],
   );
 
   const getDraggedFaceUp = useCallback((id: string): boolean => {
@@ -404,7 +130,12 @@ const handleDraw = useCallback(
     (excludeId: string): MergeTargetInfo[] => {
       const state = useGameStore.getState();
       if (!state.game) return [];
-      const cardW = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
+
+      const cardSizeConfig = state.game.cardSize;
+      const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+      const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+
+      const cardW = Math.max(size.width * cardWidthRatio, cardMinWidth);
       const r = cardW / 2;
       const result: MergeTargetInfo[] = [];
       for (const c of state.game.components) {
@@ -441,8 +172,13 @@ const handleDraw = useCallback(
 
   const handleDragMoveCommon = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>, draggedId: string) => {
-      const cardW = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-      const cardH = cardW * CARD_ASPECT;
+      const cardSizeConfig = game?.cardSize;
+      const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+      const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+      const cardAspectRatio = cardSizeConfig?.aspectRatio ?? DEFAULT_CARD_ASPECT;
+
+      const cardW = Math.max(size.width * cardWidthRatio, cardMinWidth);
+      const cardH = cardW * cardAspectRatio;
       const cx = e.target.x() + cardW / 2;
       const cy = e.target.y() + cardH / 2;
 
@@ -614,42 +350,25 @@ const handleDraw = useCallback(
     const selectedComponent = game.components.find((c) => c.id === selectedComponentId);
     if (!selectedComponent) return [];
     const buttons: ActionButton[] = [];
-    if (selectedComponent.type === "card") {
+    if (selectedComponent.type === "card" || selectedComponent.type === "deck") {
       for (const action of selectedComponent.actions) {
-        if (action.type === "flip") {
-          buttons.push({ id: action.type, label: action.label, onClick: handleFlip });
-        }
-      }
-    } else if (selectedComponent.type === "deck") {
-      for (const action of selectedComponent.actions) {
-        if (action.type === "flip") {
-          buttons.push({ id: action.type, label: action.label, onClick: handleFlip });
-        } else if (action.type === "draw-face-up") {
-          buttons.push({ id: action.type, label: action.label, onClick: handleDrawFaceUp });
-        } else if (action.type === "draw-face-down") {
-          const isMergeDeck = selectedComponentId.startsWith("merge--");
+        if (action.type === "composite") {
           buttons.push({
             id: action.type,
             label: action.label,
-            onClick: handleDrawFaceDown,
-            ...(isMergeDeck ? { iconOverride: Hand } : {}),
-          });
-        } else if (action.type === "shuffle") {
-          buttons.push({ id: action.type, label: action.label, onClick: handleShuffle });
-        } else if (action.type === "draw-to-zone") {
-          const drawToZoneAction = action as { type: "draw-to-zone"; label: string; targetZone: string; faceUp: boolean };
-          buttons.push({
-            id: action.type,
-            label: drawToZoneAction.label,
-            onClick: () => handleDrawToZoneGen(drawToZoneAction.targetZone, drawToZoneAction.faceUp),
-          });
-        } else if (action.type === "composite") {
-          const compositeAction = action as { type: "composite"; label: string; steps: { type: string; targetZone?: string; faceUp?: boolean }[] };
-          buttons.push({
-            id: action.type,
-            label: compositeAction.label,
-            onClick: () => handleComposite(compositeAction.steps),
+            onClick: () => handleComposite(action),
             iconOverride: Combine,
+          });
+        } else {
+          const isMergeDeckDraw = selectedComponent.type === "deck" && 
+                                selectedComponentId.startsWith("merge--") && 
+                                action.type === "draw-face-down";
+          
+          buttons.push({
+            id: action.type,
+            label: action.label,
+            onClick: () => handleAction(action),
+            ...(isMergeDeckDraw ? { iconOverride: Hand } : {}),
           });
         }
       }
@@ -685,7 +404,10 @@ const handleDraw = useCallback(
     selectedComponentId !== null &&
     selectedComponent !== undefined;
 
-  const cardWidth = Math.max(size.width * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
+  const cardSizeConfig = game?.cardSize;
+  const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+  const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+  const cardWidth = Math.max(size.width * cardWidthRatio, cardMinWidth);
 
   const ACTION_BAR_GAP = 8;
   const ACTION_BAR_MARGIN = 4;

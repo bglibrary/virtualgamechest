@@ -2,14 +2,14 @@ import { useRef, useEffect, useCallback } from "react";
 import { Rect, Text, Group } from "react-konva";
 import type Konva from "konva";
 import KonvaLib from "konva";
-import type { DeckComponent } from "@/types/game";
+import type { DeckComponent, Position, CardComponent } from "@/types/game";
 import { useGameStore } from "@/store/gameStore";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 import CountBadge from "@/ui/canvas/CountBadge";
 import {
-  CARD_WIDTH_RATIO,
-  CARD_MIN_WIDTH,
-  CARD_ASPECT,
+  DEFAULT_CARD_WIDTH_RATIO as CARD_WIDTH_RATIO,
+  DEFAULT_CARD_MIN_WIDTH as CARD_MIN_WIDTH,
+  DEFAULT_CARD_ASPECT as CARD_ASPECT,
   CORNER_RADIUS_RATIO,
   FONT_SIZE_RATIO,
   BORDER_WIDTH,
@@ -74,11 +74,16 @@ function DeckRenderer({
   positionOverride,
 }: DeckRendererProps) {
   const game = useGameStore((s) => s.game);
+  const cardSizeConfig = game?.cardSize;
+  const cardWidthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
+  const cardMinWidth = cardSizeConfig?.minWidth ?? CARD_MIN_WIDTH;
+  const cardAspectRatio = cardSizeConfig?.aspectRatio ?? CARD_ASPECT;
+
   const topCard = game?.components.find(
-    (c) => c.id === topCardId && c.type === "card",
+    (c): c is CardComponent => c.id === topCardId && c.type === "card",
   );
-  const cardWidth = Math.max(viewportWidth * CARD_WIDTH_RATIO, CARD_MIN_WIDTH);
-  const cardHeight = cardWidth * CARD_ASPECT;
+  const cardWidth = Math.max(viewportWidth * cardWidthRatio, cardMinWidth);
+  const cardHeight = cardWidth * cardAspectRatio;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 

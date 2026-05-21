@@ -94,6 +94,42 @@ const deckActionSchema = z.discriminatedUnion("type", [
   deckCompositeSchema,
 ]);
 
+// ─── Startup sequence schemas (F12) ───
+
+const startupStepSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("flip"),
+    target: z.string().min(1),
+  }),
+  z.object({
+    type: z.literal("draw-face-up"),
+    target: z.string().min(1),
+  }),
+  z.object({
+    type: z.literal("draw-face-down"),
+    target: z.string().min(1),
+  }),
+  z.object({
+    type: z.literal("shuffle"),
+    target: z.string().min(1),
+  }),
+  z.object({
+    type: z.literal("draw-to-zone"),
+    target: z.string().min(1),
+    targetZone: z.string().min(1),
+    faceUp: z.boolean(),
+  }),
+  z.object({
+    type: z.literal("composite"),
+    target: z.string().min(1),
+    // For composite, we refer to a composite action defined on the target component
+    // or just execute a predefined sequence? The spec says:
+    // "Each step targets a specific component by ID and executes an action (or composite action) on it."
+    // Let's allow executing a specific named action from the component's actions.
+    actionLabel: z.string().min(1),
+  }),
+]);
+
 export const imageUrlSchema = z.string().min(1).refine(
   (url) => {
     const supported = [".png", ".jpg", ".jpeg", ".svg"];
@@ -158,10 +194,18 @@ export const componentSchema = z.discriminatedUnion("type", [
   zoneComponentSchema,
 ]);
 
+export const cardSizeSchema = z.object({
+  widthRatio: z.number().min(0.01).max(0.5).default(0.08),
+  minWidth: z.number().min(10).default(55),
+  aspectRatio: z.number().min(0.5).max(2).default(1.4),
+});
+
 export const gameDefinitionSchema = z.object({
   name: z.string().min(1),
   version: z.string().min(1),
+  cardSize: cardSizeSchema.optional(),
   components: z.array(componentSchema).min(1),
+  startup: z.array(startupStepSchema).optional(),
 }).refine(
   (data) => {
     const ids = data.components.map((c) => c.id);
@@ -220,4 +264,5 @@ export type DeckComponent = z.infer<typeof deckComponentSchema>;
 export type CardComponent = z.infer<typeof cardComponentSchema>;
 export type ZoneComponent = z.infer<typeof zoneComponentSchema>;
 export type GameComponent = z.infer<typeof componentSchema>;
+export type StartupStep = z.infer<typeof startupStepSchema>;
 export type GameDefinition = z.infer<typeof gameDefinitionSchema>;

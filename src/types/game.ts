@@ -1,3 +1,4 @@
+import type { cardSizeSchema } from "@/schemas/game";
 export type {
   CardFace,
   CardBack,
@@ -8,8 +9,12 @@ export type {
   CardComponent,
   ZoneComponent,
   GameComponent,
+  StartupStep,
   GameDefinition,
 } from "@/schemas/game";
+
+import { z } from "zod/v4";
+export type CardSize = z.infer<typeof cardSizeSchema>;
 
 export type CardCompositeStep = { type: "flip" };
 export type DeckCompositeStep =
