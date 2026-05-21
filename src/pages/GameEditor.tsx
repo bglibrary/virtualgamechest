@@ -5,6 +5,7 @@ import { useGameValidation } from "@/editor/validation/useGameValidation";
 import { getGameById, getGameUrl } from "@/editor/data/gameRegistry";
 import { loadGame } from "@/engine/loadGame";
 import ComponentTree from "@/editor/components/ComponentTree";
+import PropertyPanel from "@/editor/components/forms/PropertyPanel";
 import type { GameDefinition } from "@/types/game";
 
 export default function GameEditor() {
@@ -119,14 +120,9 @@ export default function GameEditor() {
           </div>
         </main>
 
-        {/* Right panel: Properties (empty in Phase 1) */}
-        <aside className="w-72 border-l border-gray-800 bg-gray-900 p-4">
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Properties
-          </h2>
-          <p className="text-sm text-gray-600">
-            Select a component to edit its properties.
-          </p>
+        {/* Right panel: Properties */}
+        <aside className="w-72 overflow-y-auto border-l border-gray-800 bg-gray-900 p-4">
+          <PropertyPanel />
         </aside>
       </div>
     </div>
