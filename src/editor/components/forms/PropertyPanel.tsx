@@ -3,6 +3,7 @@ import { useEditorValidationStore } from "@/editor/stores/editorValidationStore"
 import CardForm from "./CardForm";
 import DeckForm from "./DeckForm";
 import ZoneForm from "./ZoneForm";
+import StartupEditor from "./StartupEditor";
 
 export default function PropertyPanel() {
   const game = useEditorStore((s) => s.game);
@@ -19,8 +20,11 @@ export default function PropertyPanel() {
 
   if (!selectedId) {
     return (
-      <div className="text-sm text-gray-600">
-        Select a component to edit its properties.
+      <div className="space-y-4">
+        <div className="text-sm text-gray-600">
+          Select a component to edit its properties, or configure the startup sequence below.
+        </div>
+        <StartupEditor />
       </div>
     );
   }
