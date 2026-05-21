@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import type { CardComponent } from "@/types/game";
 import { useEditorStore } from "@/editor/stores/editorStore";
+import ActionEditor from "./ActionEditor";
 
 interface Props {
   component: CardComponent;
@@ -103,6 +104,9 @@ export default function CardForm({ component }: Props) {
           </Field>
         </>
       )}
+
+      <hr className="border-gray-800" />
+      <ActionEditor componentId={component.id} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import type { DeckComponent, GameComponent } from "@/types/game";
 import { useEditorStore } from "@/editor/stores/editorStore";
+import ActionEditor from "./ActionEditor";
 
 interface Props {
   component: DeckComponent;
@@ -98,6 +99,9 @@ export default function DeckForm({ component }: Props) {
           ))}
         </div>
       </Field>
+
+      <hr className="border-gray-800" />
+      <ActionEditor componentId={component.id} />
     </div>
   );
 }
