@@ -5,6 +5,7 @@ import { useGameValidation } from "@/editor/validation/useGameValidation";
 import { getGameById, getGameUrl } from "@/editor/data/gameRegistry";
 import { loadGame } from "@/engine/loadGame";
 import ComponentTree from "@/editor/components/ComponentTree";
+import EditorCanvas from "@/editor/components/forms/EditorCanvas";
 import PropertyPanel from "@/editor/components/forms/PropertyPanel";
 import type { GameDefinition } from "@/types/game";
 
@@ -111,13 +112,9 @@ export default function GameEditor() {
           <ComponentTree />
         </aside>
 
-        {/* Center panel: Canvas (empty in Phase 1) */}
-        <main className="flex-1 bg-gray-950 p-4">
-          <div className="flex h-full items-center justify-center rounded-lg border-2 border-dashed border-gray-800">
-            <p className="text-sm text-gray-600">
-              Canvas will appear here (Phase 4).
-            </p>
-          </div>
+        {/* Center panel: Canvas */}
+        <main className="flex-1 overflow-hidden bg-gray-950">
+          <EditorCanvas />
         </main>
 
         {/* Right panel: Properties */}
