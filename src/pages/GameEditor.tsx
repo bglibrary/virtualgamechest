@@ -4,6 +4,7 @@ import { useEditorStore } from "@/editor/stores/editorStore";
 import { useGameValidation } from "@/editor/validation/useGameValidation";
 import { getGameById, getGameUrl } from "@/editor/data/gameRegistry";
 import { loadGame } from "@/engine/loadGame";
+import ComponentTree from "@/editor/components/ComponentTree";
 import type { GameDefinition } from "@/types/game";
 
 export default function GameEditor() {
@@ -104,14 +105,9 @@ export default function GameEditor() {
 
       {/* 3-panel layout */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left panel: Component tree (empty in Phase 1) */}
-        <aside className="w-64 border-r border-gray-800 bg-gray-900 p-4">
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Components
-          </h2>
-          <p className="text-sm text-gray-600">
-            {game ? "Component tree will appear here." : "Open a game to begin editing."}
-          </p>
+        {/* Left panel: Component tree */}
+        <aside className="w-64 overflow-y-auto border-r border-gray-800 bg-gray-900 p-4">
+          <ComponentTree />
         </aside>
 
         {/* Center panel: Canvas (empty in Phase 1) */}

@@ -450,15 +450,15 @@ Dashboard → Nouveau jeu / Éditer existant
 
 ---
 
-## 11. Questions ouvertes
+## 11. Questions ouvertes (résolues)
 
 | # | Question | Décision | Résolue le |
 |---|---|---|---|
-| 1 | Faut-il un mode "upload d'image" (pas seulement URL) ? | | |
-| 2 | Le JSON exporté doit-il remplacer le fichier existant dans `public/games/` ou être téléchargé ? | | |
-| 3 | Faut-il un système de templates de jeu (ex: "Démarrer avec un jeu de 52 cartes") ? | | |
-| 4 | Faut-il gérer le chargement d'un fichier JSON existant depuis l'interface (pas depuis le code) ? | | |
-| 5 | Multi-langue pour l'interface éditeur (anglais/français) ? | | |
+| 1 | Faut-il un mode "upload d'image" (pas seulement URL) ? | **Oui** — upload d'images depuis le PC requis. Les images doivent être gérées dans le système de sauvegarde/export du jeu (packagées avec le JSON ou référencées via un chemin relatif dans le projet). | 2026-05-21 |
+| 2 | Le JSON exporté doit-il remplacer le fichier existant dans `public/games/` ou être téléchargé ? | **Téléchargement** (download .json) pour permettre le commit manuel dans la codebase. Un script d'import commité dans le repo facilitera l'intégration. Gestion distincte pour **création** vs **update** d'un jeu. Les images doivent être incluses dans l'export. | 2026-05-21 |
+| 3 | Faut-il un système de templates de jeu (ex: "Démarrer avec un jeu de 52 cartes") ? | **Oui** — prévoir des templates/objets raccourcis. Au minimum un template "Jeu de 52 cartes" pour accélérer la création. | 2026-05-21 |
+| 4 | Faut-il gérer le chargement d'un fichier JSON existant depuis l'interface (pas depuis le code) ? | **Non** — le chargement de jeux existants pour les compléter se fait via les jeux déjà présents dans le repo (git), pas via upload dans l'interface. | 2026-05-21 |
+| 5 | Multi-langue pour l'interface éditeur (anglais/français) ? | **Français uniquement** au départ. Pas de système i18n pour le MVP. L'interface de l'éditeur sera en français. | 2026-05-21 |
 
 ---
 
@@ -466,4 +466,5 @@ Dashboard → Nouveau jeu / Éditer existant
 
 | Date | Changement | Auteur |
 |---|---|---|
+| 2026-05-21 | Section 11 : résolution des 5 questions ouvertes (upload images, export download + script, templates, pas d'import JSON, français uniquement) | IA |
 | 2026-05-19 | Création du document | IA |
