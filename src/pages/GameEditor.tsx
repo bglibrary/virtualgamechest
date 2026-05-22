@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEditorStore } from "@/editor/stores/editorStore";
+import { useEditorHistoryStore } from "@/editor/stores/editorHistoryStore";
 import { useEditorValidationStore } from "@/editor/stores/editorValidationStore";
 import { useGameValidation } from "@/editor/validation/useGameValidation";
 import { getGameById, getGameUrl } from "@/editor/data/gameRegistry";
 import { loadGame } from "@/engine/loadGame";
+import { useEditorShortcuts } from "@/editor/hooks/useEditorShortcuts";
+import { useDraftPersistence } from "@/editor/hooks/useDraftPersistence";
+import { useUnsavedChangesGuard } from "@/editor/hooks/useUnsavedChangesGuard";
 import ComponentTree from "@/editor/components/ComponentTree";
 import EditorCanvas from "@/editor/components/forms/EditorCanvas";
 import PropertyPanel from "@/editor/components/forms/PropertyPanel";
@@ -12,7 +16,7 @@ import ValidationPanel from "@/editor/components/ValidationPanel";
 import JsonPreview from "@/editor/components/JsonPreview";
 import { downloadGameJson } from "@/editor/utils/jsonExport";
 import type { GameDefinition } from "@/types/game";
-import { AlertCircle, CheckCircle, Download, Code, ChevronDown, ChevronRight } from "lucide-react";
+import { AlertCircle, CheckCircle, Download, Code, Undo2, Redo2 } from "lucide-react";
 
 export default function GameEditor() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -34,6 +38,47 @@ export default function GameEditor() {
 
   // Run validation whenever the game changes
   useGameValidation(game);
+
+  // Phase 8: Undo/redo shortcuts, draft persistence, unsaved changes guard
+  useEditorShortcuts();
+  useDraftPersistence();
+  useUnsavedChangesGuard();
+
+  // Undo/redo handlers
+  const canUndo = useEditorHistoryStore((s) => s.past.length > 0);
+  const canRedo = useEditorHistoryStore((s) => s.future.length > 0);
+
+  const handleUndo = useCallback(() => {
+    const historyStore = useEditorHistoryStore.getState();
+    const editorStore = useEditorStore.getState();
+    if (!historyStore.canUndo() || !editorStore.game || !editorStore.gameId) return;
+
+    const current = editorStore.game;
+    const prev = historyStore.undo();
+    if (prev) {
+      useEditorHistoryStore.setState((s) => ({
+        future: [...s.future, structuredClone(current)],
+      }));
+      editorStore.openGame(editorStore.gameId, prev);
+      editorStore.markDirty();
+    }
+  }, []);
+
+  const handleRedo = useCallback(() => {
+    const historyStore = useEditorHistoryStore.getState();
+    const editorStore = useEditorStore.getState();
+    if (!historyStore.canRedo() || !editorStore.game || !editorStore.gameId) return;
+
+    const current = editorStore.game;
+    const next = historyStore.redo();
+    if (next) {
+      useEditorHistoryStore.setState((s) => ({
+        past: [...s.past, structuredClone(current)],
+      }));
+      editorStore.openGame(editorStore.gameId, next);
+      editorStore.markDirty();
+    }
+  }, []);
 
   // Load game on mount
   useEffect(() => {
@@ -131,6 +176,26 @@ export default function GameEditor() {
               )}
             </div>
           )}
+
+          {/* Undo/Redo buttons */}
+          <button
+            onClick={handleUndo}
+            disabled={!canUndo}
+            className="rounded p-1.5 text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30"
+            title="Undo (Ctrl+Z)"
+          >
+            <Undo2 size={14} />
+          </button>
+          <button
+            onClick={handleRedo}
+            disabled={!canRedo}
+            className="rounded p-1.5 text-gray-400 hover:bg-gray-800 hover:text-gray-200 disabled:opacity-30"
+            title="Redo (Ctrl+Shift+Z)"
+          >
+            <Redo2 size={14} />
+          </button>
+
+          <span className="text-gray-700">|</span>
 
           {/* JSON Preview toggle */}
           <button

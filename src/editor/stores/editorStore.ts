@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { GameDefinition, GameComponent } from "@/types/game";
+import { useEditorHistoryStore } from "@/editor/stores/editorHistoryStore";
 
 export interface EditorState {
   /** The ID of the game being edited (filename without .json). */
@@ -24,7 +25,7 @@ export interface EditorState {
   ) => void;
 }
 
-export const useEditorStore = create<EditorState>((set) => ({
+export const useEditorStore = create<EditorState>((set, get) => ({
   gameId: null,
   game: null,
   selectedId: null,
@@ -55,8 +56,10 @@ export const useEditorStore = create<EditorState>((set) => ({
   updateGame: (updater) =>
     set((state) => {
       if (!state.game) return state;
+      // Push snapshot before modification for undo
+      useEditorHistoryStore.getState().pushSnapshot(state.game);
       return {
-        game: updater(state.game),
+        game: updater(structuredClone(state.game)),
         isDirty: true,
       };
     }),
@@ -64,6 +67,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   updateComponent: (componentId, updater) =>
     set((state) => {
       if (!state.game) return state;
+      // Push snapshot before modification for undo
+      useEditorHistoryStore.getState().pushSnapshot(state.game);
       return {
         game: {
           ...state.game,
