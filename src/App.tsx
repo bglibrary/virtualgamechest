@@ -1,4 +1,3 @@
-import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { useDeckStateStore } from "@/store/deckStateStore";
@@ -55,15 +54,21 @@ function GamePage() {
   return <TableCanvas />;
 }
 
-function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<GamePage />} />
-      <Route path="/editor" element={<EditorDashboard />} />
-      <Route path="/editor/new" element={<NewGamePage />} />
-      <Route path="/editor/:gameId" element={<GameEditor />} />
-    </Routes>
-  );
-}
-
-export default App;
+export const routes = [
+  {
+    path: "/",
+    element: <GamePage />,
+  },
+  {
+    path: "/editor",
+    element: <EditorDashboard />,
+  },
+  {
+    path: "/editor/new",
+    element: <NewGamePage />,
+  },
+  {
+    path: "/editor/:gameId",
+    element: <GameEditor />,
+  },
+];

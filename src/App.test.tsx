@@ -1,15 +1,14 @@
 import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { describe, it, expect } from 'vitest';
-import App from './App';
+import { routes } from './App';
 
 describe('App', () => {
   it('renders without crashing', () => {
-    const { container } = render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>,
-    );
+    const router = createMemoryRouter(routes, {
+      initialEntries: ['/editor'],
+    });
+    const { container } = render(<RouterProvider router={router} />);
     expect(container).toBeInTheDocument();
   });
 });

@@ -7,15 +7,16 @@ export interface EditorState {
   gameId: string | null;
   /** The full game definition being edited. */
   game: GameDefinition | null;
-  /** The currently selected component ID (null = nothing selected). */
-  selectedId: string | null;
+  /** The currently selected component IDs. */
+  selectedIds: string[];
   /** Whether there are unsaved changes. */
   isDirty: boolean;
 
   // Actions
   openGame: (gameId: string, game: GameDefinition) => void;
   closeGame: () => void;
-  selectComponent: (id: string | null) => void;
+  selectComponent: (id: string | null, multi?: boolean) => void;
+  selectComponents: (ids: string[]) => void;
   markDirty: () => void;
   markClean: () => void;
   updateGame: (updater: (game: GameDefinition) => GameDefinition) => void;
@@ -23,19 +24,23 @@ export interface EditorState {
     componentId: string,
     updater: (component: GameComponent) => GameComponent,
   ) => void;
+  updateComponents: (
+    componentIds: string[],
+    updater: (component: GameComponent) => GameComponent,
+  ) => void;
 }
 
-export const useEditorStore = create<EditorState>((set, get) => ({
+export const useEditorStore = create<EditorState>((set) => ({
   gameId: null,
   game: null,
-  selectedId: null,
+  selectedIds: [],
   isDirty: false,
 
   openGame: (gameId, game) =>
     set({
       gameId,
       game,
-      selectedId: null,
+      selectedIds: [],
       isDirty: false,
     }),
 
@@ -43,11 +48,25 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set({
       gameId: null,
       game: null,
-      selectedId: null,
+      selectedIds: [],
       isDirty: false,
     }),
 
-  selectComponent: (id) => set({ selectedId: id }),
+  selectComponent: (id, multi) =>
+    set((state) => {
+      if (!id) return { selectedIds: [] };
+      if (multi) {
+        const isSelected = state.selectedIds.includes(id);
+        return {
+          selectedIds: isSelected
+            ? state.selectedIds.filter((sid) => sid !== id)
+            : [...state.selectedIds, id],
+        };
+      }
+      return { selectedIds: [id] };
+    }),
+
+  selectComponents: (ids) => set({ selectedIds: ids }),
 
   markDirty: () => set({ isDirty: true }),
 
@@ -74,6 +93,22 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           ...state.game,
           components: state.game.components.map((c) =>
             c.id === componentId ? updater(c) : c,
+          ),
+        },
+        isDirty: true,
+      };
+    }),
+
+  updateComponents: (componentIds, updater) =>
+    set((state) => {
+      if (!state.game) return state;
+      // Push snapshot before modification for undo
+      useEditorHistoryStore.getState().pushSnapshot(state.game);
+      return {
+        game: {
+          ...state.game,
+          components: state.game.components.map((c) =>
+            componentIds.includes(c.id) ? updater(c) : c,
           ),
         },
         isDirty: true,

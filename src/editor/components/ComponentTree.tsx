@@ -10,19 +10,23 @@ import { Trash2 } from "lucide-react";
 
 export default function ComponentTree() {
   const game = useEditorStore((s) => s.game);
-  const selectedId = useEditorStore((s) => s.selectedId);
+  const selectedIds = useEditorStore((s) => s.selectedIds);
   const selectComponent = useEditorStore((s) => s.selectComponent);
   const updateGame = useEditorStore((s) => s.updateGame);
 
-  const cards = game?.components.filter((c: GameComponent) => c.type === "card") ?? [];
-  const decks = game?.components.filter((c: GameComponent) => c.type === "deck") ?? [];
-  const zones = game?.components.filter((c: GameComponent) => c.type === "zone") ?? [];
+  const cards =
+    game?.components.filter((c: GameComponent) => c.type === "card") ?? [];
+  const decks =
+    game?.components.filter((c: GameComponent) => c.type === "deck") ?? [];
+  const zones =
+    game?.components.filter((c: GameComponent) => c.type === "zone") ?? [];
 
   const handleSelect = useCallback(
-    (id: string) => {
-      selectComponent(selectedId === id ? null : id);
+    (e: React.MouseEvent, id: string) => {
+      const isMulti = e.shiftKey || e.metaKey || e.ctrlKey;
+      selectComponent(id, isMulti);
     },
-    [selectedId, selectComponent],
+    [selectComponent],
   );
 
   const handleDelete = useCallback(
@@ -34,11 +38,11 @@ export default function ComponentTree() {
         ...g,
         components: g.components.filter((c) => c.id !== id),
       }));
-      if (selectedId === id) {
+      if (selectedIds.includes(id)) {
         selectComponent(null);
       }
     },
-    [game, updateGame, selectedId, selectComponent],
+    [game, updateGame, selectedIds, selectComponent],
   );
 
   const handleAddCard = useCallback(() => {
@@ -100,8 +104,8 @@ export default function ComponentTree() {
             id={card.id}
             label={card.id}
             type="card"
-            isSelected={selectedId === card.id}
-            onSelect={() => handleSelect(card.id)}
+            isSelected={selectedIds.includes(card.id)}
+            onSelect={(e) => handleSelect(e, card.id)}
             onDelete={(e) => handleDelete(e, card.id)}
           />
         ))}
@@ -123,8 +127,8 @@ export default function ComponentTree() {
             id={deck.id}
             label={deck.id}
             type="deck"
-            isSelected={selectedId === deck.id}
-            onSelect={() => handleSelect(deck.id)}
+            isSelected={selectedIds.includes(deck.id)}
+            onSelect={(e) => handleSelect(e, deck.id)}
             onDelete={(e) => handleDelete(e, deck.id)}
           />
         ))}
@@ -146,8 +150,8 @@ export default function ComponentTree() {
             id={zone.id}
             label={zone.id}
             type="zone"
-            isSelected={selectedId === zone.id}
-            onSelect={() => handleSelect(zone.id)}
+            isSelected={selectedIds.includes(zone.id)}
+            onSelect={(e) => handleSelect(e, zone.id)}
             onDelete={(e) => handleDelete(e, zone.id)}
           />
         ))}
@@ -191,7 +195,7 @@ interface ComponentRowProps {
   label: string;
   type: "card" | "deck" | "zone";
   isSelected: boolean;
-  onSelect: () => void;
+  onSelect: (e: React.MouseEvent) => void;
   onDelete: (e: React.MouseEvent) => void;
 }
 
