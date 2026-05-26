@@ -20,7 +20,9 @@ function createMinimalGame(): GameDefinition {
   const card: CardComponent = {
     type: "card",
     id: "card-1",
+    face: { type: "text", text: "Test" },
     position: { x: 0.1, y: 0.1 },
+    actions: [{ type: "flip", label: "Flip" }],
   };
   return {
     name: "test-game",

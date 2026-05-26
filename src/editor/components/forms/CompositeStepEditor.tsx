@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { GameComponent } from "@/types/game";
+import type { GameComponent, ZoneComponent } from "@/types/game";
 import { Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 
 const CARD_STEP_TYPES = [
@@ -35,7 +35,7 @@ interface CompositeStepEditorProps {
   steps: any[];
   onUpdateSteps: (steps: any[]) => void;
   isCard: boolean;
-  zones: GameComponent[];
+  zones: ZoneComponent[];
 }
 
 export default function CompositeStepEditor({

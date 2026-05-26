@@ -86,23 +86,23 @@ export default function StartupEditor() {
   }, [steps, updateSteps]);
 
   const handleTargetZoneChange = useCallback((index: number, targetZone: string) => {
-    const newSteps = [...steps];
-    newSteps[index] = { ...newSteps[index], targetZone };
+    const newSteps = [...steps] as StartupStep[];
+    (newSteps[index] as any).targetZone = targetZone;
     updateSteps(newSteps);
   }, [steps, updateSteps]);
 
   const handleFaceUpToggle = useCallback((index: number) => {
-    const newSteps = [...steps];
-    const step = newSteps[index];
+    const newSteps = [...steps] as StartupStep[];
+    const step = newSteps[index] as any;
     if ("faceUp" in step) {
-      newSteps[index] = { ...step, faceUp: !step.faceUp };
+      step.faceUp = !step.faceUp;
       updateSteps(newSteps);
     }
   }, [steps, updateSteps]);
 
   const handleActionLabelChange = useCallback((index: number, actionLabel: string) => {
-    const newSteps = [...steps];
-    newSteps[index] = { ...newSteps[index], actionLabel };
+    const newSteps = [...steps] as StartupStep[];
+    (newSteps[index] as any).actionLabel = actionLabel;
     updateSteps(newSteps);
   }, [steps, updateSteps]);
 

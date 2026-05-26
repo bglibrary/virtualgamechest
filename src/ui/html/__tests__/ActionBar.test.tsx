@@ -175,7 +175,7 @@ describe("ActionBar", () => {
         side="right"
       />,
     );
-    const bar = container.firstElementChild!;
+    const bar = container.firstElementChild! as HTMLElement;
     expect(bar.style.transform).toBe("translateY(-50%)");
   });
 
@@ -189,7 +189,7 @@ describe("ActionBar", () => {
         side="left"
       />,
     );
-    const bar = container.firstElementChild!;
+    const bar = container.firstElementChild! as HTMLElement;
     expect(bar.style.transform).toBe("translateX(-100%) translateY(-50%)");
   });
 
