@@ -106,6 +106,11 @@ function CardRenderer({
       ? component.back!.image!
       : undefined;
 
+  // DEBUG: log image loading state for uploaded blob images
+  if (imageUrl?.startsWith("blob:")) {
+    console.warn("[CardRenderer] blob image URL:", imageUrl.substring(0, 50), "faceUp:", faceUp, "component:", component.id);
+  }
+
   const textFallback = (
     <Text
       text={text}

@@ -473,6 +473,16 @@ useEffect(() => {
           {visibleComponents.map((component) => {
             if (component.type === "card") {
               if (component.position === null) return null;
+              // DEBUG: log card rendering with image info for blob URLs
+              if ((component.face as { image?: string })?.image?.startsWith("blob:") ||
+                  (component.back as { image?: string })?.image?.startsWith("blob:")) {
+                console.warn("[TableCanvas] rendering card with blob image:", {
+                  id: component.id,
+                  faceImage: (component.face as { image?: string })?.image?.substring(0, 60),
+                  backImage: (component.back as { image?: string })?.image?.substring(0, 60),
+                  position: component.position,
+                });
+              }
               return (
                 <InteractiveCard
                   key={component.id}

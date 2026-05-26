@@ -19,7 +19,16 @@ function CardFaceImage({
 }: CardFaceImageProps) {
   const { image, loading, error } = useCardImage(imageUrl);
 
+  // DEBUG: trace every render
+  console.warn("[CardFaceImage] render:", {
+    imageUrl: imageUrl?.substring(0, 50),
+    hasImage: !!image,
+    loading,
+    error,
+  });
+
   if (!image || loading || error) {
+    console.warn("[CardFaceImage] fallback:", { hasImage: !!image, loading, error });
     return <>{fallback}</>;
   }
 

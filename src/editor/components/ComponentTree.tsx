@@ -1,12 +1,12 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import type { GameComponent } from "@/types/game";
 import { useEditorStore } from "@/editor/stores/editorStore";
 import {
   createDefaultCard,
-  createDefaultDeck,
   createDefaultZone,
 } from "@/editor/utils/componentFactory";
 import { Trash2 } from "lucide-react";
+import BulkCardWizard from "@/editor/components/forms/BulkCardWizard";
 
 export default function ComponentTree() {
   const game = useEditorStore((s) => s.game);
@@ -56,17 +56,6 @@ export default function ComponentTree() {
     selectComponent(newCard.id);
   }, [game, updateGame, selectComponent]);
 
-  const handleAddDeck = useCallback(() => {
-    if (!game) return;
-    const existingIds = game.components.map((c) => c.id);
-    const newDeck = createDefaultDeck(existingIds);
-    updateGame((g) => ({
-      ...g,
-      components: [...g.components, newDeck],
-    }));
-    selectComponent(newDeck.id);
-  }, [game, updateGame, selectComponent]);
-
   const handleAddZone = useCallback(() => {
     if (!game) return;
     const existingIds = game.components.map((c) => c.id);
@@ -77,6 +66,8 @@ export default function ComponentTree() {
     }));
     selectComponent(newZone.id);
   }, [game, updateGame, selectComponent]);
+
+  const [showBulkWizard, setShowBulkWizard] = useState(false);
 
   if (!game) {
     return (
@@ -115,7 +106,7 @@ export default function ComponentTree() {
       <Section
         title="Decks"
         count={decks.length}
-        onAdd={handleAddDeck}
+        onAdd={() => setShowBulkWizard(true)}
         addLabel="+ Add Deck"
       >
         {decks.length === 0 && (
@@ -133,6 +124,10 @@ export default function ComponentTree() {
           />
         ))}
       </Section>
+
+      {showBulkWizard && (
+        <BulkCardWizard onClose={() => setShowBulkWizard(false)} />
+      )}
 
       {/* Zones section */}
       <Section

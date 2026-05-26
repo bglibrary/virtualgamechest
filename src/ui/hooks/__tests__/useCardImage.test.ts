@@ -81,7 +81,7 @@ describe("useCardImage", () => {
     expect(result.current.error).toBe(true);
     expect(result.current.image).toBeNull();
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Card image failed to load"),
+      expect.stringContaining("FAILED to load"),
     );
 
     warnSpy.mockRestore();

@@ -86,6 +86,14 @@ export async function executeAction(
           } else if (result.deckDegenerates) {
             const lastCardId = getDeckCards(componentId)[0];
             const lastCardComp = game.components.find((c) => c.id === lastCardId) as CardComponent;
+            console.warn("[actionExecutor] draw — deck degenerates:", {
+              deckId: componentId,
+              lastCardId,
+              hasFaceImage: !!lastCardComp?.face?.image,
+              hasBackImage: !!lastCardComp?.back?.image,
+              faceImage: (lastCardComp?.face as { image?: string })?.image?.substring(0, 60),
+              backImage: (lastCardComp?.back as { image?: string })?.image?.substring(0, 60),
+            });
             removeComponent(componentId);
             removeDeck(componentId);
             if (lastCardComp) {
@@ -132,6 +140,14 @@ export async function executeAction(
           } else if (result.deckDegenerates) {
             const lastCardId = getDeckCards(componentId)[0];
             const lastCardComp = game.components.find((c) => c.id === lastCardId) as CardComponent;
+            console.warn("[actionExecutor] draw-to-zone — deck degenerates:", {
+              deckId: componentId,
+              lastCardId,
+              hasFaceImage: !!lastCardComp?.face?.image,
+              hasBackImage: !!lastCardComp?.back?.image,
+              faceImage: (lastCardComp?.face as { image?: string })?.image?.substring(0, 60),
+              backImage: (lastCardComp?.back as { image?: string })?.image?.substring(0, 60),
+            });
             removeComponent(componentId);
             removeDeck(componentId);
             if (lastCardComp) {

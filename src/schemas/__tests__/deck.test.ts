@@ -247,34 +247,34 @@ const drawFaceUpAction = { type: "draw-face-up" as const, label: "Piocher face v
 const drawFaceDownAction = { type: "draw-face-down" as const, label: "Piocher face cachée" };
 
 it("accepts game with both card and deck components", () => {
-const result = gameDefinitionSchema.safeParse({
-name: "Poker Patience",
-version: "1.0.0",
-components: [
-{
-type: "card",
-id: "card-1",
-face: { type: "text", text: "Roi Pique" },
-position: { x: 0.3, y: 0.5 },
-actions: [flipAction],
-},
-{
-type: "card",
-id: "card-2",
-face: { type: "text", text: "Dame Carreau" },
-position: { x: 0.3, y: 0.6 },
-actions: [flipAction],
-},
-{
-type: "deck",
-id: "draw-pile",
-cards: ["card-1", "card-2"],
-position: { x: 0.7, y: 0.5 },
-actions: [flipAction, drawFaceUpAction, drawFaceDownAction],
-},
-],
-});
-expect(result.success).toBe(true);
+  const result = gameDefinitionSchema.safeParse({
+    name: "Poker Patience",
+    version: "1.0.0",
+    components: [
+      {
+        type: "card",
+        id: "card-1",
+        face: { type: "text", text: "Roi Pique" },
+        position: null,
+        actions: [flipAction],
+      },
+      {
+        type: "card",
+        id: "card-2",
+        face: { type: "text", text: "Dame Carreau" },
+        position: null,
+        actions: [flipAction],
+      },
+      {
+        type: "deck",
+        id: "draw-pile",
+        cards: ["card-1", "card-2"],
+        position: { x: 0.7, y: 0.5 },
+        actions: [flipAction, drawFaceUpAction, drawFaceDownAction],
+      },
+    ],
+  });
+  expect(result.success).toBe(true);
 });
 
 it("rejects duplicate ids across card and deck", () => {
@@ -305,27 +305,27 @@ expect(result.error.issues[0].message).toContain("unique");
 });
 
 it("accepts game with only deck components", () => {
-const result = gameDefinitionSchema.safeParse({
-name: "Deck Only",
-version: "1.0.0",
-components: [
-{
-type: "card",
-id: "card-1",
-face: { type: "text", text: "Roi" },
-position: { x: 0.3, y: 0.5 },
-actions: [flipAction],
-},
-{
-type: "deck",
-id: "draw-pile",
-cards: ["card-1"],
-position: { x: 0.5, y: 0.5 },
-actions: [flipAction],
-},
-],
-});
-expect(result.success).toBe(true);
+  const result = gameDefinitionSchema.safeParse({
+    name: "Deck Only",
+    version: "1.0.0",
+    components: [
+      {
+        type: "card",
+        id: "card-1",
+        face: { type: "text", text: "Roi" },
+        position: null,
+        actions: [flipAction],
+      },
+      {
+        type: "deck",
+        id: "draw-pile",
+        cards: ["card-1"],
+        position: { x: 0.5, y: 0.5 },
+        actions: [flipAction],
+      },
+    ],
+  });
+  expect(result.success).toBe(true);
 });
 
 it("rejects deck referencing non-existent card ID", () => {
@@ -353,6 +353,33 @@ expect(result.success).toBe(false);
 if (!result.success) {
 expect(result.error.issues.some((i) => i.message.includes("does not exist"))).toBe(true);
 }
+});
+
+it("rejects card in deck with non-null position", () => {
+  const result = gameDefinitionSchema.safeParse({
+    name: "Bad Position",
+    version: "1.0.0",
+    components: [
+      {
+        type: "card",
+        id: "card-1",
+        face: { type: "text", text: "Roi" },
+        position: { x: 0.3, y: 0.5 },
+        actions: [flipAction],
+      },
+      {
+        type: "deck",
+        id: "draw-pile",
+        cards: ["card-1"],
+        position: { x: 0.5, y: 0.5 },
+        actions: [flipAction],
+      },
+    ],
+  });
+  expect(result.success).toBe(false);
+  if (!result.success) {
+    expect(result.error.issues.some((i) => i.message.includes("position: null"))).toBe(true);
+  }
 });
 
 it("rejects card referenced by two decks", () => {

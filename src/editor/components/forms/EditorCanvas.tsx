@@ -1,9 +1,11 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import { Stage, Layer, Rect, Text, Group, Line } from "react-konva";
+import { Stage, Layer, Rect, Text, Group, Line, Image } from "react-konva";
 import type Konva from "konva";
 import { useEditorStore } from "@/editor/stores/editorStore";
 import { setViewportSize } from "@/editor/stores/viewportStore";
 import type { CardComponent, DeckComponent, ZoneComponent } from "@/types/game";
+import useCardImage from "@/ui/hooks/useCardImage";
+import computeCoverCrop from "@/ui/canvas/coverCrop";
 
 const CARD_WIDTH_RATIO = 0.08;
 const CARD_MIN_WIDTH = 55;
@@ -166,6 +168,52 @@ function EditorCardRenderer({
     ? component.face.text.slice(0, 18) + "..."
     : component.face.text;
 
+  const { image: faceImg, loading: faceLoading, error: faceError } = useCardImage(component.face.image);
+  const { image: backImg, loading: backLoading, error: backError } = useCardImage(component.back?.image);
+  const showFaceImage = !!component.face.image && !faceLoading && !faceError && faceImg;
+  const showBackImage = !!component.back?.image && !backLoading && !backError && backImg;
+
+  const renderFaceContent = () => {
+    if (showFaceImage) {
+      const crop = computeCoverCrop(faceImg!.naturalWidth, faceImg!.naturalHeight, cardWidth, cardHeight);
+      return (
+        <Image
+          image={faceImg!}
+          x={0} y={0}
+          width={cardWidth} height={cardHeight}
+          cropX={crop.cropX} cropY={crop.cropY}
+          cropWidth={crop.cropWidth} cropHeight={crop.cropHeight}
+          cornerRadius={cornerRadius}
+        />
+      );
+    }
+    if (showBackImage) {
+      const crop = computeCoverCrop(backImg!.naturalWidth, backImg!.naturalHeight, cardWidth, cardHeight);
+      return (
+        <Image
+          image={backImg!}
+          x={0} y={0}
+          width={cardWidth} height={cardHeight}
+          cropX={crop.cropX} cropY={crop.cropY}
+          cropWidth={crop.cropWidth} cropHeight={crop.cropHeight}
+          cornerRadius={cornerRadius}
+        />
+      );
+    }
+    return (
+      <Text
+        text={label}
+        fontSize={fontSize}
+        fontFamily="serif"
+        fontStyle="bold"
+        fill={CARD_TEXT_FILL}
+        width={cardWidth} height={cardHeight}
+        align="center"
+        verticalAlign="middle"
+      />
+    );
+  };
+
   return (
     <DragItem
       id={component.id}
@@ -197,16 +245,7 @@ function EditorCardRenderer({
         stroke="#333333"
         strokeWidth={BORDER_WIDTH}
       />
-      <Text
-        text={label}
-        fontSize={fontSize}
-        fontFamily="serif"
-        fontStyle="bold"
-        fill={CARD_TEXT_FILL}
-        width={cardWidth} height={cardHeight}
-        align="center"
-        verticalAlign="middle"
-      />
+      {renderFaceContent()}
     </DragItem>
   );
 }

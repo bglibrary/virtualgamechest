@@ -132,11 +132,16 @@ const startupStepSchema = z.discriminatedUnion("type", [
 
 export const imageUrlSchema = z.string().min(1).refine(
   (url) => {
+    // Allow blob URLs (used during editing for uploaded images)
+    if (url.startsWith("blob:")) return true;
+    // Allow data URLs (base64 embedded images)
+    if (url.startsWith("data:")) return true;
+    // For regular URLs, check the file extension
     const supported = [".png", ".jpg", ".jpeg", ".svg"];
     const lower = url.toLowerCase().split("?")[0].split("#")[0];
     return supported.some((ext) => lower.endsWith(ext));
   },
-  { message: "Image URL must end with .png, .jpg, .jpeg, or .svg" },
+  { message: "Image URL must be a blob URL, data URL, or end with .png, .jpg, .jpeg, or .svg" },
 );
 
 export const cardFaceSchema = z.object({
@@ -230,6 +235,24 @@ export const gameDefinitionSchema = z.object({
     return new Set(allReferencedIds).size === allReferencedIds.length;
   },
   { message: "A card cannot be referenced by multiple decks", path: ["components"] },
+).refine(
+  (data) => {
+    const cardMap = new Map(
+      data.components.filter((c) => c.type === "card").map((c) => [c.id, c]),
+    );
+    return data.components
+      .filter((c) => c.type === "deck")
+      .every((deck) =>
+        deck.cards.every((cardId) => {
+          const card = cardMap.get(cardId);
+          return card && card.position === null;
+        }),
+      );
+  },
+  {
+    message: "Card referenced by a deck must have position: null",
+    path: ["components"],
+  },
 ).refine(
   (data) => {
     const zoneIds = new Set(

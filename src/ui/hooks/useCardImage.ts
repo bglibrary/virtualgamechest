@@ -65,6 +65,14 @@ function useCardImage(url: string | undefined): UseCardImageResult {
     prevUrlRef.current = url;
     if (!url) return;
 
+    // Critical: DO NOT delete+recreate the store entry.
+    // The entry was already created (or retrieved) during render (line ~51) and
+    // captured by subscribe/getSnapshot callbacks.  If we delete and recreate
+    // here, the effect writes to a *different* object (E2) while the component
+    // reads from the stale original (E1), so `useSyncExternalStore` never fires
+    // a re-render — the image stays stuck in loading/fallback forever.
+    //
+    // Instead, just reset the SAME entry's state to force a fresh load:
     const e = getOrCreateStore(url);
     e.image = null;
     e.loading = true;
@@ -73,9 +81,23 @@ function useCardImage(url: string | undefined): UseCardImageResult {
     e.listeners.forEach((l) => l());
 
     const img = new window.Image();
-    img.crossOrigin = "anonymous";
+    // crossOrigin="anonymous" prevents CORS issues for external URLs,
+    // but breaks blob URLs (blob: URLs are same-origin by default)
+    if (!url.startsWith("blob:")) {
+      img.crossOrigin = "anonymous";
+    }
+
+    const loadingTimeout = setTimeout(() => {
+      console.warn(
+        `[useCardImage] LOADING TIMEOUT 3s: url=${url.substring(0, 50)} ` +
+        `img.complete=${img.complete} img.naturalWidth=${img.naturalWidth} ` +
+        `stores.has=${stores.has(url)} loading=${e.loading} error=${e.error}`,
+      );
+    }, 3000);
 
     img.onload = () => {
+      clearTimeout(loadingTimeout);
+      console.warn(`[useCardImage] loaded: ${url.substring(0, 50)} (${img.naturalWidth}x${img.naturalHeight})`);
       e.image = img;
       e.loading = false;
       e.error = false;
@@ -84,7 +106,8 @@ function useCardImage(url: string | undefined): UseCardImageResult {
     };
 
     img.onerror = () => {
-      console.warn(`Card image failed to load: ${url} — falling back to text`);
+      clearTimeout(loadingTimeout);
+      console.warn(`[useCardImage] FAILED to load: ${url.substring(0, 50)} — falling back to text`);
       e.image = null;
       e.loading = false;
       e.error = true;
@@ -95,6 +118,7 @@ function useCardImage(url: string | undefined): UseCardImageResult {
     img.src = url;
 
     return () => {
+      clearTimeout(loadingTimeout);
       img.onload = null;
       img.onerror = null;
     };
