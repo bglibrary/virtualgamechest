@@ -9,7 +9,8 @@ import { useZoneStateStore } from "@/store/zoneStateStore";
 import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ZoneRenderer from "@/ui/canvas/ZoneRenderer";
-import { Hand, Combine } from "lucide-react";
+import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
+import { Hand, Combine, Smartphone, Monitor } from "lucide-react";
 import { executeAction, executeCompositeAction } from "@/engine/actionExecutor";
 import ActionBar from "@/ui/html/ActionBar";
 import type { ActionButton } from "@/ui/html/ActionBar";
@@ -27,6 +28,7 @@ import type Konva from "konva";
 import type { DeckComponent } from "@/types/game";
 
 function TableCanvas() {
+  const { isMobile, getPosition, getCardSize, lockOrientation } = useDeviceLayout();
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -50,7 +52,13 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
   const addCard = useZoneStateStore((s) => s.addCard);
   const cardStateIsFaceUp = useCardStateStore((s) => s.isFaceUp);
 
-useEffect(() => {
+  useEffect(() => {
+    if (game) {
+      lockOrientation(game.mobileOrientation);
+    }
+  }, [game, lockOrientation]);
+
+  useEffect(() => {
     initZOrderDebug();
     if (game) {
       const componentIds = game.components
@@ -75,13 +83,14 @@ useEffect(() => {
 
   const zoneComponents = game?.components.filter((c) => c.type === "zone") ?? [];
   const zoneSnapInfos: ZoneSnapInfo[] = useMemo(() => {
-    const cardSizeConfig = game?.cardSize;
-    const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
-    const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+    const cardSizeConfig = getCardSize(game ?? { cardSize: undefined, mobileCardSize: undefined });
+    const cardWidthRatio = cardSizeConfig.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+    const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
 
     return zoneComponents.map((zone, index) => {
-      const zoneX = zone.position.x * size.width;
-      const zoneY = zone.position.y * size.height;
+      const zonePos = getPosition(zone);
+      const zoneX = zonePos.x * size.width;
+      const zoneY = zonePos.y * size.height;
       const snapRadius = zone.snapRadius ?? (Math.max(size.width * cardWidthRatio, cardMinWidth) * 0.75);
       return {
         zoneId: zone.id,
@@ -91,7 +100,7 @@ useEffect(() => {
         componentIndex: index,
       };
     });
-  }, [zoneComponents, size, game?.cardSize]);
+  }, [zoneComponents, size, getCardSize, getPosition, game]);
 
   const handleAction = useCallback(async (action: { type: string; targetZone?: string; faceUp?: boolean }) => {
     const componentId = selectedComponentId;
@@ -131,9 +140,9 @@ useEffect(() => {
       const state = useGameStore.getState();
       if (!state.game) return [];
 
-      const cardSizeConfig = state.game.cardSize;
-      const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
-      const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+      const cardSizeConfig = getCardSize(state.game);
+      const cardWidthRatio = cardSizeConfig.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+      const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
 
       const cardW = Math.max(size.width * cardWidthRatio, cardMinWidth);
       const r = cardW / 2;
@@ -141,7 +150,7 @@ useEffect(() => {
       for (const c of state.game.components) {
         if (c.id === excludeId) continue;
         if (c.type === "card" && c.position !== null) {
-          const pos = getCardPosition(c.id) ?? c.position;
+          const pos = getPosition(c);
           result.push({
             componentId: c.id,
             type: "card",
@@ -153,7 +162,7 @@ useEffect(() => {
         } else if (c.type === "deck") {
           const count = useDeckStateStore.getState().getCardCount(c.id);
           if (count >= 2) {
-            const pos = getCardPosition(c.id) ?? c.position;
+            const pos = getPosition(c);
             result.push({
               componentId: c.id,
               type: "deck",
@@ -167,18 +176,18 @@ useEffect(() => {
       }
       return result;
     },
-    [size, getCardPosition],
+    [size, getCardSize, getPosition],
   );
 
   const handleDragMoveCommon = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>, draggedId: string) => {
-      const cardSizeConfig = game?.cardSize;
-      const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
-      const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
-      const cardAspectRatio = cardSizeConfig?.aspectRatio ?? DEFAULT_CARD_ASPECT;
+      const cardSizeConfig = getCardSize(game ?? { cardSize: undefined, mobileCardSize: undefined });
+      const cardWidthRatio = cardSizeConfig.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+      const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+      const aspectRatio = cardSizeConfig.aspectRatio ?? DEFAULT_CARD_ASPECT;
 
       const cardW = Math.max(size.width * cardWidthRatio, cardMinWidth);
-      const cardH = cardW * cardAspectRatio;
+      const cardH = cardW * aspectRatio;
       const cx = e.target.x() + cardW / 2;
       const cy = e.target.y() + cardH / 2;
 
@@ -198,7 +207,7 @@ useEffect(() => {
       const mergeResult = findNearestMergeTarget(cx, cy, draggedFaceUp, targets);
       setHighlightedMergeTargetId(mergeResult?.componentId ?? null);
     },
-    [zoneSnapInfos, size, buildMergeTargetInfos, getDraggedFaceUp],
+    [zoneSnapInfos, size, buildMergeTargetInfos, getDraggedFaceUp, getCardSize, game],
   );
 
   const handleMerge = useCallback(
@@ -377,7 +386,12 @@ useEffect(() => {
   })();
 
   const unsortedVisible = game?.components.filter((c) => {
-    if (c.type === "card") return c.position !== null;
+    if (c.type === "card") {
+      const hasDesktopPos = c.position !== null;
+      const hasMobilePos = (c as any).mobilePosition !== undefined;
+      // A card is visible if it has a desktop position, or if on mobile it has a mobile position
+      return hasDesktopPos || (isMobile && hasMobilePos);
+    }
     return true;
   }) ?? [];
 
@@ -404,9 +418,9 @@ useEffect(() => {
     selectedComponentId !== null &&
     selectedComponent !== undefined;
 
-  const cardSizeConfig = game?.cardSize;
-  const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
-  const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+  const cardSizeConfig = getCardSize(game ?? { cardSize: undefined, mobileCardSize: undefined });
+  const cardWidthRatio = cardSizeConfig.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+  const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
   const cardWidth = Math.max(size.width * cardWidthRatio, cardMinWidth);
 
   const ACTION_BAR_GAP = 8;
@@ -442,6 +456,14 @@ useEffect(() => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
+      {/* Mobile mode badge — visible indicator */}
+      {isMobile && (
+        <div className="absolute top-2 left-2 z-50 flex items-center gap-1.5 rounded bg-blue-900/70 px-2.5 py-1 text-xs font-medium text-blue-200 backdrop-blur-sm">
+          <Smartphone size={12} />
+          Mobile Mode
+        </div>
+      )}
+
       <Stage width={size.width} height={size.height}>
         <Layer>
           <Rect
@@ -471,22 +493,18 @@ useEffect(() => {
             );
           })}
           {visibleComponents.map((component) => {
+            // Resolve the position for the active layout so InteractiveCard/Deck render correctly
+            const resolvedPos = getPosition(component);
+
             if (component.type === "card") {
-              if (component.position === null) return null;
-              // DEBUG: log card rendering with image info for blob URLs
-              if ((component.face as { image?: string })?.image?.startsWith("blob:") ||
-                  (component.back as { image?: string })?.image?.startsWith("blob:")) {
-                console.warn("[TableCanvas] rendering card with blob image:", {
-                  id: component.id,
-                  faceImage: (component.face as { image?: string })?.image?.substring(0, 60),
-                  backImage: (component.back as { image?: string })?.image?.substring(0, 60),
-                  position: component.position,
-                });
-              }
+              if (component.position === null && !isMobile) return null;
+              if (isMobile && !resolvedPos) return null;
+              // Create a component clone with the resolved position for rendering
+              const renderComponent = { ...component, position: resolvedPos as any };
               return (
                 <InteractiveCard
                   key={component.id}
-                  component={component}
+                  component={renderComponent}
                   cardId={component.id}
                   viewportWidth={size.width}
                   viewportHeight={size.height}

@@ -161,12 +161,15 @@ export const positionSchema = z.object({
   y: z.number().min(0).max(1),
 });
 
+export const mobileOrientationSchema = z.enum(["portrait", "landscape"]);
+
 export const cardComponentSchema = z.object({
   type: z.literal("card"),
   id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
   face: cardFaceSchema,
   back: cardBackSchema.optional(),
   position: positionSchema.nullable(),
+  mobilePosition: positionSchema.optional(),
   actions: z.array(cardActionSchema).min(1).refine(
     (arr) => new Set(arr.map((a) => a.type)).size === arr.length,
     { message: "Duplicate actions are not allowed" },
@@ -178,6 +181,7 @@ export const deckComponentSchema = z.object({
   id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
   cards: z.array(z.string().min(1)).min(1),
   position: positionSchema,
+  mobilePosition: positionSchema.optional(),
   faceUp: z.boolean().optional().default(false),
   actions: z.array(deckActionSchema).min(1).refine(
     (arr) => new Set(arr.map((a) => "targetZone" in a ? `${a.type}:${a.targetZone}` : a.type)).size === arr.length,
@@ -189,6 +193,7 @@ export const zoneComponentSchema = z.object({
   type: z.literal("zone"),
   id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
   position: positionSchema,
+  mobilePosition: positionSchema.optional(),
   label: z.string().max(30).optional(),
   snapRadius: z.number().positive().optional(),
 });
@@ -209,6 +214,8 @@ export const gameDefinitionSchema = z.object({
   name: z.string().min(1),
   version: z.string().min(1),
   cardSize: cardSizeSchema.optional(),
+  mobileCardSize: cardSizeSchema.optional(),
+  mobileOrientation: mobileOrientationSchema.optional(),
   components: z.array(componentSchema).min(1),
   startup: z.array(startupStepSchema).optional(),
 }).refine(
@@ -281,6 +288,7 @@ export const gameDefinitionSchema = z.object({
 export type CardFace = z.infer<typeof cardFaceSchema>;
 export type CardBack = z.infer<typeof cardBackSchema>;
 export type Position = z.infer<typeof positionSchema>;
+export type MobileOrientation = z.infer<typeof mobileOrientationSchema>;
 export type CardAction = z.infer<typeof cardActionSchema>;
 export type DeckAction = z.infer<typeof deckActionSchema>;
 export type DeckComponent = z.infer<typeof deckComponentSchema>;

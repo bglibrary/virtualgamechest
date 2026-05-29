@@ -16,7 +16,7 @@ import ValidationPanel from "@/editor/components/ValidationPanel";
 import JsonPreview from "@/editor/components/JsonPreview";
 import { downloadGameJson } from "@/editor/utils/jsonExport";
 import type { GameDefinition } from "@/types/game";
-import { AlertCircle, CheckCircle, Download, Code, Undo2, Redo2 } from "lucide-react";
+import { AlertCircle, CheckCircle, Download, Code, Undo2, Redo2, Smartphone, Monitor } from "lucide-react";
 
 export default function GameEditor() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -31,6 +31,7 @@ export default function GameEditor() {
   const markClean = useEditorStore((s) => s.markClean);
   const openGame = useEditorStore((s) => s.openGame);
   const closeGame = useEditorStore((s) => s.closeGame);
+  const editLayout = useEditorStore((s) => s.editLayout);
 
   const validationResult = useEditorValidationStore((s) => s.validationResult);
   const isValid = validationResult?.isValid ?? true;
@@ -163,6 +164,34 @@ export default function GameEditor() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Desktop/Mobile layout toggle */}
+          <div className="flex items-center rounded border border-gray-700 bg-gray-800 p-0.5">
+            <button
+              onClick={() => useEditorStore.getState().setEditLayout("desktop")}
+              className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
+                editLayout === "desktop"
+                  ? "bg-blue-700 text-white"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+              title="Edit desktop layout"
+            >
+              <Monitor size={12} />
+              Desktop
+            </button>
+            <button
+              onClick={() => useEditorStore.getState().setEditLayout("mobile")}
+              className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
+                editLayout === "mobile"
+                  ? "bg-blue-700 text-white"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+              title="Edit mobile layout"
+            >
+              <Smartphone size={12} />
+              Mobile
+            </button>
+          </div>
+
           {/* Validation status */}
           {validationResult && (
             <div className="flex items-center gap-1.5">

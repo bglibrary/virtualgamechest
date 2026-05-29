@@ -3,7 +3,7 @@ import { Stage, Layer, Rect, Text, Group, Line, Image } from "react-konva";
 import type Konva from "konva";
 import { useEditorStore } from "@/editor/stores/editorStore";
 import { setViewportSize } from "@/editor/stores/viewportStore";
-import type { CardComponent, DeckComponent, ZoneComponent } from "@/types/game";
+import type { CardComponent, DeckComponent, ZoneComponent, GameComponent } from "@/types/game";
 import useCardImage from "@/ui/hooks/useCardImage";
 import computeCoverCrop from "@/ui/canvas/coverCrop";
 
@@ -14,6 +14,11 @@ const CORNER_RADIUS_RATIO = 0.05;
 const FONT_SIZE_RATIO = 0.22;
 const BORDER_WIDTH = 2;
 const DECK_OFFSET = 3;
+
+// Mobile viewport defaults (chrome-inspector style)
+const MOBILE_PORTRAIT_RATIO = 9 / 16; // width/height
+const MOBILE_LANDSCAPE_RATIO = 16 / 9;
+const MOBILE_VIEWPORT_FRACTION = 0.65; // take 65% of container width for mobile viewport
 
 const SELECTED_STROKE = "#FFD700";
 const SELECTED_STROKE_WIDTH = 3;
@@ -43,6 +48,34 @@ function useCardDimensions(viewportWidth: number) {
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
   return { cardWidth, cardHeight, cornerRadius, fontSize };
+}
+
+/** Resolve the position for a component based on the current edit layout. */
+function getComponentPosition(c: GameComponent, editLayout: "desktop" | "mobile"): { x: number; y: number } | null {
+  if (c.type === "card") {
+    if (editLayout === "mobile") {
+      return (c as any).mobilePosition ?? c.position;
+    }
+    return c.position;
+  }
+  if (c.type === "deck") {
+    if (editLayout === "mobile") {
+      return (c as any).mobilePosition ?? c.position;
+    }
+    return c.position;
+  }
+  if (c.type === "zone") {
+    if (editLayout === "mobile") {
+      return (c as any).mobilePosition ?? c.position;
+    }
+    return c.position;
+  }
+  return null;
+}
+
+/** The position field key to write to based on the current edit layout. */
+function getPositionKey(editLayout: "desktop" | "mobile"): string {
+  return editLayout === "mobile" ? "mobilePosition" : "position";
 }
 
 /**
@@ -159,7 +192,8 @@ function EditorCardRenderer({
   isSelected, isDragging, viewportWidth, viewportHeight,
   onDragEnd, onClick, onDragStart, onDragMove,
 }: EditorCardRendererProps) {
-  const pos = component.position;
+  const editLayout = useEditorStore((s) => s.editLayout);
+  const pos = getComponentPosition(component, editLayout);
   if (!pos) return null;
 
   const x = pos.x * viewportWidth - cardWidth / 2;
@@ -271,7 +305,10 @@ function EditorDeckRenderer({
   isSelected, isDragging, viewportWidth, viewportHeight,
   onDragEnd, onClick, onDragStart, onDragMove,
 }: EditorDeckRendererProps) {
-  const pos = component.position;
+  const editLayout = useEditorStore((s) => s.editLayout);
+  const pos = getComponentPosition(component, editLayout);
+  if (!pos) return null;
+
   const x = pos.x * viewportWidth - cardWidth / 2;
   const y = pos.y * viewportHeight - cardHeight / 2;
   const cardCount = component.cards.length;
@@ -362,7 +399,10 @@ function EditorZoneRenderer({
   isSelected, isDragging, viewportWidth, viewportHeight,
   onDragEnd, onClick, onDragStart, onDragMove,
 }: EditorZoneRendererProps) {
-  const pos = component.position;
+  const editLayout = useEditorStore((s) => s.editLayout);
+  const pos = getComponentPosition(component, editLayout);
+  if (!pos) return null;
+
   const x = pos.x * viewportWidth - cardWidth / 2;
   const y = pos.y * viewportHeight - cardHeight / 2;
   const label = component.label ?? "Zone";
@@ -420,11 +460,6 @@ interface EdgeSnap {
 
 /**
  * Computes alignment guide lines and snap targets for a dragged component.
- * Checks:
- * - Center X/Y alignment with other components
- * - Left/Right edge alignment with other components
- * - Top/Bottom edge alignment with other components
- * - Canvas center alignment
  */
 function computeGuides(
   dragId: string,
@@ -446,16 +481,11 @@ function computeGuides(
 
   for (const other of others) {
     const checks: EdgeSnap[] = [
-      // Center alignment
       { linePos: other.centerX, isVertical: true, snapValue: other.centerX - dragWidth / 2 },
       { linePos: other.centerY, isVertical: false, snapValue: other.centerY - dragHeight / 2 },
-      // Left edge alignment
       { linePos: other.left, isVertical: true, snapValue: other.left },
-      // Right edge alignment
       { linePos: other.right, isVertical: true, snapValue: other.right - dragWidth },
-      // Top edge alignment
       { linePos: other.top, isVertical: false, snapValue: other.top },
-      // Bottom edge alignment
       { linePos: other.bottom, isVertical: false, snapValue: other.bottom - dragHeight },
     ];
 
@@ -510,7 +540,6 @@ export default function EditorCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Snapshot of initial pixel positions for all selected components at drag start.
-  // Keyed by component id, value is the initial (px, py) pixel top-left position.
   const dragStartPositionsRef = useRef<Map<string, { px: number; py: number }>>(new Map());
 
   const game = useEditorStore((s) => s.game);
@@ -519,9 +548,38 @@ export default function EditorCanvas() {
   const selectComponents = useEditorStore((s) => s.selectComponents);
   const updateComponent = useEditorStore((s) => s.updateComponent);
   const updateComponents = useEditorStore((s) => s.updateComponents);
+  const editLayout = useEditorStore((s) => s.editLayout);
+  const posKey = getPositionKey(editLayout);
+  const isMobile = editLayout === "mobile";
+  const gameMobileOrientation = game?.mobileOrientation ?? "portrait";
+  const mobileRatio = isMobile
+    ? (gameMobileOrientation === "portrait" ? MOBILE_PORTRAIT_RATIO : MOBILE_LANDSCAPE_RATIO)
+    : 1;
+
+  // Compute mobile viewport dimensions (chrome-inspector style)
+  const viewportInfo = useMemo(() => {
+    if (!isMobile) {
+      return { width: size.width, height: size.height, offsetX: 0, offsetY: 0 };
+    }
+    const maxVpWidth = Math.floor(size.width * MOBILE_VIEWPORT_FRACTION);
+    const vpWidth = Math.floor(Math.min(maxVpWidth, size.height * mobileRatio));
+    const vpHeight = Math.floor(vpWidth / mobileRatio);
+    const offsetX = Math.floor((size.width - vpWidth) / 2);
+    const offsetY = Math.floor((size.height - vpHeight) / 2);
+    return { width: vpWidth, height: vpHeight, offsetX, offsetY };
+  }, [isMobile, mobileRatio, size]);
 
   const { cardWidth, cardHeight, cornerRadius, fontSize } =
-    useCardDimensions(size.width);
+    useCardDimensions(viewportInfo.width);
+
+  // Update viewport store with actual game viewport (not the full container)
+  useEffect(() => {
+    if (isMobile) {
+      setViewportSize(viewportInfo.width, viewportInfo.height);
+    } else {
+      setViewportSize(size.width, size.height);
+    }
+  }, [isMobile, viewportInfo, size]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -534,7 +592,6 @@ export default function EditorCanvas() {
           const w = Math.floor(width);
           const h = Math.floor(height);
           setSize({ width: w, height: h });
-          setViewportSize(w, h);
         }
       }
     });
@@ -545,19 +602,20 @@ export default function EditorCanvas() {
   const visibleComponents = useMemo(() => {
     if (!game) return [];
     return game.components.filter((c) => {
-      if (c.type === "card") return c.position !== null;
+      if (c.type === "card") return c.position !== null || (c as any).mobilePosition !== undefined;
       return true;
     });
   }, [game]);
 
-  // Compute edge positions for all components (pixel coords)
+  // Compute edge positions for all components (in viewport pixel coords)
   const componentEdges = useMemo(() => {
     return visibleComponents.map((c) => {
-      const pos = c.position!;
+      const pos = getComponentPosition(c, editLayout);
+      if (!pos) return null;
       const w = cardWidth;
       const h = cardHeight;
-      const cx = pos.x * size.width;
-      const cy = pos.y * size.height;
+      const cx = pos.x * viewportInfo.width;
+      const cy = pos.y * viewportInfo.height;
       return {
         id: c.id,
         centerX: cx,
@@ -567,8 +625,8 @@ export default function EditorCanvas() {
         top: cy - h / 2,
         bottom: cy + h / 2,
       };
-    });
-  }, [visibleComponents, size, cardWidth, cardHeight]);
+    }).filter((e): e is NonNullable<typeof e> => e !== null);
+  }, [visibleComponents, viewportInfo, cardWidth, cardHeight, editLayout]);
 
   const handleDragEnd = useCallback(
     (id: string, nx: number, ny: number) => {
@@ -579,44 +637,49 @@ export default function EditorCanvas() {
       setGuides({ lines: [] });
 
       const component = game?.components.find((c) => c.id === id);
-      if (!component || !component.position) return;
+      if (!component) return;
+
+      const currentPos = getComponentPosition(component, editLayout);
+      if (!currentPos) return;
 
       let finalNx = nx;
       let finalNy = ny;
 
       // Snapping logic
       const SNAP_THRESHOLD = 0.01;
-      const others = game?.components.filter((c) => c.id !== id && c.position) ?? [];
+      const others = game?.components.filter((c) => c.id !== id) ?? [];
 
       others.forEach((other) => {
-        if (!other.position) return;
-        if (Math.abs(other.position.x - finalNx) < SNAP_THRESHOLD)
-          finalNx = other.position.x;
-        if (Math.abs(other.position.y - finalNy) < SNAP_THRESHOLD)
-          finalNy = other.position.y;
+        const otherPos = getComponentPosition(other, editLayout);
+        if (!otherPos) return;
+        if (Math.abs(otherPos.x - finalNx) < SNAP_THRESHOLD)
+          finalNx = otherPos.x;
+        if (Math.abs(otherPos.y - finalNy) < SNAP_THRESHOLD)
+          finalNy = otherPos.y;
       });
 
-      const dx = finalNx - component.position.x;
-      const dy = finalNy - component.position.y;
+      const dx = finalNx - currentPos.x;
+      const dy = finalNy - currentPos.y;
 
       if (isMultiDrag) {
-        // Move all selected using the same delta
-        updateComponents(Array.from(startMap.keys()), (c) => ({
-          ...c,
-          position: {
-            x: Math.max(0, Math.min(1, (c.position?.x ?? 0) + dx)),
-            y: Math.max(0, Math.min(1, (c.position?.y ?? 0) + dy)),
-          },
-        }));
+        updateComponents(Array.from(startMap.keys()), (c) => {
+          const oldPos = getComponentPosition(c, editLayout);
+          return {
+            ...c,
+            [posKey]: {
+              x: Math.max(0, Math.min(1, (oldPos?.x ?? 0) + dx)),
+              y: Math.max(0, Math.min(1, (oldPos?.y ?? 0) + dy)),
+            },
+          };
+        });
       } else {
-        // Move single
         updateComponent(id, (c) => ({
           ...c,
-          position: { x: finalNx, y: finalNy },
+          [posKey]: { x: finalNx, y: finalNy },
         }));
       }
     },
-    [game?.components, updateComponent, updateComponents],
+    [game?.components, updateComponent, updateComponents, editLayout, posKey],
   );
 
   const handleDragStart = useCallback((id: string) => {
@@ -626,12 +689,10 @@ export default function EditorCanvas() {
 
     const wasAlreadySelected = selected.includes(id);
 
-    // If the dragged component is not in the current selection, or only one is selected, select it
     if (!wasAlreadySelected || selected.length === 1) {
       selectComponent(id);
     }
 
-    // Snapshot pixel positions of all selected components for real-time multi-drag
     const game = state.game;
     const currentSelected = useEditorStore.getState().selectedIds;
     const idsToDrag = currentSelected.length > 1 && currentSelected.includes(id)
@@ -642,9 +703,10 @@ export default function EditorCanvas() {
       const map = new Map<string, { px: number; py: number }>();
       idsToDrag.forEach((sid) => {
         const comp = game?.components.find((c) => c.id === sid);
-        if (comp?.position) {
-          const cx = comp.position.x * size.width;
-          const cy = comp.position.y * size.height;
+        const pos = comp ? getComponentPosition(comp, editLayout) : null;
+        if (pos) {
+          const cx = pos.x * viewportInfo.width;
+          const cy = pos.y * viewportInfo.height;
           const tlX = cx - cardWidth / 2;
           const tlY = cy - cardHeight / 2;
           map.set(sid, { px: tlX, py: tlY });
@@ -654,7 +716,7 @@ export default function EditorCanvas() {
     } else {
       dragStartPositionsRef.current = new Map();
     }
-  }, [selectComponent, size, cardWidth, cardHeight]);
+  }, [selectComponent, viewportInfo, cardWidth, cardHeight, editLayout]);
 
   const handleDragMove = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
@@ -666,10 +728,9 @@ export default function EditorCanvas() {
       const nodeX = node.x();
       const nodeY = node.y();
 
-      const result = computeGuides(id, nodeX, nodeY, cardWidth, cardHeight, componentEdges, size.width, size.height);
+      const result = computeGuides(id, nodeX, nodeY, cardWidth, cardHeight, componentEdges, viewportInfo.width, viewportInfo.height);
       setGuides({ lines: result.lines });
 
-      // Apply snap
       if (result.snapX !== null) {
         node.x(result.snapX);
       }
@@ -677,11 +738,9 @@ export default function EditorCanvas() {
         node.y(result.snapY);
       }
 
-      // Use snapped positions for the delta
       const snappedX = result.snapX !== null ? result.snapX : nodeX;
       const snappedY = result.snapY !== null ? result.snapY : nodeY;
 
-      // Sync other selected components via direct Konva node manipulation
       const startMap = dragStartPositionsRef.current;
       if (startMap.size > 1) {
         const startPos = startMap.get(id);
@@ -698,7 +757,7 @@ export default function EditorCanvas() {
         });
       }
     },
-    [cardWidth, cardHeight, componentEdges, size],
+    [cardWidth, cardHeight, componentEdges, viewportInfo],
   );
 
   const handleClick = useCallback(
@@ -746,9 +805,10 @@ export default function EditorCanvas() {
       } else {
         const ids = visibleComponents
           .filter((c) => {
-            if (!c.position) return false;
-            const cx = c.position.x * size.width;
-            const cy = c.position.y * size.height;
+            const pos = getComponentPosition(c, editLayout);
+            if (!pos) return false;
+            const cx = pos.x * viewportInfo.width;
+            const cy = pos.y * viewportInfo.height;
             return cx >= x1 && cx <= x2 && cy >= y1 && cy <= y2;
           })
           .map((c) => c.id);
@@ -767,7 +827,7 @@ export default function EditorCanvas() {
 
       setSelectionRect(null);
     },
-    [selectionRect, visibleComponents, size, selectedIds, selectComponent, selectComponents],
+    [selectionRect, visibleComponents, viewportInfo, selectedIds, selectComponent, selectComponents, editLayout],
   );
 
   if (!game) {
@@ -778,148 +838,187 @@ export default function EditorCanvas() {
     );
   }
 
-  return (
-    <div ref={containerRef} className="h-full w-full overflow-hidden rounded-lg">
-      <Stage
-        width={size.width}
-        height={size.height}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      >
-        <Layer>
-          <Rect
-            name="background"
-            x={0}
-            y={0}
-            width={size.width}
-            height={size.height}
-            fill="#3B7A3B"
-          />
-        </Layer>
-        <Layer>
-          {visibleComponents.map((component) => {
-            const isSelected = selectedIds.includes(component.id);
-            const isDragging = draggingIdRef.current === component.id;
+  const stageContent = (
+    <>
+      <Layer>
+        {/* In mobile mode, the stage itself is the mobile viewport with a green background.
+            The dark areas around it are rendered via the container's CSS background. */}
+        <Rect
+          name="background"
+          x={0}
+          y={0}
+          width={viewportInfo.width}
+          height={viewportInfo.height}
+          fill="#3B7A3B"
+        />
+      </Layer>
+      <Layer>
+        {visibleComponents.map((component) => {
+          const isSelected = selectedIds.includes(component.id);
+          const isDragging = draggingIdRef.current === component.id;
 
-            if (component.type === "card") {
-              return (
-                <EditorCardRenderer
-                  key={component.id}
-                  component={component}
-                  cardWidth={cardWidth}
-                  cardHeight={cardHeight}
-                  cornerRadius={cornerRadius}
-                  fontSize={fontSize}
-                  isSelected={isSelected}
-                  isDragging={isDragging}
-                  viewportWidth={size.width}
-                  viewportHeight={size.height}
-                  onDragEnd={handleDragEnd}
-                  onClick={(id) => {
-                    handleClick(
-                      { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
-                      id,
-                    );
-                  }}
-                  onDragStart={() => handleDragStart(component.id)}
-                  onDragMove={handleDragMove}
-                />
-              );
-            }
-            if (component.type === "deck") {
-              return (
-                <EditorDeckRenderer
-                  key={component.id}
-                  component={component}
-                  cardWidth={cardWidth}
-                  cardHeight={cardHeight}
-                  cornerRadius={cornerRadius}
-                  fontSize={fontSize}
-                  isSelected={isSelected}
-                  isDragging={isDragging}
-                  viewportWidth={size.width}
-                  viewportHeight={size.height}
-                  onDragEnd={handleDragEnd}
-                  onClick={(id) => {
-                    handleClick(
-                      { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
-                      id,
-                    );
-                  }}
-                  onDragStart={() => handleDragStart(component.id)}
-                  onDragMove={handleDragMove}
-                />
-              );
-            }
-            if (component.type === "zone") {
-              return (
-                <EditorZoneRenderer
-                  key={component.id}
-                  component={component}
-                  cardWidth={cardWidth}
-                  cardHeight={cardHeight}
-                  cornerRadius={cornerRadius}
-                  fontSize={fontSize}
-                  isSelected={isSelected}
-                  isDragging={isDragging}
-                  viewportWidth={size.width}
-                  viewportHeight={size.height}
-                  onDragEnd={handleDragEnd}
-                  onClick={(id) => {
-                    handleClick(
-                      { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
-                      id,
-                    );
-                  }}
-                  onDragStart={() => handleDragStart(component.id)}
-                  onDragMove={handleDragMove}
-                />
-              );
-            }
-            return null;
-          })}
+          if (component.type === "card") {
+            return (
+              <EditorCardRenderer
+                key={component.id}
+                component={component}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
+                cornerRadius={cornerRadius}
+                fontSize={fontSize}
+                isSelected={isSelected}
+                isDragging={isDragging}
+                viewportWidth={viewportInfo.width}
+                viewportHeight={viewportInfo.height}
+                onDragEnd={handleDragEnd}
+                onClick={(id) => {
+                  handleClick(
+                    { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
+                    id,
+                  );
+                }}
+                onDragStart={() => handleDragStart(component.id)}
+                onDragMove={handleDragMove}
+              />
+            );
+          }
+          if (component.type === "deck") {
+            return (
+              <EditorDeckRenderer
+                key={component.id}
+                component={component}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
+                cornerRadius={cornerRadius}
+                fontSize={fontSize}
+                isSelected={isSelected}
+                isDragging={isDragging}
+                viewportWidth={viewportInfo.width}
+                viewportHeight={viewportInfo.height}
+                onDragEnd={handleDragEnd}
+                onClick={(id) => {
+                  handleClick(
+                    { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
+                    id,
+                  );
+                }}
+                onDragStart={() => handleDragStart(component.id)}
+                onDragMove={handleDragMove}
+              />
+            );
+          }
+          if (component.type === "zone") {
+            return (
+              <EditorZoneRenderer
+                key={component.id}
+                component={component}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
+                cornerRadius={cornerRadius}
+                fontSize={fontSize}
+                isSelected={isSelected}
+                isDragging={isDragging}
+                viewportWidth={viewportInfo.width}
+                viewportHeight={viewportInfo.height}
+                onDragEnd={handleDragEnd}
+                onClick={(id) => {
+                  handleClick(
+                    { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
+                    id,
+                  );
+                }}
+                onDragStart={() => handleDragStart(component.id)}
+                onDragMove={handleDragMove}
+              />
+            );
+          }
+          return null;
+        })}
 
-          {/* Alignment guide lines (Figma-style red) */}
-          {guides.lines.map((guide, idx) => {
-            if (guide.isVertical) {
-              return (
-                <Line
-                  key={`guide-v-${idx}`}
-                  x={guide.pos}
-                  y={0}
-                  points={[0, 0, 0, size.height]}
-                  stroke={GUIDE_COLOR}
-                  strokeWidth={GUIDE_STROKE_WIDTH}
-                  dash={[4, 3]}
-                />
-              );
-            }
+        {/* Alignment guide lines */}
+        {guides.lines.map((guide, idx) => {
+          if (guide.isVertical) {
             return (
               <Line
-                key={`guide-h-${idx}`}
-                x={0}
-                y={guide.pos}
-                points={[0, 0, size.width, 0]}
+                key={`guide-v-${idx}`}
+                x={guide.pos}
+                y={0}
+                points={[0, 0, 0, viewportInfo.height]}
                 stroke={GUIDE_COLOR}
                 strokeWidth={GUIDE_STROKE_WIDTH}
                 dash={[4, 3]}
               />
             );
-          })}
-
-          {selectionRect && (
-            <Rect
-              x={Math.min(selectionRect.x1, selectionRect.x2)}
-              y={Math.min(selectionRect.y1, selectionRect.y2)}
-              width={Math.abs(selectionRect.x2 - selectionRect.x1)}
-              height={Math.abs(selectionRect.y2 - selectionRect.y1)}
-              fill="rgba(0, 161, 255, 0.3)"
-              stroke="rgba(0, 161, 255, 1)"
-              strokeWidth={1}
+          }
+          return (
+            <Line
+              key={`guide-h-${idx}`}
+              x={0}
+              y={guide.pos}
+              points={[0, 0, viewportInfo.width, 0]}
+              stroke={GUIDE_COLOR}
+              strokeWidth={GUIDE_STROKE_WIDTH}
+              dash={[4, 3]}
             />
-          )}
-        </Layer>
+          );
+        })}
+
+        {selectionRect && (
+          <Rect
+            x={Math.min(selectionRect.x1, selectionRect.x2)}
+            y={Math.min(selectionRect.y1, selectionRect.y2)}
+            width={Math.abs(selectionRect.x2 - selectionRect.x1)}
+            height={Math.abs(selectionRect.y2 - selectionRect.y1)}
+            fill="rgba(0, 161, 255, 0.3)"
+            stroke="rgba(0, 161, 255, 1)"
+            strokeWidth={1}
+          />
+        )}
+      </Layer>
+    </>
+  );
+
+  // In mobile mode, we wrap the stage in a centered container with dark margins
+  if (isMobile) {
+    return (
+      <div
+        ref={containerRef}
+        className="h-full w-full overflow-hidden rounded-lg"
+        style={{ backgroundColor: "#1a1a2e" }}
+      >
+        <div
+          style={{
+            position: "relative",
+            marginLeft: viewportInfo.offsetX,
+            marginTop: viewportInfo.offsetY,
+            width: viewportInfo.width,
+            height: viewportInfo.height,
+          }}
+        >
+          <Stage
+            width={viewportInfo.width}
+            height={viewportInfo.height}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+          >
+            {stageContent.props.children}
+          </Stage>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div ref={containerRef} className="h-full w-full overflow-hidden rounded-lg">
+      <Stage
+        width={viewportInfo.width}
+        height={viewportInfo.height}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        {stageContent.props.children}
       </Stage>
     </div>
   );

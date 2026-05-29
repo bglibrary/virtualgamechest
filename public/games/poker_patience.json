@@ -6,6 +6,7 @@
     "minWidth": 60,
     "aspectRatio": 1.4
   },
+  "mobileOrientation": "landscape",
   "startup": [
     { "type": "shuffle", "target": "draw-pile" }
   ],

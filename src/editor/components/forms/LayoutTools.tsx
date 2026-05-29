@@ -100,12 +100,23 @@ function DistributeVIcon() {
 
 export default function LayoutTools({ components }: Props) {
   const updateComponents = useEditorStore((s) => s.updateComponents);
+  const editLayout = useEditorStore((s) => s.editLayout);
+  const isMobile = editLayout === "mobile";
+
+  const getPosition = useCallback(
+    (c: { position?: { x: number; y: number } | null; mobilePosition?: { x: number; y: number } | null }): { x: number; y: number } => {
+      return isMobile && c.mobilePosition ? c.mobilePosition : (c.position ?? { x: 0, y: 0 });
+    },
+    [isMobile],
+  );
+
+  const getPosKey = isMobile ? "mobilePosition" : "position";
 
   const align = useCallback(
     (type: "left" | "center" | "right" | "top" | "middle" | "bottom") => {
       if (components.length < 2) return;
 
-      const positions = components.map((c) => c.position).filter((p): p is { x: number; y: number } => !!p);
+      const positions = components.map((c) => getPosition(c)).filter((p) => !!(p.x !== undefined && p.y !== undefined));
       if (positions.length === 0) return;
 
       let targetX = 0;
@@ -134,43 +145,53 @@ export default function LayoutTools({ components }: Props) {
 
       updateComponents(
         components.map((c) => c.id),
-        (c) => ({
-          ...c,
-          position: {
-            x: ["left", "right", "center"].includes(type) ? targetX : (c.position?.x ?? 0),
-            y: ["top", "bottom", "middle"].includes(type) ? targetY : (c.position?.y ?? 0),
-          },
-        }),
+        (c) => {
+          const currentPos = isMobile ? (c.mobilePosition ?? c.position ?? { x: 0, y: 0 }) : c.position ?? { x: 0, y: 0 };
+          return {
+            ...c,
+            [getPosKey]: {
+              x: ["left", "right", "center"].includes(type) ? targetX : currentPos.x,
+              y: ["top", "bottom", "middle"].includes(type) ? targetY : currentPos.y,
+            },
+          };
+        },
       );
     },
-    [components, updateComponents],
+    [components, updateComponents, getPosition, getPosKey, isMobile],
   );
 
   const distribute = useCallback(
     (axis: "h" | "v") => {
       if (components.length < 3) return;
 
+      const getVal = (c: { position?: { x: number; y: number } | null; mobilePosition?: { x: number; y: number } | null }): number => {
+        return axis === "h" ? getPosition(c).x : getPosition(c).y;
+      };
+
       const sorted = [...components]
-        .filter((c) => c.position)
-        .sort((a, b) => (axis === "h" ? (a.position?.x ?? 0) - (b.position?.x ?? 0) : (a.position?.y ?? 0) - (b.position?.y ?? 0)));
+        .filter((c) => getPosition(c))
+        .sort((a, b) => getVal(a) - getVal(b));
 
       if (sorted.length < 3) return;
 
-      const start = axis === "h" ? (sorted[0].position?.x ?? 0) : (sorted[0].position?.y ?? 0);
-      const end = axis === "h" ? (sorted[sorted.length - 1].position?.x ?? 0) : (sorted[sorted.length - 1].position?.y ?? 0);
+      const start = getVal(sorted[0]);
+      const end = getVal(sorted[sorted.length - 1]);
       const step = (end - start) / (sorted.length - 1);
 
       sorted.forEach((c, i) => {
-        updateComponents([c.id], (comp) => ({
-          ...comp,
-          position: {
-            x: axis === "h" ? start + step * i : (comp.position?.x ?? 0),
-            y: axis === "v" ? start + step * i : (comp.position?.y ?? 0),
-          },
-        }));
+        updateComponents([c.id], (comp) => {
+          const currentPos = isMobile ? (comp.mobilePosition ?? comp.position ?? { x: 0, y: 0 }) : comp.position ?? { x: 0, y: 0 };
+          return {
+            ...comp,
+            [getPosKey]: {
+              x: axis === "h" ? start + step * i : currentPos.x,
+              y: axis === "v" ? start + step * i : currentPos.y,
+            },
+          };
+        });
       });
     },
-    [components, updateComponents],
+    [components, updateComponents, getPosition, getPosKey, isMobile],
   );
 
   return (

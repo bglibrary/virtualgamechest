@@ -8,11 +8,12 @@ interface Props {
 
 export default function PositionForm({ components }: Props) {
   const updateComponents = useEditorStore((s) => s.updateComponents);
+  const editLayout = useEditorStore((s) => s.editLayout);
 
-  // If multiple components, we show the values of the first one but indicate it affects all
-  // or we show empty if they differ. For simplicity here, we'll use the first one's values
-  // but allow updating all of them to the same value if changed.
-  const firstPos = components[0]?.position || { x: 0, y: 0 };
+  const isMobile = editLayout === "mobile";
+
+  // Get the position for the current layout (mobilePosition or position)
+  const firstPos = (isMobile ? components[0]?.mobilePosition : components[0]?.position) || { x: 0, y: 0 };
 
   const roundToCentieme = (v: number) => Math.round(v * 100) / 100;
 
@@ -24,13 +25,16 @@ export default function PositionForm({ components }: Props) {
       // Clamp 0-1 and round to centième
       const clampedValue = roundToCentieme(Math.max(0, Math.min(1, numValue)));
 
+      const editLayout = useEditorStore.getState().editLayout;
+      const isMobile = editLayout === "mobile";
+
       updateComponents(
         components.map((c) => c.id),
         (c) => ({
           ...c,
-          position: {
-            x: c.position?.x ?? 0,
-            y: c.position?.y ?? 0,
+          [isMobile ? "mobilePosition" : "position"]: {
+            x: isMobile ? (c.mobilePosition?.x ?? c.position?.x ?? 0) : (c.position?.x ?? 0),
+            y: isMobile ? (c.mobilePosition?.y ?? c.position?.y ?? 0) : (c.position?.y ?? 0),
             [axis]: clampedValue,
           },
         }),

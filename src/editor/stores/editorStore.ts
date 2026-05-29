@@ -11,6 +11,8 @@ export interface EditorState {
   selectedIds: string[];
   /** Whether there are unsaved changes. */
   isDirty: boolean;
+  /** Which layout is currently being edited in the editor. */
+  editLayout: "desktop" | "mobile";
 
   // Actions
   openGame: (gameId: string, game: GameDefinition) => void;
@@ -28,6 +30,7 @@ export interface EditorState {
     componentIds: string[],
     updater: (component: GameComponent) => GameComponent,
   ) => void;
+  setEditLayout: (layout: "desktop" | "mobile") => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -35,6 +38,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   game: null,
   selectedIds: [],
   isDirty: false,
+  editLayout: "desktop",
 
   openGame: (gameId, game) =>
     set({
@@ -42,6 +46,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       game,
       selectedIds: [],
       isDirty: false,
+      editLayout: "desktop",
     }),
 
   closeGame: () =>
@@ -114,4 +119,6 @@ export const useEditorStore = create<EditorState>((set) => ({
         isDirty: true,
       };
     }),
+
+  setEditLayout: (layout) => set({ editLayout: layout }),
 }));
