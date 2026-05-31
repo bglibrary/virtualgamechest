@@ -13,7 +13,7 @@
 
 ## Goal
 
-Allow game authors to define a separate layout for mobile devices, with configurable positions and card sizes per component, so that games are playable and well-proportioned on both desktop and mobile screens. The mobile layout has a fixed orientation (portrait or landscape) chosen by the game author.
+Allow game authors to define a separate layout for mobile devices, with configurable positions and card sizes per component, so that games are playable and well-proportioned on both desktop and mobile screens. The mobile layout is always in portrait mode (landscape would be cumbersome on mobile web).
 
 ## Business Context
 
@@ -24,9 +24,7 @@ Currently, the engine renders all components using a single set of positions and
 - Two distinct layouts: **desktop** and **mobile**
 - Each component (card, deck, zone) can have a `position` (desktop) and optionally a `mobilePosition`
 - The game definition can have a `mobileCardSize` (optional) that overrides `cardSize` on mobile
-- The game definition can have a `mobileOrientation` field (`"portrait"` or `"landscape"`) — only used if the device is mobile, otherwise ignored
 - Device detection at game load time: mobile vs desktop, based on user-agent + touch support
-- On mobile, an orientation lock hint is set via `screen.orientation.lock()` if the API supports it
 - The game editor gains a "Desktop / Mobile" toggle in the top toolbar that switches which layout is visible and editable on the canvas
 - The position form in the editor reads/writes the layout corresponding to the active toggle
 - The LayoutTools (alignment & distribution) apply to the active layout
@@ -67,20 +65,7 @@ Currently, the engine renders all components using a single set of positions and
 - [ ] When `mobileCardSize` is absent, fall back to `cardSize` on mobile
 - [ ] `mobileCardSize` is ignored on desktop
 
-### US-3: Set mobile orientation
-
-**As a** game author
-**I want** to fix the orientation for the mobile layout
-**So that** players see the game in the intended orientation
-
-**Acceptance Criteria:**
-
-- [ ] The game definition can have an optional `mobileOrientation` field, values: `"portrait"` | `"landscape"`
-- [ ] On a mobile device, the engine attempts to lock the screen orientation to the configured value
-- [ ] If `mobileOrientation` is absent, no orientation lock is attempted
-- [ ] On desktop, `mobileOrientation` is ignored
-
-### US-4: Toggle layout mode in editor
+### US-3: Toggle layout mode in editor
 
 **As a** game author
 **I want** to switch between desktop and mobile view in the editor
@@ -93,7 +78,7 @@ Currently, the engine renders all components using a single set of positions and
 - [ ] Switching the toggle does not change which components exist, only their display/editing positions
 - [ ] The active layout mode is visually indicated (e.g., highlighted toggle)
 
-### US-5: Editor position form adapts to active layout
+### US-4: Editor position form adapts to active layout
 
 **As a** game author
 **I want** the position form to edit the position of the currently active layout
@@ -105,7 +90,7 @@ Currently, the engine renders all components using a single set of positions and
 - [ ] When editing in "Mobile" mode, the PositionForm reads/writes `mobilePosition`
 - [ ] If `mobilePosition` is null/undefined in mobile mode, the form shows defaults (x:0, y:0)
 
-### US-6: Render correct layout at runtime
+### US-5: Render correct layout at runtime
 
 **As a** player
 **I want** to see the game in the layout appropriate for my device
@@ -123,7 +108,6 @@ Currently, the engine renders all components using a single set of positions and
 |---|---|
 | Mobile device, no `mobilePosition` set on any component | All components render at their desktop `position` |
 | Mobile device, no `mobileCardSize` set | Cards use `cardSize` (desktop size) |
-| `mobileOrientation` set but screen.orientation.lock() not supported (older browser) | No lock, game loads normally in whatever orientation |
 | Editor toggles to mobile mode, component has no `mobilePosition` | Position form shows default (0, 0), canvas shows component at (0, 0) |
 | LayoutTools used in mobile mode | Alignment/distribution applies to `mobilePosition` values |
 | Desktop device being tested via "responsive mode" in browser devtools | Layout stays desktop (detected by user-agent, not viewport width) |
@@ -134,8 +118,6 @@ Currently, the engine renders all components using a single set of positions and
 |---|---|---|
 | `mobilePosition` on a component (any type) | Must be a valid position object {x: 0-1, y: 0-1} or undefined/null | Zod validation error |
 | `mobileCardSize` on game definition | Must be a valid cardSize object or undefined | Zod validation error |
-| `mobileOrientation` on game definition | Must be "portrait" or "landscape" or undefined | Zod validation error |
-
 ## UX Expectations
 
 - **Runtime**: the game loads and runs in the correct layout silently — no flash of wrong layout
@@ -148,10 +130,10 @@ Currently, the engine renders all components using a single set of positions and
 |---|---|---|---|
 | 1 | Should tablets be treated as mobile or desktop? | Desktop (sufficient screen space) | 2026-05-29 |
 | 2 | Do we need runtime layout switching (resize from mobile to desktop)? | No — layout is determined once at load | 2026-05-29 |
-| 3 | What happens if screen.orientation.lock() fails? | Silently ignored, game loads normally | 2026-05-29 |
 
 ## Change Log
 
 | Date | Change | Author |
 |---|---|---|
 | 2026-05-29 | Initial draft | AI |
+| 2026-05-31 | Removed mobileOrientation — mobile is always portrait; removed orientation lock; consolidated editor stories into main spec | AI |

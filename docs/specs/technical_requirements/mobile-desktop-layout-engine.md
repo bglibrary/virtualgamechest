@@ -4,27 +4,13 @@
 
 ## Schema Changes (`src/schemas/game.ts`)
 
-### New schemas
-
-```typescript
-export const mobileOrientationSchema = z.enum(["portrait", "landscape"]).optional();
-
-export const mobileCardSizeSchema = cardSizeSchema.optional();
-```
-
 ### Modified schemas
 
 - `cardComponentSchema`: add optional `mobilePosition: positionSchema.optional()`
 - `deckComponentSchema`: add optional `mobilePosition: positionSchema.optional()`
 - `zoneComponentSchema`: add optional `mobilePosition: positionSchema.optional()`
-- `gameDefinitionSchema`: add optional `mobileCardSize: mobileCardSizeSchema` and `mobileOrientation: mobileOrientationSchema`
-
-### Type exports
-
-Add to `src/types/game.ts`:
-```typescript
-export type MobileOrientation = "portrait" | "landscape";
-```
+- `gameDefinitionSchema`: add optional `mobileCardSize: cardSizeSchema.optional()`
+- Removed `mobileOrientation` (no longer needed — mobile is always portrait)
 
 ## Device Detection (`src/utils/deviceDetection.ts`)
 
@@ -49,7 +35,6 @@ interface DeviceLayout {
   isMobile: boolean;
   getPosition: (component: { position?: Position; mobilePosition?: Position }) => Position;
   getCardSize: (game: { cardSize?: CardSize; mobileCardSize?: CardSize }) => CardSize;
-  lockOrientation: (orientation?: "portrait" | "landscape") => void;
 }
 
 function useDeviceLayout(): DeviceLayout
@@ -58,21 +43,17 @@ function useDeviceLayout(): DeviceLayout
 - `isMobile`: memoized result of `isMobileDevice()`
 - `getPosition`: returns `mobilePosition ?? position` if mobile, else `position`
 - `getCardSize`: returns `mobileCardSize ?? cardSize` if mobile, else `cardSize`
-- `lockOrientation`: calls `screen.orientation.lock(orientation)` if mobile and orientation is set
+- No orientation lock (mobile is always portrait, no need to lock)
 
 ## TableCanvas Changes (`src/ui/canvas/TableCanvas.tsx`)
 
 - Import and call `useDeviceLayout()` at the top level
 - Use `getPosition(component)` to resolve position for zones and visible components
 - Use `getCardSize(game)` for card size calculations (cardWidth, cardHeight)
-- Call `lockOrientation(game.mobileOrientation)` on mount
 - `getDraggedFaceUp`, `buildMergeTargetInfos`, `handleDragMoveCommon` all use resolved position
 - `handleSnapToZone` uses resolved position
 - ActionBar positioning uses resolved position
-
-## Load Game (`src/engine/loadGame.ts`)
-
-- Call `lockOrientation` after game is loaded if on mobile
+- No `lockOrientation` call on mount (removed)
 
 ## Layout Store (`src/store/layoutStore.ts`)
 
@@ -92,3 +73,4 @@ interface LayoutStore {
 - Add `mobileOrientation: "portrait"` (since it's a solitaire game typically played portrait)
 - No `mobileCardSize` (fall back to desktop card size)
 - No `mobilePosition` on components initially (fall back to desktop positions)
+- No `mobileOrientation` (removed — mobile is always portrait)

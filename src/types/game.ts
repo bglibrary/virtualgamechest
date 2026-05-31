@@ -11,7 +11,6 @@ export type {
   GameComponent,
   StartupStep,
   GameDefinition,
-  MobileOrientation,
 } from "@/schemas/game";
 
 import { z } from "zod/v4";

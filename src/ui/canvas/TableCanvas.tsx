@@ -10,7 +10,7 @@ import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ZoneRenderer from "@/ui/canvas/ZoneRenderer";
 import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
-import { Hand, Combine, Smartphone, Monitor } from "lucide-react";
+import { Hand, Combine } from "lucide-react";
 import { executeAction, executeCompositeAction } from "@/engine/actionExecutor";
 import ActionBar from "@/ui/html/ActionBar";
 import type { ActionButton } from "@/ui/html/ActionBar";
@@ -28,7 +28,7 @@ import type Konva from "konva";
 import type { DeckComponent } from "@/types/game";
 
 function TableCanvas() {
-  const { isMobile, getPosition, getCardSize, lockOrientation } = useDeviceLayout();
+  const { isMobile, getPosition, getCardSize } = useDeviceLayout();
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -51,12 +51,6 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
   const getCardCount = useZoneStateStore((s) => s.getCardCount);
   const addCard = useZoneStateStore((s) => s.addCard);
   const cardStateIsFaceUp = useCardStateStore((s) => s.isFaceUp);
-
-  useEffect(() => {
-    if (game) {
-      lockOrientation(game.mobileOrientation);
-    }
-  }, [game, lockOrientation]);
 
   useEffect(() => {
     initZOrderDebug();
@@ -456,14 +450,6 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
-      {/* Mobile mode badge — visible indicator */}
-      {isMobile && (
-        <div className="absolute top-2 left-2 z-50 flex items-center gap-1.5 rounded bg-blue-900/70 px-2.5 py-1 text-xs font-medium text-blue-200 backdrop-blur-sm">
-          <Smartphone size={12} />
-          Mobile Mode
-        </div>
-      )}
-
       <Stage width={size.width} height={size.height}>
         <Layer>
           <Rect

@@ -25,47 +25,6 @@ export default function PropertyPanel() {
           Select a component to edit its properties, or configure game settings
           below.
         </div>
-        {/* Mobile orientation selector */}
-        <div className="space-y-2 rounded border border-gray-800 bg-gray-900/50 p-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Mobile Layout
-          </h3>
-          <div className="flex gap-2">
-            <button
-              onClick={() =>
-                useEditorStore.getState().updateGame((g) => ({
-                  ...g,
-                  mobileOrientation: "portrait" as const,
-                }))
-              }
-              className={`flex-1 rounded px-3 py-1.5 text-xs font-medium transition-colors ${
-                game.mobileOrientation === "portrait" || !game.mobileOrientation
-                  ? "bg-blue-700 text-white"
-                  : "border border-gray-700 text-gray-400 hover:bg-gray-800"
-              }`}
-            >
-              Portrait
-            </button>
-            <button
-              onClick={() =>
-                useEditorStore.getState().updateGame((g) => ({
-                  ...g,
-                  mobileOrientation: "landscape" as const,
-                }))
-              }
-              className={`flex-1 rounded px-3 py-1.5 text-xs font-medium transition-colors ${
-                game.mobileOrientation === "landscape"
-                  ? "bg-blue-700 text-white"
-                  : "border border-gray-700 text-gray-400 hover:bg-gray-800"
-              }`}
-            >
-              Paysage
-            </button>
-          </div>
-          <p className="text-[10px] text-gray-500">
-            Used when rendering on a mobile device. The editor preview adapts to this orientation.
-          </p>
-        </div>
         <StartupEditor />
       </div>
     );

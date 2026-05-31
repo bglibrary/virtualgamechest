@@ -15,9 +15,8 @@ const FONT_SIZE_RATIO = 0.22;
 const BORDER_WIDTH = 2;
 const DECK_OFFSET = 3;
 
-// Mobile viewport defaults (chrome-inspector style)
-const MOBILE_PORTRAIT_RATIO = 9 / 16; // width/height
-const MOBILE_LANDSCAPE_RATIO = 16 / 9;
+// Mobile viewport (always portrait mode, chrome-inspector style)
+const MOBILE_RATIO = 9 / 16; // width/height
 const MOBILE_VIEWPORT_FRACTION = 0.65; // take 65% of container width for mobile viewport
 
 const SELECTED_STROKE = "#FFD700";
@@ -551,23 +550,19 @@ export default function EditorCanvas() {
   const editLayout = useEditorStore((s) => s.editLayout);
   const posKey = getPositionKey(editLayout);
   const isMobile = editLayout === "mobile";
-  const gameMobileOrientation = game?.mobileOrientation ?? "portrait";
-  const mobileRatio = isMobile
-    ? (gameMobileOrientation === "portrait" ? MOBILE_PORTRAIT_RATIO : MOBILE_LANDSCAPE_RATIO)
-    : 1;
 
-  // Compute mobile viewport dimensions (chrome-inspector style)
+  // Compute mobile viewport dimensions (always portrait, chrome-inspector style)
   const viewportInfo = useMemo(() => {
     if (!isMobile) {
       return { width: size.width, height: size.height, offsetX: 0, offsetY: 0 };
     }
     const maxVpWidth = Math.floor(size.width * MOBILE_VIEWPORT_FRACTION);
-    const vpWidth = Math.floor(Math.min(maxVpWidth, size.height * mobileRatio));
-    const vpHeight = Math.floor(vpWidth / mobileRatio);
+    const vpWidth = Math.floor(Math.min(maxVpWidth, size.height * MOBILE_RATIO));
+    const vpHeight = Math.floor(vpWidth / MOBILE_RATIO);
     const offsetX = Math.floor((size.width - vpWidth) / 2);
     const offsetY = Math.floor((size.height - vpHeight) / 2);
     return { width: vpWidth, height: vpHeight, offsetX, offsetY };
-  }, [isMobile, mobileRatio, size]);
+  }, [isMobile, size]);
 
   const { cardWidth, cardHeight, cornerRadius, fontSize } =
     useCardDimensions(viewportInfo.width);
