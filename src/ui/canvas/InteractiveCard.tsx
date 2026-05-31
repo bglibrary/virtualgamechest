@@ -10,6 +10,7 @@ import CardRenderer, {
   DEFAULT_CARD_ASPECT,
 } from "@/ui/canvas/CardRenderer";
 import { useGameStore } from "@/store/gameStore";
+import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
 import { logZOrder } from "@/utils/debugZOrder";
 
@@ -35,7 +36,9 @@ function InteractiveCard({
   const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
   const setDragging = useCardPositionStore((s) => s.setDragging);
   const bringToTop = useCardZOrderStore((s) => s.bringToTop);
-  const cardSizeConfig = useGameStore((state) => state.game?.cardSize);
+  const { getCardSize } = useDeviceLayout();
+  const game = useGameStore((state) => state.game);
+  const cardSizeConfig = getCardSize(game ?? {});
   const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
   const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
   const cardAspectRatio = cardSizeConfig?.aspectRatio ?? DEFAULT_CARD_ASPECT;

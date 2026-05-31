@@ -1,6 +1,7 @@
 import { useMemo, useEffect } from "react";
 import { isMobileDevice } from "@/utils/deviceDetection";
 import { useLayoutStore } from "@/store/layoutStore";
+import { useEditorStore } from "@/editor/stores/editorStore";
 import type { Position, CardSize } from "@/types/game";
 
 export interface ComponentWithPosition {
@@ -23,11 +24,21 @@ const DEFAULT_POSITION: Position = { x: 0, y: 0 };
 const DEFAULT_CARD_SIZE: CardSize = { widthRatio: 0.08, minWidth: 55, aspectRatio: 1.4 };
 
 export function useDeviceLayout(): DeviceLayout {
+  // Try to get editLayout from editor store if it exists
+  const editLayout = useEditorStore((s) => s.editLayout);
   const isMobile = useMemo(() => {
+    console.log("[DeviceLayout] debug check: editLayout =", editLayout);
+    // In the editor, we follow the editLayout toggle. 
+    // In the game, we follow the detected device.
+    if (editLayout) {
+      const res = editLayout === "mobile";
+      console.log("[DeviceLayout] debug check: isMobile (editor) =", res);
+      return res;
+    }
     const detected = isMobileDevice();
     console.log("[DeviceLayout] isMobile:", detected, "href:", window.location.href, "ua:", navigator.userAgent);
     return detected;
-  }, []);
+  }, [editLayout]);
   const setIsMobile = useLayoutStore((s) => s.setIsMobile);
 
   useEffect(() => {
@@ -43,9 +54,12 @@ export function useDeviceLayout(): DeviceLayout {
 
   const getCardSize = (game: GameWithCardSize): CardSize => {
     if (isMobile && game.mobileCardSize) {
+      console.log("[DeviceLayout] returning mobileCardSize:", game.mobileCardSize);
       return game.mobileCardSize;
     }
-    return game.cardSize ?? DEFAULT_CARD_SIZE;
+    const res = game.cardSize ?? DEFAULT_CARD_SIZE;
+    console.log("[DeviceLayout] returning cardSize:", res, "isMobile:", isMobile);
+    return res;
   };
 
   return { isMobile, getPosition, getCardSize };

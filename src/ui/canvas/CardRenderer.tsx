@@ -47,6 +47,7 @@ interface CardRendererProps {
 }
 
 import { useGameStore } from "@/store/gameStore";
+import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
 
 function CardRenderer({
   component,
@@ -63,12 +64,15 @@ function CardRenderer({
   onDragEnd,
   positionOverride,
 }: CardRendererProps) {
-  const cardSizeConfig = useGameStore((state) => state.game?.cardSize);
+  const { getCardSize } = useDeviceLayout();
+  const game = useGameStore((state) => state.game);
+  const cardSizeConfig = getCardSize(game ?? {});
   const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
   const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
   const cardAspectRatio = cardSizeConfig?.aspectRatio ?? DEFAULT_CARD_ASPECT;
 
   const cardWidth = Math.max(viewportWidth * cardWidthRatio, cardMinWidth);
+  console.log("[CardRenderer] dimensions:", { cardWidth, cardHeight: cardWidth * cardAspectRatio, viewportWidth, cardWidthRatio, cardMinWidth });
   const cardHeight = cardWidth * cardAspectRatio;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;

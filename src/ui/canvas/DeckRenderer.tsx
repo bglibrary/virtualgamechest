@@ -4,6 +4,7 @@ import type Konva from "konva";
 import KonvaLib from "konva";
 import type { DeckComponent, Position, CardComponent } from "@/types/game";
 import { useGameStore } from "@/store/gameStore";
+import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 import CountBadge from "@/ui/canvas/CountBadge";
 import {
@@ -73,8 +74,9 @@ function DeckRenderer({
   onDragEnd,
   positionOverride,
 }: DeckRendererProps) {
+  const { getCardSize } = useDeviceLayout();
   const game = useGameStore((s) => s.game);
-  const cardSizeConfig = game?.cardSize;
+  const cardSizeConfig = getCardSize(game ?? {});
   const cardWidthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
   const cardMinWidth = cardSizeConfig?.minWidth ?? CARD_MIN_WIDTH;
   const cardAspectRatio = cardSizeConfig?.aspectRatio ?? CARD_ASPECT;

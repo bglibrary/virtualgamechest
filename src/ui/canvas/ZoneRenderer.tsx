@@ -7,6 +7,7 @@ import type { ZoneCardEntry } from "@/store/zoneStateStore";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
 import CountBadge from "@/ui/canvas/CountBadge";
 import { useGameStore } from "@/store/gameStore";
+import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
 import {
   DEFAULT_CARD_WIDTH_RATIO as CARD_WIDTH_RATIO,
   DEFAULT_CARD_MIN_WIDTH as CARD_MIN_WIDTH,
@@ -67,7 +68,9 @@ function ZoneRenderer({
   onTopCardDragMove,
   onTopCardDragEnd,
 }: ZoneRendererProps) {
-  const cardSizeConfig = useGameStore((state) => state.game?.cardSize);
+  const { getCardSize } = useDeviceLayout();
+  const game = useGameStore((state) => state.game);
+  const cardSizeConfig = getCardSize(game ?? {});
   const cardWidthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
   const cardMinWidth = cardSizeConfig?.minWidth ?? CARD_MIN_WIDTH;
   const cardAspectRatio = cardSizeConfig?.aspectRatio ?? CARD_ASPECT;

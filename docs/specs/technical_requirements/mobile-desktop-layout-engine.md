@@ -74,3 +74,16 @@ interface LayoutStore {
 - No `mobileCardSize` (fall back to desktop card size)
 - No `mobilePosition` on components initially (fall back to desktop positions)
 - No `mobileOrientation` (removed — mobile is always portrait)
+
+## Editor UI Changes
+
+### Card Size Form (`src/editor/components/forms/CardSizeForm.tsx`)
+
+- New form component displayed in `PropertyPanel` when no component is selected.
+- Edits `game.cardSize` when `editLayout === 'desktop'`.
+- Edits `game.mobileCardSize` when `editLayout === 'mobile'`.
+- Fields:
+  - **Width Ratio**: 0.01 to 0.5 (default 0.08)
+  - **Min Width**: 10 to 500 (default 55)
+  - **Aspect Ratio**: 0.5 to 2.0 (default 1.4)
+- If `mobileCardSize` is not set, the form should offer to "Override desktop card size" for mobile.

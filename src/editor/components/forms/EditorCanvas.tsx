@@ -38,7 +38,9 @@ const GUIDE_STROKE_WIDTH = 1;
 
 function useCardDimensions(viewportWidth: number) {
   const game = useEditorStore((s) => s.game);
-  const cardSizeConfig = game?.cardSize;
+  const editLayout = useEditorStore((s) => s.editLayout);
+  const isMobile = editLayout === "mobile";
+  const cardSizeConfig = isMobile ? (game?.mobileCardSize ?? game?.cardSize) : game?.cardSize;
   const widthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
   const minWidth = cardSizeConfig?.minWidth ?? CARD_MIN_WIDTH;
   const aspectRatio = cardSizeConfig?.aspectRatio ?? CARD_ASPECT;

@@ -6,6 +6,7 @@ import ZoneForm from "./ZoneForm";
 import StartupEditor from "./StartupEditor";
 import PositionForm from "./PositionForm";
 import LayoutTools from "./LayoutTools";
+import CardSizeForm from "./CardSizeForm";
 
 export default function PropertyPanel() {
   const game = useEditorStore((s) => s.game);
@@ -25,6 +26,8 @@ export default function PropertyPanel() {
           Select a component to edit its properties, or configure game settings
           below.
         </div>
+        <CardSizeForm />
+        <hr className="border-gray-800" />
         <StartupEditor />
       </div>
     );
