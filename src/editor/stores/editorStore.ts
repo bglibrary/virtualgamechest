@@ -41,13 +41,13 @@ export const useEditorStore = create<EditorState>((set) => ({
   editLayout: "desktop",
 
   openGame: (gameId, game) =>
-    set({
+    set((state) => ({
       gameId,
       game,
       selectedIds: [],
       isDirty: false,
-      editLayout: "desktop",
-    }),
+      editLayout: state.editLayout ?? "desktop",
+    })),
 
   closeGame: () =>
     set({
