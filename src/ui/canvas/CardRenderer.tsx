@@ -64,7 +64,7 @@ function CardRenderer({
   onDragEnd,
   positionOverride,
 }: CardRendererProps) {
-  const { getCardSize } = useDeviceLayout();
+  const { getCardSize, getPosition } = useDeviceLayout();
   const game = useGameStore((state) => state.game);
   const cardSizeConfig = getCardSize(game ?? {});
   const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
@@ -77,7 +77,7 @@ function CardRenderer({
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 
-  const effectivePosition = positionOverride ?? component.position;
+  const effectivePosition = positionOverride ?? getPosition(component);
   if (!effectivePosition) return null;
   const x = effectivePosition.x * viewportWidth - cardWidth / 2;
   const y = effectivePosition.y * viewportHeight - cardHeight / 2;

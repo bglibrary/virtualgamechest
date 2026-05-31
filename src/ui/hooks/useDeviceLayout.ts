@@ -26,19 +26,7 @@ const DEFAULT_CARD_SIZE: CardSize = { widthRatio: 0.08, minWidth: 55, aspectRati
 export function useDeviceLayout(): DeviceLayout {
   // Try to get editLayout from editor store if it exists
   const editLayout = useEditorStore((s) => s.editLayout);
-  const isMobile = useMemo(() => {
-    console.log("[DeviceLayout] debug check: editLayout =", editLayout);
-    // In the editor, we follow the editLayout toggle. 
-    // In the game, we follow the detected device.
-    if (editLayout) {
-      const res = editLayout === "mobile";
-      console.log("[DeviceLayout] debug check: isMobile (editor) =", res);
-      return res;
-    }
-    const detected = isMobileDevice();
-    console.log("[DeviceLayout] isMobile:", detected, "href:", window.location.href, "ua:", navigator.userAgent);
-    return detected;
-  }, [editLayout]);
+  const isMobile = editLayout !== undefined ? editLayout === "mobile" : isMobileDevice();
   const setIsMobile = useLayoutStore((s) => s.setIsMobile);
 
   useEffect(() => {

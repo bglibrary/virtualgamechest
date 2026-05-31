@@ -74,7 +74,7 @@ function DeckRenderer({
   onDragEnd,
   positionOverride,
 }: DeckRendererProps) {
-  const { getCardSize } = useDeviceLayout();
+  const { getCardSize, getPosition } = useDeviceLayout();
   const game = useGameStore((s) => s.game);
   const cardSizeConfig = getCardSize(game ?? {});
   const cardWidthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
@@ -89,7 +89,7 @@ function DeckRenderer({
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 
-  const effectivePosition = positionOverride ?? component.position;
+  const effectivePosition = positionOverride ?? getPosition(component);
   const x = effectivePosition.x * viewportWidth - cardWidth / 2;
   const y = effectivePosition.y * viewportHeight - cardHeight / 2;
 

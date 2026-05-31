@@ -68,7 +68,7 @@ function ZoneRenderer({
   onTopCardDragMove,
   onTopCardDragEnd,
 }: ZoneRendererProps) {
-  const { getCardSize } = useDeviceLayout();
+  const { getCardSize, getPosition } = useDeviceLayout();
   const game = useGameStore((state) => state.game);
   const cardSizeConfig = getCardSize(game ?? {});
   const cardWidthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
@@ -86,8 +86,9 @@ function ZoneRenderer({
   const offsetX = (zoneWidth - cardWidth) / 2;
   const offsetY = (zoneHeight - cardHeight) / 2;
 
-  const x = component.position.x * viewportWidth - zoneWidth / 2;
-  const y = component.position.y * viewportHeight - zoneHeight / 2;
+  const pos = getPosition(component);
+  const x = pos.x * viewportWidth - zoneWidth / 2;
+  const y = pos.y * viewportHeight - zoneHeight / 2;
 
   const groupRef = useRef<Konva.Group>(null);
   const bounceRef = useRef<(() => void) | null>(null);
