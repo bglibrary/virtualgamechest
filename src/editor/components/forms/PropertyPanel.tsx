@@ -3,6 +3,7 @@ import { useEditorValidationStore } from "@/editor/stores/editorValidationStore"
 import CardForm from "./CardForm";
 import DeckForm from "./DeckForm";
 import ZoneForm from "./ZoneForm";
+import LabelForm from "./LabelForm";
 import StartupEditor from "./StartupEditor";
 import PositionForm from "./PositionForm";
 import LayoutTools from "./LayoutTools";
@@ -74,6 +75,7 @@ export default function PropertyPanel() {
       {component.type === "card" && <CardForm component={component} />}
       {component.type === "deck" && <DeckForm component={component} />}
       {component.type === "zone" && <ZoneForm component={component} />}
+      {component.type === "label" && <LabelForm component={component} />}
     </div>
   );
 }

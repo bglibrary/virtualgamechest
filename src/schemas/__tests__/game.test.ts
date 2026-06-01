@@ -6,6 +6,7 @@ cardBackSchema,
 positionSchema,
 componentSchema,
 cardComponentSchema,
+labelComponentSchema,
 imageUrlSchema,
 CardActionType,
 DeckActionType,
@@ -388,6 +389,93 @@ position: { x: 0.5, y: 0.5 },
 });
 expect(result.success).toBe(false);
 });
+});
+
+describe("labelComponentSchema", () => {
+  it("accepts valid label component", () => {
+    const result = labelComponentSchema.safeParse({
+      type: "label",
+      id: "game-title",
+      text: "Poker Patience",
+      position: { x: 0.5, y: 0.1 },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.fontSize).toBe(0.03);
+      expect(result.data.textColor).toBe("#ffffff");
+      expect(result.data.width).toBe(0.3);
+      expect(result.data.height).toBe(0.1);
+    }
+  });
+
+  it("rejects label with empty text", () => {
+    const result = labelComponentSchema.safeParse({
+      type: "label",
+      id: "empty-label",
+      text: "",
+      position: { x: 0.5, y: 0.1 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects label with invalid position", () => {
+    const result = labelComponentSchema.safeParse({
+      type: "label",
+      id: "bad-pos",
+      text: "Hello",
+      position: { x: 1.5, y: 0.5 },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts label with custom styling", () => {
+    const result = labelComponentSchema.safeParse({
+      type: "label",
+      id: "styled-label",
+      text: "Title",
+      position: { x: 0.3, y: 0.2 },
+      fontSize: 0.05,
+      textColor: "#ff0000",
+      textAlign: "left",
+      fontWeight: "bold",
+      rotation: 90,
+      width: 0.5,
+      height: 0.2,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects label with zero width", () => {
+    const result = labelComponentSchema.safeParse({
+      type: "label",
+      id: "zero-w",
+      text: "Hello",
+      position: { x: 0.5, y: 0.5 },
+      width: 0,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts label with mobilePosition", () => {
+    const result = labelComponentSchema.safeParse({
+      type: "label",
+      id: "mobile-label",
+      text: "Mobile Title",
+      position: { x: 0.5, y: 0.1 },
+      mobilePosition: { x: 0.3, y: 0.05 },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("is part of componentSchema discriminated union", () => {
+    const result = componentSchema.safeParse({
+      type: "label",
+      id: "test-label",
+      text: "Hello World",
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(true);
+  });
 });
 
 describe("gameDefinitionSchema", () => {

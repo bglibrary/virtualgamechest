@@ -4,6 +4,7 @@ import { useEditorStore } from "@/editor/stores/editorStore";
 import {
   createDefaultCard,
   createDefaultZone,
+  createDefaultLabel,
 } from "@/editor/utils/componentFactory";
 import { Trash2 } from "lucide-react";
 import BulkCardWizard from "@/editor/components/forms/BulkCardWizard";
@@ -18,8 +19,10 @@ export default function ComponentTree() {
     game?.components.filter((c: GameComponent) => c.type === "card") ?? [];
   const decks =
     game?.components.filter((c: GameComponent) => c.type === "deck") ?? [];
-  const zones =
+      const zones =
     game?.components.filter((c: GameComponent) => c.type === "zone") ?? [];
+  const labels =
+    game?.components.filter((c: GameComponent) => c.type === "label") ?? [];
 
   const handleSelect = useCallback(
     (e: React.MouseEvent, id: string) => {
@@ -68,6 +71,17 @@ export default function ComponentTree() {
   }, [game, updateGame, selectComponent]);
 
   const [showBulkWizard, setShowBulkWizard] = useState(false);
+
+  const handleAddLabel = useCallback(() => {
+    if (!game) return;
+    const existingIds = game.components.map((c) => c.id);
+    const newLabel = createDefaultLabel(existingIds);
+    updateGame((g) => ({
+      ...g,
+      components: [...g.components, newLabel],
+    }));
+    selectComponent(newLabel.id);
+  }, [game, updateGame, selectComponent]);
 
   if (!game) {
     return (
@@ -151,6 +165,29 @@ export default function ComponentTree() {
           />
         ))}
       </Section>
+
+      {/* Labels section */}
+      <Section
+        title="Labels"
+        count={labels.length}
+        onAdd={handleAddLabel}
+        addLabel="+ Add Label"
+      >
+        {labels.length === 0 && (
+          <p className="px-2 text-xs text-gray-600">(no labels)</p>
+        )}
+        {labels.map((label) => (
+          <ComponentRow
+            key={label.id}
+            id={label.id}
+            label={label.id}
+            type="label"
+            isSelected={selectedIds.includes(label.id)}
+            onSelect={(e) => handleSelect(e, label.id)}
+            onDelete={(e) => handleDelete(e, label.id)}
+          />
+        ))}
+      </Section>
     </div>
   );
 }
@@ -188,7 +225,7 @@ function Section({ title, count, onAdd, addLabel, children }: SectionProps) {
 interface ComponentRowProps {
   id: string;
   label: string;
-  type: "card" | "deck" | "zone";
+  type: "card" | "deck" | "zone" | "label";
   isSelected: boolean;
   onSelect: (e: React.MouseEvent) => void;
   onDelete: (e: React.MouseEvent) => void;
@@ -203,7 +240,7 @@ function ComponentRow({
   onDelete,
 }: ComponentRowProps) {
   const typeIcon =
-    type === "card" ? "\u2660" : type === "deck" ? "\u25B6" : "\u25A3";
+    type === "card" ? "\u2660" : type === "deck" ? "\u25B6" : type === "zone" ? "\u25A3" : "\u270E";
 
   return (
     <div

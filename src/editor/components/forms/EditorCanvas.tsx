@@ -3,7 +3,7 @@ import { Stage, Layer, Rect, Text, Group, Line, Image } from "react-konva";
 import type Konva from "konva";
 import { useEditorStore } from "@/editor/stores/editorStore";
 import { setViewportSize } from "@/editor/stores/viewportStore";
-import type { CardComponent, DeckComponent, ZoneComponent, GameComponent } from "@/types/game";
+import type { CardComponent, DeckComponent, ZoneComponent, LabelComponent, GameComponent } from "@/types/game";
 import useCardImage from "@/ui/hooks/useCardImage";
 import computeCoverCrop from "@/ui/canvas/coverCrop";
 
@@ -66,6 +66,12 @@ function getComponentPosition(c: GameComponent, editLayout: "desktop" | "mobile"
     return c.position;
   }
   if (c.type === "zone") {
+    if (editLayout === "mobile") {
+      return (c as any).mobilePosition ?? c.position;
+    }
+    return c.position;
+  }
+  if (c.type === "label") {
     if (editLayout === "mobile") {
       return (c as any).mobilePosition ?? c.position;
     }
@@ -450,6 +456,69 @@ function EditorZoneRenderer({
         verticalAlign="middle"
       />
     </DragItem>
+  );
+}
+
+interface EditorLabelRendererProps {
+  component: LabelComponent;
+  isSelected: boolean;
+  viewportWidth: number;
+  viewportHeight: number;
+  onClick: (id: string) => void;
+}
+
+function EditorLabelRenderer({
+  component, isSelected, viewportWidth, viewportHeight, onClick,
+}: EditorLabelRendererProps) {
+  const editLayout = useEditorStore((s) => s.editLayout);
+  const pos = getComponentPosition(component, editLayout);
+  if (!pos) return null;
+
+  const x = pos.x * viewportWidth;
+  const y = pos.y * viewportHeight;
+  const w = component.width * viewportWidth;
+  const h = component.height * viewportHeight;
+  const fontSize = (component.fontSize ?? 0.03) * viewportWidth;
+
+  const handleClick = useCallback(() => {
+    onClick(component.id);
+  }, [component.id, onClick]);
+
+  return (
+    <Group
+      x={x}
+      y={y}
+      rotation={component.rotation}
+      offsetX={w / 2}
+      offsetY={h / 2}
+      onClick={handleClick}
+      onTap={handleClick}
+    >
+      {isSelected && (
+        <Rect
+          x={-4}
+          y={-4}
+          width={w + 8}
+          height={h + 8}
+          stroke={SELECTED_STROKE}
+          strokeWidth={SELECTED_STROKE_WIDTH}
+          fill={SELECTED_FILL}
+          dash={[4, 3]}
+        />
+      )}
+      <Text
+        text={component.text}
+        width={w}
+        height={h}
+        fontSize={fontSize}
+        fill={component.textColor}
+        align={component.textAlign}
+        fontStyle={component.fontWeight === "bold" ? "bold" : "normal"}
+        fontFamily="sans-serif"
+        verticalAlign="middle"
+        wrap="word"
+      />
+    </Group>
   );
 }
 
@@ -930,6 +999,26 @@ export default function EditorCanvas() {
             );
           }
           return null;
+        })}
+
+        {/* Labels */}
+        {visibleComponents.filter((c) => c.type === "label").map((component) => {
+          const isSelected = selectedIds.includes(component.id);
+          return (
+            <EditorLabelRenderer
+              key={component.id}
+              component={component}
+              isSelected={isSelected}
+              viewportWidth={viewportInfo.width}
+              viewportHeight={viewportInfo.height}
+              onClick={(id) => {
+                handleClick(
+                  { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
+                  id,
+                );
+              }}
+            />
+          );
         })}
 
         {/* Alignment guide lines */}

@@ -3,6 +3,7 @@ import type {
   CardComponent,
   DeckComponent,
   ZoneComponent,
+  LabelComponent,
 } from "@/types/game";
 
 /**
@@ -71,5 +72,25 @@ export function createDefaultZone(
     position: { x: 0.5, y: 0.5 },
     label,
     snapRadius: 30,
+  };
+}
+
+export function createDefaultLabel(
+  existingIds: string[],
+  text = "New Label",
+): LabelComponent {
+  const idSet = new Set(existingIds);
+  return {
+    type: "label",
+    id: generateComponentId("label", idSet),
+    position: { x: 0.5, y: 0.1 },
+    text,
+    fontSize: 0.03,
+    textColor: "#ffffff",
+    textAlign: "center",
+    fontWeight: "normal",
+    rotation: 0,
+    width: 0.3,
+    height: 0.1,
   };
 }

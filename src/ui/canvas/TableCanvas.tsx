@@ -9,6 +9,7 @@ import { useZoneStateStore } from "@/store/zoneStateStore";
 import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ZoneRenderer from "@/ui/canvas/ZoneRenderer";
+import LabelRenderer from "@/ui/canvas/LabelRenderer";
 import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
 import { Hand, Combine } from "lucide-react";
 import { executeAction, executeCompositeAction } from "@/engine/actionExecutor";
@@ -75,6 +76,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
     selectComponent(null);
   }, [selectComponent]);
 
+  const labelComponents = game?.components.filter((c) => c.type === "label") ?? [];
   const zoneComponents = game?.components.filter((c) => c.type === "zone") ?? [];
   const zoneSnapInfos: ZoneSnapInfo[] = useMemo(() => {
     const cardSizeConfig = getCardSize(game ?? { cardSize: undefined, mobileCardSize: undefined });
@@ -386,6 +388,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       // A card is visible if it has a desktop position, or if on mobile it has a mobile position
       return hasDesktopPos || (isMobile && hasMobilePos);
     }
+    // Labels are rendered in their own layer, not here
+    if (c.type === "label") return false;
     return true;
   }) ?? [];
 
@@ -461,6 +465,16 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
             onClick={handleBackgroundClick}
             onTap={handleBackgroundClick}
           />
+        </Layer>
+        <Layer>
+          {labelComponents.map((component) => (
+            <LabelRenderer
+              key={component.id}
+              component={component}
+              viewportWidth={size.width}
+              viewportHeight={size.height}
+            />
+          ))}
         </Layer>
         <Layer>
           {zoneComponents.map((component) => {

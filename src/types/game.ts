@@ -8,6 +8,7 @@ export type {
   DeckComponent,
   CardComponent,
   ZoneComponent,
+  LabelComponent,
   GameComponent,
   StartupStep,
   GameDefinition,

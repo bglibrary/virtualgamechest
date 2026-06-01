@@ -196,10 +196,26 @@ export const zoneComponentSchema = z.object({
   snapRadius: z.number().positive().optional(),
 });
 
+export const labelComponentSchema = z.object({
+  type: z.literal("label"),
+  id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
+  position: positionSchema,
+  mobilePosition: positionSchema.optional(),
+  text: z.string().min(1),
+  fontSize: z.number().min(0.001).max(0.5).default(0.03),
+  textColor: z.string().min(1).default("#ffffff"),
+  textAlign: z.enum(["left", "center", "right"]).default("center"),
+  fontWeight: z.enum(["normal", "bold"]).default("normal"),
+  rotation: z.number().min(0).max(360).default(0),
+  width: z.number().min(0.001).max(1).default(0.3),
+  height: z.number().min(0.001).max(1).default(0.1),
+});
+
 export const componentSchema = z.discriminatedUnion("type", [
   cardComponentSchema,
   deckComponentSchema,
   zoneComponentSchema,
+  labelComponentSchema,
 ]);
 
 export const cardSizeSchema = z.object({
@@ -290,6 +306,7 @@ export type DeckAction = z.infer<typeof deckActionSchema>;
 export type DeckComponent = z.infer<typeof deckComponentSchema>;
 export type CardComponent = z.infer<typeof cardComponentSchema>;
 export type ZoneComponent = z.infer<typeof zoneComponentSchema>;
+export type LabelComponent = z.infer<typeof labelComponentSchema>;
 export type GameComponent = z.infer<typeof componentSchema>;
 export type StartupStep = z.infer<typeof startupStepSchema>;
 export type GameDefinition = z.infer<typeof gameDefinitionSchema>;
