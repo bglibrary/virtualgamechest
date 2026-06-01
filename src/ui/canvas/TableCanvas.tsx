@@ -414,7 +414,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
     : null;
 
   const selectedPosition = selectedComponentId
-    ? (getCardPosition(selectedComponentId) ?? selectedComponent?.position)
+    ? (getCardPosition(selectedComponentId) ?? (selectedComponent ? getPosition(selectedComponent) : null))
     : null;
 
   const showActionBar =
