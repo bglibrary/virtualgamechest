@@ -10,6 +10,7 @@ import InteractiveCard from "@/ui/canvas/InteractiveCard";
 import InteractiveDeck from "@/ui/canvas/InteractiveDeck";
 import ZoneRenderer from "@/ui/canvas/ZoneRenderer";
 import LabelRenderer from "@/ui/canvas/LabelRenderer";
+import RestartButtonRenderer from "@/ui/canvas/RestartButtonRenderer";
 import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
 import { Hand, Combine } from "lucide-react";
 import { executeAction, executeCompositeAction } from "@/engine/actionExecutor";
@@ -77,6 +78,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
   }, [selectComponent]);
 
   const labelComponents = game?.components.filter((c) => c.type === "label") ?? [];
+  const restartButtonComponents = game?.components.filter((c) => c.type === "restart-button") ?? [];
   const zoneComponents = game?.components.filter((c) => c.type === "zone") ?? [];
   const zoneSnapInfos: ZoneSnapInfo[] = useMemo(() => {
     const cardSizeConfig = getCardSize(game ?? { cardSize: undefined, mobileCardSize: undefined });
@@ -392,6 +394,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
     }
     // Labels are rendered in their own layer, not here
     if (c.type === "label") return false;
+    if (c.type === "restart-button") return false;
     return true;
   }) ?? [];
 
@@ -471,6 +474,14 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
         <Layer>
           {labelComponents.map((component) => (
             <LabelRenderer
+              key={component.id}
+              component={component}
+              viewportWidth={size.width}
+              viewportHeight={size.height}
+            />
+          ))}
+          {restartButtonComponents.map((component) => (
+            <RestartButtonRenderer
               key={component.id}
               component={component}
               viewportWidth={size.width}

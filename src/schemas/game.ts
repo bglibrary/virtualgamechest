@@ -221,6 +221,14 @@ export const zoneComponentSchema = z.object({
   actions: z.array(zoneActionSchema).optional(),
 });
 
+export const restartButtonComponentSchema = z.object({
+  type: z.literal("restart-button"),
+  id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
+  position: positionSchema,
+  mobilePosition: positionSchema.optional(),
+  label: z.string().min(1).default("Relancer"),
+});
+
 export const labelComponentSchema = z.object({
   type: z.literal("label"),
   id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
@@ -241,6 +249,7 @@ export const componentSchema = z.discriminatedUnion("type", [
   deckComponentSchema,
   zoneComponentSchema,
   labelComponentSchema,
+  restartButtonComponentSchema,
 ]);
 
 export const cardSizeSchema = z.object({
@@ -331,6 +340,7 @@ export type DeckAction = z.infer<typeof deckActionSchema>;
 export type DeckComponent = z.infer<typeof deckComponentSchema>;
 export type CardComponent = z.infer<typeof cardComponentSchema>;
 export type ZoneComponent = z.infer<typeof zoneComponentSchema>;
+export type RestartButtonComponent = z.infer<typeof restartButtonComponentSchema>;
 export type LabelComponent = z.infer<typeof labelComponentSchema>;
 export type GameComponent = z.infer<typeof componentSchema>;
 export type StartupStep = z.infer<typeof startupStepSchema>;

@@ -244,6 +244,10 @@ export async function executeStartupSequence(steps: StartupStep[]): Promise<void
         console.warn(`Startup step target ${step.target} is a zone, cannot execute composite action`);
         continue;
       }
+      if (!("actions" in component) || !component.actions) {
+        console.warn(`Startup step target ${step.target} has no actions, cannot execute composite`);
+        continue;
+      }
       // Find the composite action on the component by its label
       const action = (component.actions as (CardAction | DeckAction)[]).find(
         (a) => a.type === "composite" && a.label === step.actionLabel,

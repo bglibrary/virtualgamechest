@@ -77,6 +77,12 @@ function getComponentPosition(c: GameComponent, editLayout: "desktop" | "mobile"
     }
     return c.position;
   }
+  if (c.type === "restart-button") {
+    if (editLayout === "mobile") {
+      return (c as any).mobilePosition ?? c.position;
+    }
+    return c.position;
+  }
   return null;
 }
 

@@ -9,6 +9,7 @@ export type {
   CardComponent,
   ZoneComponent,
   LabelComponent,
+  RestartButtonComponent,
   GameComponent,
   StartupStep,
   GameDefinition,
