@@ -477,14 +477,35 @@ function EditorLabelRenderer({
   component, isSelected, viewportWidth, viewportHeight, onClick,
 }: EditorLabelRendererProps) {
   const editLayout = useEditorStore((s) => s.editLayout);
+  const isMobile = editLayout === "mobile";
   const pos = getComponentPosition(component, editLayout);
   if (!pos) return null;
 
+  // Resolve properties based on device mode
+  const w = (isMobile && component.mobileWidth !== undefined
+    ? component.mobileWidth
+    : component.width) * viewportWidth;
+  const h = (isMobile && component.mobileHeight !== undefined
+    ? component.mobileHeight
+    : component.height) * viewportHeight;
+  const fontSize = (isMobile && component.mobileFontSize !== undefined
+    ? component.mobileFontSize
+    : component.fontSize ?? 0.03) * viewportWidth;
+  const textColor = isMobile && component.mobileTextColor !== undefined
+    ? component.mobileTextColor
+    : component.textColor;
+  const textAlign = isMobile && component.mobileTextAlign !== undefined
+    ? component.mobileTextAlign
+    : component.textAlign;
+  const fontWeight = isMobile && component.mobileFontWeight !== undefined
+    ? component.mobileFontWeight
+    : component.fontWeight;
+  const rotation = isMobile && component.mobileRotation !== undefined
+    ? component.mobileRotation
+    : component.rotation;
+
   const x = pos.x * viewportWidth;
   const y = pos.y * viewportHeight;
-  const w = component.width * viewportWidth;
-  const h = component.height * viewportHeight;
-  const fontSize = (component.fontSize ?? 0.03) * viewportWidth;
 
   const handleClick = useCallback(() => {
     onClick(component.id);
@@ -494,7 +515,7 @@ function EditorLabelRenderer({
     <Group
       x={x}
       y={y}
-      rotation={component.rotation}
+      rotation={rotation}
       offsetX={w / 2}
       offsetY={h / 2}
       onClick={handleClick}
@@ -517,9 +538,9 @@ function EditorLabelRenderer({
         width={w}
         height={h}
         fontSize={fontSize}
-        fill={component.textColor}
-        align={component.textAlign}
-        fontStyle={component.fontWeight === "bold" ? "bold" : "normal"}
+        fill={textColor}
+        align={textAlign}
+        fontStyle={fontWeight === "bold" ? "bold" : "normal"}
         fontFamily="sans-serif"
         verticalAlign="middle"
         wrap="word"

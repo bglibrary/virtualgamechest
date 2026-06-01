@@ -47,6 +47,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
   const zOrder = useCardZOrderStore((s) => s.zOrder);
   const initDeck = useDeckStateStore((s) => s.initDeck);
   const getCardPosition = useCardPositionStore((s) => s.getCardPosition);
+  const updateCardPosition = useCardPositionStore((s) => s.updateCardPosition);
   
   const initZone = useZoneStateStore((s) => s.initZone);
   const getTopCard = useZoneStateStore((s) => s.getTopCard);
@@ -350,6 +351,34 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
     [handleMerge],
   );
 
+  const handleLabelDragEnd = useCallback(
+    (labelId: string, e: Konva.KonvaEventObject<DragEvent>) => {
+      const node = e.target;
+      const labelComp = game?.components.find((c) => c.id === labelId);
+      if (!labelComp || labelComp.type !== "label") return;
+
+      // Use mobile dimensions if on mobile
+      const w = (isMobile && labelComp.mobileWidth !== undefined
+        ? labelComp.mobileWidth
+        : labelComp.width) * size.width;
+      const h = (isMobile && labelComp.mobileHeight !== undefined
+        ? labelComp.mobileHeight
+        : labelComp.height) * size.height;
+
+      // Calculate center position (label uses offset center)
+      const nx = (node.x() + w / 2) / size.width;
+      const ny = (node.y() + h / 2) / size.height;
+
+      const clampedPosition = {
+        x: Math.max(0, Math.min(1, nx)),
+        y: Math.max(0, Math.min(1, ny)),
+      };
+
+      updateCardPosition(labelId, clampedPosition);
+    },
+    [game, isMobile, size, updateCardPosition],
+  );
+
   const actionButtons: ActionButton[] = (() => {
     if (!selectedComponentId) return [];
     const game = useGameStore.getState().game;
@@ -472,14 +501,23 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
           />
         </Layer>
         <Layer>
-          {labelComponents.map((component) => (
-            <LabelRenderer
-              key={component.id}
-              component={component}
-              viewportWidth={size.width}
-              viewportHeight={size.height}
-            />
-          ))}
+          {labelComponents.map((component) => {
+            const labelPosOverride = getCardPosition(component.id);
+            const isLabelSelected = selectedComponentId === component.id;
+            return (
+              <LabelRenderer
+                key={component.id}
+                component={component}
+                viewportWidth={size.width}
+                viewportHeight={size.height}
+                draggable
+                onClick={() => selectComponent(component.id)}
+                highlighted={isLabelSelected}
+                positionOverride={labelPosOverride}
+                onDragEnd={(e) => handleLabelDragEnd(component.id, e)}
+              />
+            );
+          })}
           {restartButtonComponents.map((component) => (
             <RestartButtonRenderer
               key={component.id}

@@ -1182,17 +1182,24 @@
       "type": "label",
       "id": "label-0",
       "position": {
-        "x": 0.49374999999999963,
-        "y": 0.6066666666666667
+        "x": 0.87,
+        "y": 0.8
       },
-      "text": "Test \nceci\nest un \ntest pour voir",
-      "fontSize": 0.029,
-      "textColor": "#b94b4b",
-      "textAlign": "center",
+      "mobilePosition": {
+        "x": 0.85,
+        "y": 0.88
+      },
+      "text": "Straight Flush = 30 \n(all in suit and sequence)\nFours = 16 \nStraight = 12 \n(all in sequence but not of 1 suit)\nFull House = 10 \n(three of one rank plus a pair)\nThrees = 6 \nFlush = 5 \n(all 1 suit but not in sequence)\nTwo Pair = 3\nOne Pair = 1",
+      "fontSize": 0.018,
+      "textColor": "#1b2949",
+      "textAlign": "right",
       "fontWeight": "normal",
       "rotation": 0,
-      "width": 0.3,
-      "height": 0.1
+      "width": 0.241,
+      "height": 0.341,
+      "mobileHeight": 0.191,
+      "mobileFontSize": 0.02,
+      "mobileWidth": 0.271
     }
   ],
   "startup": [

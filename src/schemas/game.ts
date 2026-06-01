@@ -236,12 +236,19 @@ export const labelComponentSchema = z.object({
   mobilePosition: positionSchema.optional(),
   text: z.string().min(1),
   fontSize: z.number().min(0.001).max(0.5).default(0.03),
+  mobileFontSize: z.number().min(0.001).max(0.5).optional(),
   textColor: z.string().min(1).default("#ffffff"),
+  mobileTextColor: z.string().min(1).optional(),
   textAlign: z.enum(["left", "center", "right"]).default("center"),
+  mobileTextAlign: z.enum(["left", "center", "right"]).optional(),
   fontWeight: z.enum(["normal", "bold"]).default("normal"),
+  mobileFontWeight: z.enum(["normal", "bold"]).optional(),
   rotation: z.number().min(0).max(360).default(0),
+  mobileRotation: z.number().min(0).max(360).optional(),
   width: z.number().min(0.001).max(1).default(0.3),
+  mobileWidth: z.number().min(0.001).max(1).optional(),
   height: z.number().min(0.001).max(1).default(0.1),
+  mobileHeight: z.number().min(0.001).max(1).optional(),
 });
 
 export const componentSchema = z.discriminatedUnion("type", [
