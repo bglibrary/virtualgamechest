@@ -37,9 +37,16 @@ const simpleDeckUnitActionSchema = z.object({
   label: z.string().min(1),
 });
 
+const removeUnitActionSchema = z.object({
+  type: z.literal("remove"),
+  label: z.string().min(1),
+  count: z.number().int().min(1).max(100).optional().default(1),
+});
+
 export const deckUnitActionSchema = z.discriminatedUnion("type", [
   simpleDeckUnitActionSchema,
   drawToZoneActionSchema,
+  removeUnitActionSchema,
 ]);
 
 // ─── Composite action schemas (F11) ───
@@ -51,9 +58,22 @@ const compositeDrawToZoneStepSchema = z.object({
   faceUp: z.boolean(),
 });
 
+// Card remove action (no count — card always removes 1)
+const cardRemoveActionSchema = z.object({
+  type: z.literal("remove"),
+  label: z.string().min(1),
+});
+
+// Zone remove action (count param for zones too)
+const zoneRemoveActionSchema = z.object({
+  type: z.literal("remove"),
+  label: z.string().min(1),
+  count: z.number().int().min(1).max(100).optional().default(1),
+});
+
 // Simple step (no label)
 const compositeSimpleStepSchema = z.object({
-  type: z.enum(["flip", "draw-face-up", "draw-face-down", "shuffle"]),
+  type: z.enum(["flip", "draw-face-up", "draw-face-down", "shuffle", "remove"]),
 });
 
 // Card step: only flip
@@ -85,12 +105,14 @@ const deckCompositeSchema = z.object({
 // Combined action schemas for components
 const cardActionSchema = z.discriminatedUnion("type", [
   cardUnitActionSchema,
+  cardRemoveActionSchema,
   cardCompositeSchema,
 ]);
 
 const deckActionSchema = z.discriminatedUnion("type", [
   simpleDeckUnitActionSchema,
   drawToZoneActionSchema,
+  removeUnitActionSchema,
   deckCompositeSchema,
 ]);
 
@@ -187,6 +209,8 @@ export const deckComponentSchema = z.object({
   ),
 });
 
+const zoneActionSchema = zoneRemoveActionSchema;
+
 export const zoneComponentSchema = z.object({
   type: z.literal("zone"),
   id: z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/),
@@ -194,6 +218,7 @@ export const zoneComponentSchema = z.object({
   mobilePosition: positionSchema.optional(),
   label: z.string().max(30).optional(),
   snapRadius: z.number().positive().optional(),
+  actions: z.array(zoneActionSchema).optional(),
 });
 
 export const labelComponentSchema = z.object({

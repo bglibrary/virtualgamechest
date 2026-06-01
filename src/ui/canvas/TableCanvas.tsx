@@ -355,26 +355,28 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
     const selectedComponent = game.components.find((c) => c.id === selectedComponentId);
     if (!selectedComponent) return [];
     const buttons: ActionButton[] = [];
-    if (selectedComponent.type === "card" || selectedComponent.type === "deck") {
-      for (const action of selectedComponent.actions) {
-        if (action.type === "composite") {
-          buttons.push({
-            id: action.type,
-            label: action.label,
-            onClick: () => handleComposite(action),
-            iconOverride: Combine,
-          });
-        } else {
-          const isMergeDeckDraw = selectedComponent.type === "deck" && 
-                                selectedComponentId.startsWith("merge--") && 
-                                action.type === "draw-face-down";
-          
-          buttons.push({
-            id: action.type,
-            label: action.label,
-            onClick: () => handleAction(action),
-            ...(isMergeDeckDraw ? { iconOverride: Hand } : {}),
-          });
+    if (selectedComponent.type === "card" || selectedComponent.type === "deck" || selectedComponent.type === "zone") {
+      if ("actions" in selectedComponent && selectedComponent.actions) {
+        for (const action of selectedComponent.actions) {
+          if (action.type === "composite") {
+            buttons.push({
+              id: action.type,
+              label: action.label,
+              onClick: () => handleComposite(action),
+              iconOverride: Combine,
+            });
+          } else {
+            const isMergeDeckDraw = selectedComponent.type === "deck" && 
+                                  selectedComponentId.startsWith("merge--") && 
+                                  action.type === "draw-face-down";
+            
+            buttons.push({
+              id: action.type,
+              label: action.label,
+              onClick: () => handleAction(action),
+              ...(isMergeDeckDraw ? { iconOverride: Hand } : {}),
+            });
+          }
         }
       }
     }

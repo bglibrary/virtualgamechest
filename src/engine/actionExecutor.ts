@@ -1,5 +1,7 @@
 import { useGameStore } from "@/store/gameStore";
 import { useCardStateStore } from "@/store/cardStateStore";
+import { useCardPositionStore } from "@/store/cardPositionStore";
+import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import { useDeckStateStore } from "@/store/deckStateStore";
 import { useZoneStateStore } from "@/store/zoneStateStore";
 import type { 
@@ -17,7 +19,7 @@ import type {
  */
 export async function executeAction(
   componentId: string,
-  action: { type: string; targetZone?: string; faceUp?: boolean },
+  action: { type: string; targetZone?: string; faceUp?: boolean; count?: number },
 ): Promise<void> {
   const { game, replaceComponent, removeComponent } = useGameStore.getState();
   if (!game) return;
@@ -157,6 +159,50 @@ export async function executeAction(
               });
             }
           }
+        }
+      }
+      break;
+    }
+
+    case "remove": {
+      const { removeComponent } = useGameStore.getState();
+      const { removeFromZOrder } = useCardZOrderStore.getState();
+
+      if (component.type === "card") {
+        // Remove single card
+        removeComponent(componentId);
+        removeFromZOrder(componentId);
+      } else if (component.type === "deck") {
+        // Remove N cards from top of deck
+        const count = action.count ?? 1;
+        const deckCards = getDeckCards(componentId);
+        const toRemove = deckCards.slice(-count); // Last elements = top cards
+        const remaining = deckCards.slice(0, -count);
+        
+        toRemove.forEach((cid) => {
+          removeComponent(cid);
+          removeFromZOrder(cid);
+        });
+
+        if (remaining.length === 0) {
+          removeComponent(componentId);
+          removeDeck(componentId);
+        } else {
+          // Update deck with remaining cards
+          const updatedDeck = game.components.find((c) => c.id === componentId);
+          if (updatedDeck && "cards" in updatedDeck) {
+            const deckComp = updatedDeck as DeckComponent;
+            replaceComponent(componentId, { ...deckComp, cards: remaining });
+          }
+        }
+      } else if (component.type === "zone") {
+        // Remove N cards from top of zone
+        const count = action.count ?? 1;
+        for (let i = 0; i < count; i++) {
+          const removed = useZoneStateStore.getState().removeTopCard(componentId);
+          if (!removed) break;
+          removeComponent(removed.id);
+          removeFromZOrder(removed.id);
         }
       }
       break;
