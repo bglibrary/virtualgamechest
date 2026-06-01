@@ -10,6 +10,7 @@ const STEP_TYPES = [
   { value: "draw-face-down", label: "Draw Face Down" },
   { value: "shuffle", label: "Shuffle" },
   { value: "draw-to-zone", label: "Draw to Zone" },
+  { value: "remove", label: "Remove" },
   { value: "composite", label: "Composite" },
 ] as const;
 
@@ -25,6 +26,8 @@ function createDefaultStep(type: string): StartupStep {
       return { type: "shuffle", target: "" };
     case "draw-to-zone":
       return { type: "draw-to-zone", target: "", targetZone: "", faceUp: false };
+    case "remove":
+      return { type: "remove", target: "", count: 1 };
     case "composite":
       return { type: "composite", target: "", actionLabel: "" };
     default:
@@ -106,6 +109,15 @@ export default function StartupEditor() {
     updateSteps(newSteps);
   }, [steps, updateSteps]);
 
+  const handleCountChange = useCallback((index: number, count: number) => {
+    const newSteps = [...steps] as StartupStep[];
+    const step = newSteps[index] as any;
+    if ("count" in step) {
+      step.count = Math.max(1, Math.min(100, count));
+      updateSteps(newSteps);
+    }
+  }, [steps, updateSteps]);
+
   const compOptions = components.map((c: GameComponent) => c.id);
 
   return (
@@ -133,6 +145,7 @@ export default function StartupEditor() {
         {steps.map((step, index) => {
           const isDrawToZone = "targetZone" in step && step.type === "draw-to-zone";
           const isComposite = step.type === "composite";
+          const isRemove = step.type === "remove";
 
           return (
             <div
@@ -233,7 +246,22 @@ export default function StartupEditor() {
                     type="text"
                     value={"actionLabel" in step ? (step as any).actionLabel ?? "" : ""}
                     onChange={(e) => handleActionLabelChange(index, e.target.value)}
-                    placeholder="e.g., Shuffle &amp; Deal"
+                    placeholder="e.g., Shuffle & Deal"
+                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
+                  />
+                </div>
+              )}
+
+              {/* Remove count */}
+              {isRemove && (
+                <div>
+                  <label className="mb-0.5 block text-xs text-gray-500">Count (1-100)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={"count" in step ? (step as any).count ?? 1 : 1}
+                    onChange={(e) => handleCountChange(index, parseInt(e.target.value) || 1)}
                     className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
                   />
                 </div>

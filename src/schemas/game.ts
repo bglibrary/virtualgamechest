@@ -142,6 +142,11 @@ const startupStepSchema = z.discriminatedUnion("type", [
     faceUp: z.boolean(),
   }),
   z.object({
+    type: z.literal("remove"),
+    target: z.string().min(1),
+    count: z.number().int().min(1).max(100).optional().default(1),
+  }),
+  z.object({
     type: z.literal("composite"),
     target: z.string().min(1),
     // For composite, we refer to a composite action defined on the target component

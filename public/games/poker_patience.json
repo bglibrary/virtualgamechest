@@ -1160,21 +1160,8 @@
       "faceUp": false,
       "actions": [
         {
-          "type": "shuffle",
-          "label": "Mélanger"
-        },
-        {
-          "type": "flip",
-          "label": "Retourner"
-        },
-        {
           "type": "draw-face-up",
           "label": "Piocher"
-        },
-        {
-          "type": "remove",
-          "label": "Ranger",
-          "count": 50
         }
       ]
     },
@@ -1183,7 +1170,7 @@
       "id": "label-0",
       "position": {
         "x": 0.87,
-        "y": 0.8
+        "y": 0.5
       },
       "mobilePosition": {
         "x": 0.85,
@@ -1191,21 +1178,39 @@
       },
       "text": "Straight Flush = 30 \n(all in suit and sequence)\nFours = 16 \nStraight = 12 \n(all in sequence but not of 1 suit)\nFull House = 10 \n(three of one rank plus a pair)\nThrees = 6 \nFlush = 5 \n(all 1 suit but not in sequence)\nTwo Pair = 3\nOne Pair = 1",
       "fontSize": 0.018,
+      "mobileFontSize": 0.02,
       "textColor": "#1b2949",
       "textAlign": "right",
       "fontWeight": "normal",
       "rotation": 0,
       "width": 0.241,
+      "mobileWidth": 0.271,
       "height": 0.341,
-      "mobileHeight": 0.191,
-      "mobileFontSize": 0.02,
-      "mobileWidth": 0.271
+      "mobileHeight": 0.191
+    },
+    {
+      "type": "restart-button",
+      "id": "restart-0",
+      "position": {
+        "x": 0.1,
+        "y": 0.6383333333333333
+      },
+      "label": "Relancer",
+      "mobilePosition": {
+        "x": 0.19792284866468843,
+        "y": 0.88
+      }
     }
   ],
   "startup": [
     {
       "type": "shuffle",
       "target": "draw-pile"
+    },
+    {
+      "type": "remove",
+      "target": "draw-pile",
+      "count": 27
     }
   ]
 }
