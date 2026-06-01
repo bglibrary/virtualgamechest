@@ -5,6 +5,7 @@ import {
   createDefaultCard,
   createDefaultZone,
   createDefaultLabel,
+  createDefaultRestartButton,
 } from "@/editor/utils/componentFactory";
 import { Trash2 } from "lucide-react";
 import BulkCardWizard from "@/editor/components/forms/BulkCardWizard";
@@ -23,6 +24,8 @@ export default function ComponentTree() {
     game?.components.filter((c: GameComponent) => c.type === "zone") ?? [];
   const labels =
     game?.components.filter((c: GameComponent) => c.type === "label") ?? [];
+  const restartButtons =
+    game?.components.filter((c: GameComponent) => c.type === "restart-button") ?? [];
 
   const handleSelect = useCallback(
     (e: React.MouseEvent, id: string) => {
@@ -81,6 +84,17 @@ export default function ComponentTree() {
       components: [...g.components, newLabel],
     }));
     selectComponent(newLabel.id);
+  }, [game, updateGame, selectComponent]);
+
+  const handleAddRestartButton = useCallback(() => {
+    if (!game) return;
+    const existingIds = game.components.map((c) => c.id);
+    const newButton = createDefaultRestartButton(existingIds);
+    updateGame((g) => ({
+      ...g,
+      components: [...g.components, newButton],
+    }));
+    selectComponent(newButton.id);
   }, [game, updateGame, selectComponent]);
 
   if (!game) {
@@ -185,6 +199,29 @@ export default function ComponentTree() {
             isSelected={selectedIds.includes(label.id)}
             onSelect={(e) => handleSelect(e, label.id)}
             onDelete={(e) => handleDelete(e, label.id)}
+          />
+        ))}
+      </Section>
+
+      {/* Restart buttons section */}
+      <Section
+        title="Restart Buttons"
+        count={restartButtons.length}
+        onAdd={handleAddRestartButton}
+        addLabel="+ Add Restart Button"
+      >
+        {restartButtons.length === 0 && (
+          <p className="px-2 text-xs text-gray-600">(no restart buttons)</p>
+        )}
+        {restartButtons.map((btn) => (
+          <ComponentRow
+            key={btn.id}
+            id={btn.id}
+            label={btn.id}
+            type="label"
+            isSelected={selectedIds.includes(btn.id)}
+            onSelect={(e) => handleSelect(e, btn.id)}
+            onDelete={(e) => handleDelete(e, btn.id)}
           />
         ))}
       </Section>

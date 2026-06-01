@@ -6,6 +6,7 @@ import { Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 
 const CARD_ACTION_TYPES = [
   { value: "flip", label: "Flip" },
+  { value: "remove", label: "Remove" },
   { value: "composite", label: "Composite" },
 ] as const;
 
@@ -15,6 +16,7 @@ const DECK_ACTION_TYPES = [
   { value: "draw-face-down", label: "Draw Face Down" },
   { value: "shuffle", label: "Shuffle" },
   { value: "draw-to-zone", label: "Draw to Zone" },
+  { value: "remove", label: "Remove" },
   { value: "composite", label: "Composite" },
 ] as const;
 
@@ -22,6 +24,8 @@ function createDefaultCardAction(type: string): CardAction {
   switch (type) {
     case "flip":
       return { type: "flip", label: "Retourner" };
+    case "remove":
+      return { type: "remove", label: "Ranger" };
     case "composite":
       return { type: "composite", label: "Composite", steps: [{ type: "flip" }] };
     default:
@@ -41,6 +45,8 @@ function createDefaultDeckAction(type: string): DeckAction {
       return { type: "shuffle", label: "Mélanger" };
     case "draw-to-zone":
       return { type: "draw-to-zone", label: "Défausser", targetZone: "", faceUp: false };
+    case "remove":
+      return { type: "remove", label: "Ranger", count: 1 };
     case "composite":
       return { type: "composite", label: "Composite", steps: [{ type: "flip" }] };
     default:
@@ -174,7 +180,8 @@ export default function ActionEditor({ componentId }: ActionEditorProps) {
       <div className="space-y-2">
         {actions.map((action, index) => {
           const isComposite = action.type === "composite";
-          const isDrawToZone = "targetZone" in action;
+          const hasCountParam = action.type === "remove" || action.type === "draw-to-zone";
+  const isDrawToZone = "targetZone" in action;
 
           return (
             <div
@@ -230,6 +237,25 @@ export default function ActionEditor({ componentId }: ActionEditorProps) {
                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
                 />
               </div>
+
+              {/* Count parameter for remove action */}
+              {action.type === "remove" && (
+                <div className="mb-2">
+                  <label className="mb-0.5 block text-xs text-gray-500">Count</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={("count" in action ? (action as any).count : 1) ?? 1}
+                    onChange={(e) => {
+                      const newActions = [...actions];
+                      newActions[index] = { ...newActions[index], count: parseInt(e.target.value) || 1 } as any;
+                      updateActions(newActions);
+                    }}
+                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
+                  />
+                </div>
+              )}
 
               {/* Draw-to-zone parameters */}
               {isDrawToZone && (

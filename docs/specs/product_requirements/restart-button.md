@@ -22,9 +22,9 @@ Players need a way to restart the game without refreshing the browser page. The 
 
 - New component type `restart-button` in the game JSON schema
 - Fields: `id`, `position`, `mobilePosition`, `label` (default "Relancer")
-- Icon: refresh arrow (RotateCw from lucide-react)
-- Click restarts the game: reloads the game JSON, resets all stores to initial state
-- No drag, no other interaction
+- Icon: refresh arrow (↻) before label
+- Click restarts the game: `window.location.reload()` reloads from JSON, resetting all state
+- No drag, no other interaction in game mode
 
 ## Out of Scope
 
@@ -53,10 +53,8 @@ Players need a way to restart the game without refreshing the browser page. The 
 
 **Acceptance Criteria:**
 
-- [ ] Clicking the button calls the game restart function
-- [ ] All game state is reset (card positions, faceUp state, deck state, zone state, z-order)
-- [ ] Game JSON is reloaded from the original source
-- [ ] Startup sequence re-executes if defined
+- [ ] Clicking the button reloads the page
+- [ ] All game state is reset
 
 ### US-3: Position differently on mobile
 
@@ -69,15 +67,32 @@ Players need a way to restart the game without refreshing the browser page. The 
 - [ ] `mobilePosition` is optional
 - [ ] Falls back to `position` when not set
 
+### US-4: Edit restart button in the editor
+
+**As a** game author
+**I want** to add/edit/delete and position the restart button in the editor
+**So that** I can place it where I want with the label I want
+
+**Acceptance Criteria:**
+
+- [ ] "Restart Buttons" section appears in ComponentTree
+- [ ] "+ Add Restart Button" button creates a new button
+- [ ] Button is draggable on the editor canvas
+- [ ] Selecting the button shows the PropertyPanel with the `label` field editable
+- [ ] Position is editable via PositionForm (same as other components)
+- [ ] Button can be deleted
+
 ## Edge Cases
 
 | Scenario | Expected Behavior |
 |---|---|
 | Two restart buttons | Both work independently — same restart logic |
-| Restart during action execution | Restart cancels any in-progress action |
+| Restart during action execution | Restart cancels any in-progress action (page reload) |
+| Empty label | Schema default is "Relancer" |
 
 ## Change Log
 
 | Date | Change | Author |
 |---|---|---|
 | 2026-01-06 | Initial draft | AI |
+| 2026-01-06 | Added US-4 (editor support: draggable, label editable, ComponentTree section) | AI |

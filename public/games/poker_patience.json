@@ -6,7 +6,7 @@
     "minWidth": 60,
     "aspectRatio": 1.4
   },
-    "mobileCardSize": {
+  "mobileCardSize": {
     "widthRatio": 0.05,
     "minWidth": 55,
     "aspectRatio": 1.4
@@ -1153,6 +1153,10 @@
         "x": 0.1,
         "y": 0.5
       },
+      "mobilePosition": {
+        "x": 0.5,
+        "y": 0.8892288861689106
+      },
       "faceUp": false,
       "actions": [
         {
@@ -1166,12 +1170,29 @@
         {
           "type": "draw-face-up",
           "label": "Piocher"
+        },
+        {
+          "type": "remove",
+          "label": "Ranger",
+          "count": 50
         }
-      ],
-      "mobilePosition": {
-        "x": 0.5,
-        "y": 0.8892288861689106
-      }
+      ]
+    },
+    {
+      "type": "label",
+      "id": "label-0",
+      "position": {
+        "x": 0.49374999999999963,
+        "y": 0.6066666666666667
+      },
+      "text": "Test \nceci\nest un \ntest pour voir",
+      "fontSize": 0.029,
+      "textColor": "#b94b4b",
+      "textAlign": "center",
+      "fontWeight": "normal",
+      "rotation": 0,
+      "width": 0.3,
+      "height": 0.1
     }
   ],
   "startup": [

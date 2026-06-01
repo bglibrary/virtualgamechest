@@ -3,7 +3,7 @@ import { Stage, Layer, Rect, Text, Group, Line, Image } from "react-konva";
 import type Konva from "konva";
 import { useEditorStore } from "@/editor/stores/editorStore";
 import { setViewportSize } from "@/editor/stores/viewportStore";
-import type { CardComponent, DeckComponent, ZoneComponent, LabelComponent, GameComponent } from "@/types/game";
+import type { CardComponent, DeckComponent, ZoneComponent, LabelComponent, RestartButtonComponent, GameComponent } from "@/types/game";
 import useCardImage from "@/ui/hooks/useCardImage";
 import computeCoverCrop from "@/ui/canvas/coverCrop";
 
@@ -1005,6 +1005,69 @@ export default function EditorCanvas() {
             );
           }
           return null;
+        })}
+
+        {/* Restart buttons (use DragItem so they can be moved in editor) */}
+        {visibleComponents.filter((c) => c.type === "restart-button").map((component) => {
+          const isSelected = selectedIds.includes(component.id);
+          const pos = getComponentPosition(component, editLayout);
+          if (!pos) return null;
+          const w = viewportInfo.width * 0.1;
+          const h = viewportInfo.height * 0.04;
+          const x = pos.x * viewportInfo.width - w / 2;
+          const y = pos.y * viewportInfo.height - h / 2;
+          return (
+            <DragItem
+              key={component.id}
+              id={component.id}
+              x={x}
+              y={y}
+              cardWidth={w}
+              cardHeight={h}
+              cornerRadius={0}
+              isSelected={isSelected}
+              isDragging={false}
+              viewportWidth={viewportInfo.width}
+              viewportHeight={viewportInfo.height}
+              onDragEnd={handleDragEnd}
+              onClick={(id) => {
+                handleClick(
+                  { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
+                  id,
+                );
+              }}
+            >
+              {isSelected && (
+                <Rect
+                  x={-4}
+                  y={-4}
+                  width={w + 8}
+                  height={h + 8}
+                  stroke={SELECTED_STROKE}
+                  strokeWidth={SELECTED_STROKE_WIDTH}
+                  fill={SELECTED_FILL}
+                />
+              )}
+              <Rect
+                width={w}
+                height={h}
+                cornerRadius={6}
+                fill="rgba(255, 255, 255, 0.15)"
+                stroke="rgba(255, 255, 255, 0.4)"
+                strokeWidth={1}
+              />
+              <Text
+                text={`↻ ${component.label ?? "Relancer"}`}
+                width={w}
+                height={h}
+                fontSize={viewportInfo.width * 0.018}
+                fill="#ffffff"
+                align="center"
+                verticalAlign="middle"
+                fontFamily="sans-serif"
+              />
+            </DragItem>
+          );
         })}
 
         {/* Labels */}

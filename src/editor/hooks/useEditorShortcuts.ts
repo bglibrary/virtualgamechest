@@ -17,6 +17,11 @@ export function useEditorShortcuts() {
     if (!gameId) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore shortcuts when typing in a text input/textarea/select
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable) {
+        return;
+      }
       const isMod = e.metaKey || e.ctrlKey;
       const editorStore = useEditorStore.getState();
 

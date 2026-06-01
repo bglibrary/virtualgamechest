@@ -188,7 +188,10 @@ export async function executeAction(
           removeComponent(componentId);
           removeDeck(componentId);
         } else {
-          // Update deck with remaining cards
+          // Update deck state store AND game store
+          const { initDeck } = useDeckStateStore.getState();
+          const faceUp = useDeckStateStore.getState().isFaceUp(componentId);
+          initDeck(componentId, remaining, faceUp);
           const updatedDeck = game.components.find((c) => c.id === componentId);
           if (updatedDeck && "cards" in updatedDeck) {
             const deckComp = updatedDeck as DeckComponent;

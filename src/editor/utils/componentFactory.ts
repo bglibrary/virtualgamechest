@@ -75,6 +75,18 @@ export function createDefaultZone(
   };
 }
 
+export function createDefaultRestartButton(
+  existingIds: string[],
+): import("@/types/game").RestartButtonComponent {
+  const idSet = new Set(existingIds);
+  return {
+    type: "restart-button",
+    id: generateComponentId("restart", idSet),
+    position: { x: 0.5, y: 0.95 },
+    label: "Relancer",
+  };
+}
+
 export function createDefaultLabel(
   existingIds: string[],
   text = "New Label",
