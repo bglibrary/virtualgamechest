@@ -4,14 +4,29 @@ import { useCardPositionStore } from "@/store/cardPositionStore";
 import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import { useDeckStateStore } from "@/store/deckStateStore";
 import { useZoneStateStore } from "@/store/zoneStateStore";
+import { useLayoutStore } from "@/store/layoutStore";
 import type { 
   GameComponent, 
   CardComponent, 
   DeckComponent, 
   StartupStep, 
   CardAction, 
-  DeckAction 
+  DeckAction,
+  Position
 } from "@/types/game";
+
+/**
+ * Returns the effective position for a component based on the current device.
+ * On mobile, uses mobilePosition if available, otherwise falls back to position.
+ * On desktop, uses position directly.
+ */
+function getEffectivePosition(component: { position: Position | null; mobilePosition?: Position | null }): Position {
+  const isMobile = useLayoutStore.getState().isMobile;
+  if (isMobile && component.mobilePosition) {
+    return component.mobilePosition;
+  }
+  return component.position ?? { x: 0, y: 0 };
+}
 
 /**
  * Executes a single unit action on a component.
@@ -65,8 +80,9 @@ export async function executeAction(
       if (component.type !== "deck") break;
 
       const faceUp = action.type === "draw-face-up";
+      const deckPos = getEffectivePosition(component);
       const result = drawCard(componentId, faceUp, {
-        deckPosition: component.position,
+        deckPosition: deckPos,
         cardWidthPx: 100, // Fixed size for engine logic, UI uses scaling
         cardHeightPx: 140,
         viewportWidth: 1920,
@@ -101,7 +117,7 @@ export async function executeAction(
             if (lastCardComp) {
               replaceComponent(lastCardId, {
                 ...lastCardComp,
-                position: component.position,
+                position: deckPos,
               });
             }
           }
@@ -114,8 +130,9 @@ export async function executeAction(
       if (component.type !== "deck" || !action.targetZone) break;
 
       const faceUp = action.faceUp ?? true;
+      const deckPos = getEffectivePosition(component);
       const result = drawCard(componentId, faceUp, {
-        deckPosition: component.position,
+        deckPosition: deckPos,
         cardWidthPx: 100,
         cardHeightPx: 140,
         viewportWidth: 1920,
@@ -155,7 +172,7 @@ export async function executeAction(
             if (lastCardComp) {
               replaceComponent(lastCardId, {
                 ...lastCardComp,
-                position: component.position,
+                position: deckPos,
               });
             }
           }

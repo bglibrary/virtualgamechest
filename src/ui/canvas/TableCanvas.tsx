@@ -261,7 +261,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
         const draggedComp = gameState.components.find((c) => c.id === draggedId);
         if (!draggedComp || draggedComp.type !== "card") return;
 
-        const targetPos = getCardPosition(targetCard.id) ?? targetCard.position ?? { x: 0.5, y: 0.5 };
+        const targetPos = getCardPosition(targetCard.id) ?? getPosition(targetCard) ?? { x: 0.5, y: 0.5 };
         const sharedFaceUp = useCardStateStore.getState().isFaceUp(targetCard.id);
 
         const newDeckId = useGameStore.getState().getNextMergeId();
