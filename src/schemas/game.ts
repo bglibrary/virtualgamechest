@@ -199,6 +199,7 @@ export const cardComponentSchema = z.object({
     (arr) => new Set(arr.map((a) => a.type)).size === arr.length,
     { message: "Duplicate actions are not allowed" },
   ),
+  doubleClickActionLabel: z.string().min(1).optional(),
 });
 
 export const deckComponentSchema = z.object({
@@ -212,6 +213,7 @@ export const deckComponentSchema = z.object({
     (arr) => new Set(arr.map((a) => "targetZone" in a ? `${a.type}:${a.targetZone}` : a.type)).size === arr.length,
     { message: "Duplicate actions are not allowed" },
   ),
+  doubleClickActionLabel: z.string().min(1).optional(),
 });
 
 const zoneActionSchema = zoneRemoveActionSchema;

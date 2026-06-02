@@ -81,10 +81,19 @@ export default function ActionEditor({ componentId }: ActionEditorProps) {
   const availableTypes = isCard ? CARD_ACTION_TYPES : DECK_ACTION_TYPES;
   const zones = game?.components.filter((c: GameComponent) => c.type === "zone") ?? [];
 
+  const componentData = component as any;
+
   const updateActions = useCallback((newActions: any[]) => {
     updateComponent(componentId, (c) => ({
       ...c,
       actions: newActions,
+    }));
+  }, [componentId, updateComponent]);
+
+  const handleDoubleClickActionChange = useCallback((label: string) => {
+    updateComponent(componentId, (c) => ({
+      ...c,
+      doubleClickActionLabel: label || undefined,
     }));
   }, [componentId, updateComponent]);
 
@@ -299,6 +308,29 @@ export default function ActionEditor({ componentId }: ActionEditorProps) {
             </div>
           );
         })}
+      </div>
+
+      {/* Double-click action configuration */}
+      <hr className="border-gray-800" />
+      <div>
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+          Double-click / Tap
+        </h3>
+        <select
+          value={componentData.doubleClickActionLabel ?? ""}
+          onChange={(e) => handleDoubleClickActionChange(e.target.value)}
+          className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
+        >
+          <option value="">-- None (double-click does nothing) --</option>
+          {actions.map((action, i) => (
+            <option key={i} value={(action as any).label ?? ""}>
+              {(action as any).label ?? `Action ${i + 1}`}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-gray-600">
+          Maps double-click/tap to the selected action. If set to "None", double-click has no effect.
+        </p>
       </div>
     </div>
   );

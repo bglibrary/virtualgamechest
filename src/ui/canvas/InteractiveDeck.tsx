@@ -15,6 +15,7 @@ import CardRenderer, {
 import { WIGGLE_TOTAL_DURATION } from "@/ui/canvas/DeckRenderer";
 import DeckRenderer from "@/ui/canvas/DeckRenderer";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
+import { executeActionByLabel } from "@/engine/actionExecutor";
 import { logZOrder } from "@/utils/debugZOrder";
 
 interface InteractiveDeckProps {
@@ -98,10 +99,11 @@ function InteractiveDeck({
     selectComponent(deckId);
   }, [selectComponent, deckId]);
 
-  const handleDblClick = useCallback(() => {
-    if (!component.actions.some((a) => a.type === "flip")) return;
-    flipDeck(deckId);
-  }, [component.actions, flipDeck, deckId]);
+  const handleDblClick = useCallback(async () => {
+    const doubleClickLabel = component.doubleClickActionLabel;
+    if (!doubleClickLabel) return;
+    await executeActionByLabel(deckId, doubleClickLabel);
+  }, [component.doubleClickActionLabel, deckId]);
 
   const { onClick, cancelPendingClick } = useClickOrDblClick({
     onClick: handleClick,

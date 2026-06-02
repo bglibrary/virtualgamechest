@@ -12,6 +12,7 @@ import CardRenderer, {
 import { useGameStore } from "@/store/gameStore";
 import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
 import useClickOrDblClick from "@/ui/hooks/useClickOrDblClick";
+import { executeActionByLabel } from "@/engine/actionExecutor";
 import { logZOrder } from "@/utils/debugZOrder";
 
 interface InteractiveCardProps {
@@ -58,11 +59,12 @@ function InteractiveCard({
     selectComponent(cardId);
   }, [selectComponent, cardId]);
 
-  const handleDblClick = useCallback(() => {
-    if (!component.actions.some((a) => a.type === "flip")) return;
-    flipCard(cardId);
+  const handleDblClick = useCallback(async () => {
+    const doubleClickLabel = component.doubleClickActionLabel;
+    if (!doubleClickLabel) return;
+    await executeActionByLabel(cardId, doubleClickLabel);
     selectComponent(null);
-  }, [component.actions, flipCard, selectComponent, cardId]);
+  }, [component.doubleClickActionLabel, cardId, selectComponent]);
 
   const { onClick, cancelPendingClick } = useClickOrDblClick({
     onClick: handleClick,

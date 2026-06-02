@@ -251,6 +251,42 @@ export async function executeCompositeAction(
 }
 
 /**
+ * Execute an action on a component, finding it by label.
+ * Used by double-click/tap gesture: looks up the action with matching label
+ * in the component's actions array and executes it.
+ */
+export async function executeActionByLabel(
+  componentId: string,
+  actionLabel: string,
+): Promise<void> {
+  const { game } = useGameStore.getState();
+  if (!game) return;
+
+  const component = game.components.find((c) => c.id === componentId);
+  if (!component) {
+    console.warn(`Component ${componentId} not found for labeled action "${actionLabel}"`);
+    return;
+  }
+
+  // Only card and deck components have actions
+  if (component.type !== "card" && component.type !== "deck") return;
+
+  const action = (component.actions as (CardAction | DeckAction)[]).find(
+    (a) => a.label === actionLabel,
+  );
+  if (!action) {
+    console.warn(`Action with label "${actionLabel}" not found on component ${componentId}`);
+    return;
+  }
+
+  if (action.type === "composite") {
+    await executeCompositeAction(componentId, action);
+  } else {
+    await executeAction(componentId, action);
+  }
+}
+
+/**
  * Executes the entire startup sequence.
  */
 export async function executeStartupSequence(steps: StartupStep[]): Promise<void> {
