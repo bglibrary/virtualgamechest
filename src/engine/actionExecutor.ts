@@ -101,26 +101,29 @@ export async function executeAction(
           if (result.deckIsEmpty) {
             removeComponent(componentId);
             removeDeck(componentId);
-          } else if (result.deckDegenerates) {
-            const lastCardId = getDeckCards(componentId)[0];
-            const lastCardComp = game.components.find((c) => c.id === lastCardId) as CardComponent;
-            console.warn("[actionExecutor] draw — deck degenerates:", {
-              deckId: componentId,
-              lastCardId,
-              hasFaceImage: !!lastCardComp?.face?.image,
-              hasBackImage: !!lastCardComp?.back?.image,
-              faceImage: (lastCardComp?.face as { image?: string })?.image?.substring(0, 60),
-              backImage: (lastCardComp?.back as { image?: string })?.image?.substring(0, 60),
+        } else if (result.deckDegenerates) {
+          const lastCardId = getDeckCards(componentId)[0];
+          const lastCardComp = game.components.find((c) => c.id === lastCardId) as CardComponent;
+          // Preserve the deck's faceUp state for the last remaining card
+          const deckFaceUp = useDeckStateStore.getState().isFaceUp(componentId);
+          console.warn("[actionExecutor] draw — deck degenerates:", {
+            deckId: componentId,
+            lastCardId,
+            deckFaceUp,
+            drawFaceUp: faceUp,
+            hasFaceImage: !!lastCardComp?.face?.image,
+            hasBackImage: !!lastCardComp?.back?.image,
+          });
+          removeComponent(componentId);
+          removeDeck(componentId);
+          if (lastCardComp) {
+            setCardFaceUp(lastCardId, deckFaceUp);
+            replaceComponent(lastCardId, {
+              ...lastCardComp,
+              position: deckPos,
             });
-            removeComponent(componentId);
-            removeDeck(componentId);
-            if (lastCardComp) {
-              replaceComponent(lastCardId, {
-                ...lastCardComp,
-                position: deckPos,
-              });
-            }
           }
+        }
         }
       }
       break;
@@ -159,17 +162,19 @@ export async function executeAction(
           } else if (result.deckDegenerates) {
             const lastCardId = getDeckCards(componentId)[0];
             const lastCardComp = game.components.find((c) => c.id === lastCardId) as CardComponent;
+            // Preserve the deck's faceUp state for the last remaining card
+            const deckFaceUp = useDeckStateStore.getState().isFaceUp(componentId);
             console.warn("[actionExecutor] draw-to-zone — deck degenerates:", {
               deckId: componentId,
               lastCardId,
+              deckFaceUp,
               hasFaceImage: !!lastCardComp?.face?.image,
               hasBackImage: !!lastCardComp?.back?.image,
-              faceImage: (lastCardComp?.face as { image?: string })?.image?.substring(0, 60),
-              backImage: (lastCardComp?.back as { image?: string })?.image?.substring(0, 60),
             });
             removeComponent(componentId);
             removeDeck(componentId);
             if (lastCardComp) {
+              setCardFaceUp(lastCardId, deckFaceUp);
               replaceComponent(lastCardId, {
                 ...lastCardComp,
                 position: deckPos,
