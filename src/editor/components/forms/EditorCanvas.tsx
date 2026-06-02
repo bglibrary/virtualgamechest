@@ -468,13 +468,18 @@ function EditorZoneRenderer({
 interface EditorLabelRendererProps {
   component: LabelComponent;
   isSelected: boolean;
+  isDragging: boolean;
   viewportWidth: number;
   viewportHeight: number;
+  onDragEnd: (id: string, nx: number, ny: number) => void;
   onClick: (id: string) => void;
+  onDragStart?: () => void;
+  onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
 }
 
 function EditorLabelRenderer({
-  component, isSelected, viewportWidth, viewportHeight, onClick,
+  component, isSelected, isDragging, viewportWidth, viewportHeight,
+  onDragEnd, onClick,
 }: EditorLabelRendererProps) {
   const editLayout = useEditorStore((s) => s.editLayout);
   const isMobile = editLayout === "mobile";
@@ -504,22 +509,56 @@ function EditorLabelRenderer({
     ? component.mobileRotation
     : component.rotation;
 
+  // Labels store position as center
   const x = pos.x * viewportWidth;
   const y = pos.y * viewportHeight;
+
+  const groupRef = useRef<Konva.Group>(null);
 
   const handleClick = useCallback(() => {
     onClick(component.id);
   }, [component.id, onClick]);
 
+  const handleDragEnd = useCallback(() => {
+    const node = groupRef.current;
+    if (!node) return;
+    node.setAttr("shadowBlur", 0);
+    node.setAttr("shadowOffsetY", 0);
+
+    // Label stores center position directly (no offset needed because of offsetX/Y)
+    const nx = Math.max(0, Math.min(1, node.x() / viewportWidth));
+    const ny = Math.max(0, Math.min(1, node.y() / viewportHeight));
+    onDragEnd(component.id, nx, ny);
+  }, [component.id, viewportWidth, viewportHeight, onDragEnd]);
+
+  const handleDragStartLocal = useCallback(() => {
+    const node = groupRef.current;
+    if (!node) return;
+    node.setAttr("shadowBlur", DRAG_SHADOW_BLUR);
+    node.setAttr("shadowOffsetY", DRAG_SHADOW_OFFSET);
+    node.moveToTop();
+  }, []);
+
+  const dragBoundFunc = useCallback((pos: Konva.Vector2d) => ({
+    x: Math.max(w / 2, Math.min(viewportWidth - w / 2, pos.x)),
+    y: Math.max(h / 2, Math.min(viewportHeight - h / 2, pos.y)),
+  }), [viewportWidth, viewportHeight, w, h]);
+
   return (
     <Group
+      ref={groupRef}
       x={x}
       y={y}
       rotation={rotation}
       offsetX={w / 2}
       offsetY={h / 2}
+      draggable
       onClick={handleClick}
       onTap={handleClick}
+      onDragStart={handleDragStartLocal}
+      onDragEnd={handleDragEnd}
+      dragBoundFunc={dragBoundFunc}
+      shadowBlur={0}
     >
       {isSelected && (
         <Rect
@@ -1094,19 +1133,24 @@ export default function EditorCanvas() {
         {/* Labels */}
         {visibleComponents.filter((c) => c.type === "label").map((component) => {
           const isSelected = selectedIds.includes(component.id);
+          const isDragging = draggingIdRef.current === component.id;
           return (
             <EditorLabelRenderer
               key={component.id}
               component={component}
               isSelected={isSelected}
+              isDragging={isDragging}
               viewportWidth={viewportInfo.width}
               viewportHeight={viewportInfo.height}
+              onDragEnd={handleDragEnd}
               onClick={(id) => {
                 handleClick(
                   { evt: window.event || {} } as Konva.KonvaEventObject<MouseEvent>,
                   id,
                 );
               }}
+              onDragStart={() => handleDragStart(component.id)}
+              onDragMove={handleDragMove}
             />
           );
         })}
