@@ -475,15 +475,12 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
         <Layer>
           {labelComponents.map((component) => {
             const labelPosOverride = getCardPosition(component.id);
-            const isLabelSelected = selectedComponentId === component.id;
             return (
               <LabelRenderer
                 key={component.id}
                 component={component}
                 viewportWidth={size.width}
                 viewportHeight={size.height}
-                onClick={() => selectComponent(component.id)}
-                highlighted={isLabelSelected}
                 positionOverride={labelPosOverride}
               />
             );
