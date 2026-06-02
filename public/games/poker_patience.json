@@ -1154,8 +1154,8 @@
         "y": 0.5
       },
       "mobilePosition": {
-        "x": 0.5,
-        "y": 0.8892288861689106
+        "x": 0.3407608695652174,
+        "y": 0.890016694490818
       },
       "faceUp": false,
       "actions": [
@@ -1163,7 +1163,8 @@
           "type": "draw-face-up",
           "label": "Piocher"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Piocher"
     },
     {
       "type": "label",
@@ -1173,18 +1174,18 @@
         "y": 0.5
       },
       "mobilePosition": {
-        "x": 0.85,
+        "x": 0.79,
         "y": 0.88
       },
       "text": "Straight Flush = 30 \n(all in suit and sequence)\nFours = 16 \nStraight = 12 \n(all in sequence but not of 1 suit)\nFull House = 10 \n(three of one rank plus a pair)\nThrees = 6 \nFlush = 5 \n(all 1 suit but not in sequence)\nTwo Pair = 3\nOne Pair = 1",
       "fontSize": 0.018,
-      "mobileFontSize": 0.02,
+      "mobileFontSize": 0.025,
       "textColor": "#1b2949",
       "textAlign": "right",
       "fontWeight": "normal",
       "rotation": 0,
       "width": 0.241,
-      "mobileWidth": 0.271,
+      "mobileWidth": 0.371,
       "height": 0.341,
       "mobileHeight": 0.191
     },
@@ -1195,11 +1196,11 @@
         "x": 0.1,
         "y": 0.6383333333333333
       },
-      "label": "Relancer",
       "mobilePosition": {
-        "x": 0.19792284866468843,
+        "x": 0.14154302670623145,
         "y": 0.88
-      }
+      },
+      "label": "Relancer"
     }
   ],
   "startup": [
