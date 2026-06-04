@@ -28,6 +28,7 @@ import {
   BOUNCE_DISTANCE,
   BOUNCE_DURATION,
 } from "@/ui/canvas/CardRenderer";
+import { useCardZOrderStore } from "@/store/cardZOrderStore";
 
 const DASH_PATTERN = [8, 4];
 const LABEL_FONT_SIZE = 12;
@@ -49,9 +50,9 @@ interface ZoneRendererProps {
   viewportHeight: number;
   onClick?: () => void;
   onDblClick?: () => void;
-  onTopCardDragStart?: (e: Konva.KonvaEventObject<DragEvent>) => void;
-  onTopCardDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
-  onTopCardDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onTopCardDragStart?: (cardId: string, e: Konva.KonvaEventObject<DragEvent>) => void;
+  onTopCardDragMove?: (cardId: string, e: Konva.KonvaEventObject<DragEvent>) => void;
+  onTopCardDragEnd?: (cardId: string, e: Konva.KonvaEventObject<DragEvent>) => void;
 }
 
 function ZoneRenderer({
@@ -91,7 +92,9 @@ function ZoneRenderer({
   const y = pos.y * viewportHeight - zoneHeight / 2;
 
   const groupRef = useRef<Konva.Group>(null);
+  const cardGroupRef = useRef<Konva.Group>(null);
   const bounceRef = useRef<(() => void) | null>(null);
+  const bringToTop = useCardZOrderStore((s) => s.bringToTop);
 
   const triggerBounce = useCallback(() => {
     const node = groupRef.current;
@@ -120,7 +123,7 @@ function ZoneRenderer({
 
   const handleDragStart = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
-      const node = groupRef.current;
+      const node = cardGroupRef.current;
       if (!node) return;
       node.scaleX(DRAG_SCALE);
       node.scaleY(DRAG_SCALE);
@@ -129,16 +132,19 @@ function ZoneRenderer({
       node.moveToTop();
       const layer = node.getLayer();
       if (layer) layer.batchDraw();
-      onTopCardDragStart?.(e);
+      if (topCard) {
+        bringToTop(topCard.id);
+        onTopCardDragStart?.(topCard.id, e);
+      }
     },
-    [onTopCardDragStart],
+    [onTopCardDragStart, topCard, bringToTop],
   );
 
   const handleDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
-      const node = groupRef.current;
+      const node = cardGroupRef.current;
       if (!node) {
-        onTopCardDragEnd?.(e);
+        if (topCard) onTopCardDragEnd?.(topCard.id, e);
         return;
       }
       node.to({
@@ -149,16 +155,16 @@ function ZoneRenderer({
         duration: SETTLE_DURATION,
         easing: KonvaLib.Easings.EaseOut,
       });
-      onTopCardDragEnd?.(e);
+      if (topCard) onTopCardDragEnd?.(topCard.id, e);
     },
-    [onTopCardDragEnd],
+    [onTopCardDragEnd, topCard],
   );
 
   const handleDragMove = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
-      onTopCardDragMove?.(e);
+      if (topCard) onTopCardDragMove?.(topCard.id, e);
     },
-    [onTopCardDragMove],
+    [onTopCardDragMove, topCard],
   );
 
   const backgroundRect = (dashed: boolean) => (
@@ -250,7 +256,16 @@ function ZoneRenderer({
     >
       {/* Toujours le fond en pointillés, même avec des cartes */}
       {backgroundRect(true)}
-      <Group x={offsetX} y={offsetY}>
+      <Group
+        ref={cardGroupRef}
+        x={offsetX}
+        y={offsetY}
+        draggable
+        dragBoundFunc={dragBoundFunc}
+        onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
+        onDragEnd={handleDragEnd}
+      >
         {highlighted && (
           <Rect
             width={cardWidth}

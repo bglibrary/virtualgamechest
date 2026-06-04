@@ -27,7 +27,7 @@ import { findNearestSnapZone } from "@/utils/snapDetection";
 import type { MergeTargetInfo } from "@/utils/mergeDetection";
 import { findNearestMergeTarget } from "@/utils/mergeDetection";
 import type Konva from "konva";
-import type { DeckComponent } from "@/types/game";
+import type { DeckComponent, CardComponent, ZoneComponent } from "@/types/game";
 
 function TableCanvas() {
   const { isMobile, getPosition, getCardSize } = useDeviceLayout();
@@ -187,8 +187,11 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
 
       const cardW = Math.max(size.width * cardWidthRatio, cardMinWidth);
       const cardH = cardW * aspectRatio;
-      const cx = e.target.x() + cardW / 2;
-      const cy = e.target.y() + cardH / 2;
+      // Use absolute position to handle both top-level (InteractiveCard/InteractiveDeck)
+      // and nested (zone card) Konva Groups correctly
+      const absPos = e.target.getAbsolutePosition();
+      const cx = absPos.x + cardW / 2;
+      const cy = absPos.y + cardH / 2;
 
       const zoneResult = zoneSnapInfos.length > 0
         ? findNearestSnapZone(cx, cy, zoneSnapInfos)
@@ -328,11 +331,39 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
     [zoneSnapInfos, getCardPosition, addCard],
   );
 
-  const makeDragMoveHandler = useCallback(
-    (componentId: string) => (e: Konva.KonvaEventObject<DragEvent>) => {
-      handleDragMoveCommon(e, componentId);
+  /**
+   * Extracts a card from a zone and reconstructs it as a visible CardComponent.
+   * Called when the top card of a zone is dragged away.
+   */
+  const extractCardFromZone = useCallback(
+    (cardId: string, zoneId: string) => {
+      const { removeTopCard } = useZoneStateStore.getState();
+      const removedCard = removeTopCard(zoneId);
+      if (!removedCard) return;
+
+      const gameState = useGameStore.getState().game;
+      if (!gameState) return;
+
+      const zoneComponent = gameState.components.find((c) => c.id === zoneId) as ZoneComponent | undefined;
+      if (!zoneComponent) return;
+
+      const zonePos = getPosition(zoneComponent);
+      const cardComponent: CardComponent = {
+        type: "card",
+        id: cardId,
+        face: removedCard.face,
+        back: removedCard.back,
+        position: zonePos,
+        actions: [{ type: "flip", label: "Retourner" }],
+      };
+
+      useGameStore.getState().addComponent(cardComponent);
+      useCardZOrderStore.getState().bringToTop(cardId);
+      useCardPositionStore.getState().updateCardPosition(cardId, zonePos);
+      setHighlightedZoneId(null);
+      setHighlightedMergeTargetId(null);
     },
-    [handleDragMoveCommon],
+    [getPosition],
   );
 
   const handleCardDragEnd = useCallback(
@@ -349,6 +380,87 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       handleMerge(deckId);
     },
     [handleMerge],
+  );
+
+  const handleZoneCardDragStart = useCallback(
+    (_cardId: string, _e: Konva.KonvaEventObject<DragEvent>) => {
+      // Intentionally empty: we keep the card in the zone during drag
+      // so the Konva node stays alive. Extraction happens on dragEnd.
+    },
+    [],
+  );
+
+  const handleZoneCardDragMove = useCallback(
+    (cardId: string, e: Konva.KonvaEventObject<DragEvent>) => {
+      handleDragMoveCommon(e, cardId);
+    },
+    [handleDragMoveCommon],
+  );
+
+  /**
+   * On drag end of a zone's top card, we extract the card from the zone
+   * at the dragged position, then process snap/merge/drop as normal.
+   */
+  const handleZoneCardDragEnd = useCallback(
+    (cardId: string, e: Konva.KonvaEventObject<DragEvent>) => {
+      const zoneId = useZoneStateStore.getState().getCardZone(cardId);
+      if (!zoneId) {
+        // Card was already extracted (shouldn't happen, but fallback)
+        handleCardDragEnd(cardId);
+        return;
+      }
+
+      const { removeTopCard } = useZoneStateStore.getState();
+      const removedCard = removeTopCard(zoneId);
+      if (!removedCard) return;
+
+      const gameState = useGameStore.getState().game;
+      if (!gameState) return;
+
+      // Compute position from drag event target using absolute position
+      const node = e.target;
+      const absPos = node.getAbsolutePosition();
+      const cardSizeConfig = getCardSize(game ?? { cardSize: undefined, mobileCardSize: undefined });
+      const cardWidthRatio = cardSizeConfig.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+      const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+      const cardAspectRatio = cardSizeConfig.aspectRatio ?? DEFAULT_CARD_ASPECT;
+      const cardWidth = Math.max(size.width * cardWidthRatio, cardMinWidth);
+      const cardHeight = cardWidth * cardAspectRatio;
+
+      const nx = (absPos.x + cardWidth / 2) / size.width;
+      const ny = (absPos.y + cardHeight / 2) / size.height;
+      const clampedPos = {
+        x: Math.max(0, Math.min(1, nx)),
+        y: Math.max(0, Math.min(1, ny)),
+      };
+
+      const zoneComponent = gameState.components.find((c) => c.id === zoneId) as ZoneComponent | undefined;
+      const cardComponent: CardComponent = {
+        type: "card",
+        id: cardId,
+        face: removedCard.face,
+        back: removedCard.back,
+        position: clampedPos,
+        actions: [{ type: "flip", label: "Retourner" }],
+      };
+
+      useGameStore.getState().addComponent(cardComponent);
+      useCardZOrderStore.getState().bringToTop(cardId);
+      useCardPositionStore.getState().updateCardPosition(cardId, clampedPos);
+      setHighlightedZoneId(null);
+      setHighlightedMergeTargetId(null);
+
+      // Now process snap/merge/drop as a normal card
+      handleCardDragEnd(cardId);
+    },
+    [handleCardDragEnd, getCardSize, game, size],
+  );
+
+  const makeDragMoveHandler = useCallback(
+    (componentId: string) => (e: Konva.KonvaEventObject<DragEvent>) => {
+      handleDragMoveCommon(e, componentId);
+    },
+    [handleDragMoveCommon],
   );
 
   const actionButtons: ActionButton[] = (() => {
@@ -507,6 +619,9 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
                 highlighted={highlightedZoneId === component.id}
                 viewportWidth={size.width}
                 viewportHeight={size.height}
+                onTopCardDragStart={handleZoneCardDragStart}
+                onTopCardDragMove={handleZoneCardDragMove}
+                onTopCardDragEnd={handleZoneCardDragEnd}
               />
             );
           })}
