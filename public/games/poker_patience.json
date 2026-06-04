@@ -17,7 +17,13 @@
       "id": "2-hearts",
       "face": {
         "type": "text",
-        "text": "2 Cœur"
+        "text": "2 Cœur",
+        "image": "../img/classical_card_face/2_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -25,14 +31,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "3-hearts",
       "face": {
         "type": "text",
-        "text": "3 Cœur"
+        "text": "3 Cœur",
+        "image": "../img/classical_card_face/3_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -40,14 +53,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "4-hearts",
       "face": {
         "type": "text",
-        "text": "4 Cœur"
+        "text": "4 Cœur",
+        "image": "../img/classical_card_face/4_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -55,14 +75,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "5-hearts",
       "face": {
         "type": "text",
-        "text": "5 Cœur"
+        "text": "5 Cœur",
+        "image": "../img/classical_card_face/5_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -70,14 +97,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "6-hearts",
       "face": {
         "type": "text",
-        "text": "6 Cœur"
+        "text": "6 Cœur",
+        "image": "../img/classical_card_face/6_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -85,14 +119,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "7-hearts",
       "face": {
         "type": "text",
-        "text": "7 Cœur"
+        "text": "7 Cœur",
+        "image": "../img/classical_card_face/7_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -100,14 +141,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "8-hearts",
       "face": {
         "type": "text",
-        "text": "8 Cœur"
+        "text": "8 Cœur",
+        "image": "../img/classical_card_face/8_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -115,14 +163,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "9-hearts",
       "face": {
         "type": "text",
-        "text": "9 Cœur"
+        "text": "9 Cœur",
+        "image": "../img/classical_card_face/9_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -130,14 +185,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "10-hearts",
       "face": {
         "type": "text",
-        "text": "10 Cœur"
+        "text": "10 Cœur",
+        "image": "../img/classical_card_face/10_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -145,14 +207,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "jack-hearts",
       "face": {
         "type": "text",
-        "text": "Valet Cœur"
+        "text": "Valet Cœur",
+        "image": "../img/classical_card_face/jack_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -160,14 +229,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "queen-hearts",
       "face": {
         "type": "text",
-        "text": "Dame Cœur"
+        "text": "Dame Cœur",
+        "image": "../img/classical_card_face/queen_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -175,14 +251,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "king-hearts",
       "face": {
         "type": "text",
-        "text": "Roi Cœur"
+        "text": "Roi Cœur",
+        "image": "../img/classical_card_face/king_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -190,14 +273,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "ace-hearts",
       "face": {
         "type": "text",
-        "text": "As Cœur"
+        "text": "As Cœur",
+        "image": "../img/classical_card_face/ace_of_hearts.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -205,14 +295,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "2-diamonds",
       "face": {
         "type": "text",
-        "text": "2 Carreau"
+        "text": "2 Carreau",
+        "image": "../img/classical_card_face/2_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -220,14 +317,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "3-diamonds",
       "face": {
         "type": "text",
-        "text": "3 Carreau"
+        "text": "3 Carreau",
+        "image": "../img/classical_card_face/3_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -235,14 +339,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "4-diamonds",
       "face": {
         "type": "text",
-        "text": "4 Carreau"
+        "text": "4 Carreau",
+        "image": "../img/classical_card_face/4_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -250,14 +361,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "5-diamonds",
       "face": {
         "type": "text",
-        "text": "5 Carreau"
+        "text": "5 Carreau",
+        "image": "../img/classical_card_face/5_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -265,14 +383,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "6-diamonds",
       "face": {
         "type": "text",
-        "text": "6 Carreau"
+        "text": "6 Carreau",
+        "image": "../img/classical_card_face/6_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -280,14 +405,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "7-diamonds",
       "face": {
         "type": "text",
-        "text": "7 Carreau"
+        "text": "7 Carreau",
+        "image": "../img/classical_card_face/7_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -295,14 +427,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "8-diamonds",
       "face": {
         "type": "text",
-        "text": "8 Carreau"
+        "text": "8 Carreau",
+        "image": "../img/classical_card_face/8_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -310,14 +449,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "9-diamonds",
       "face": {
         "type": "text",
-        "text": "9 Carreau"
+        "text": "9 Carreau",
+        "image": "../img/classical_card_face/9_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -325,14 +471,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "10-diamonds",
       "face": {
         "type": "text",
-        "text": "10 Carreau"
+        "text": "10 Carreau",
+        "image": "../img/classical_card_face/10_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -340,14 +493,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "jack-diamonds",
       "face": {
         "type": "text",
-        "text": "Valet Carreau"
+        "text": "Valet Carreau",
+        "image": "../img/classical_card_face/jack_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -355,14 +515,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "queen-diamonds",
       "face": {
         "type": "text",
-        "text": "Dame Carreau"
+        "text": "Dame Carreau",
+        "image": "../img/classical_card_face/queen_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -370,14 +537,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "king-diamonds",
       "face": {
         "type": "text",
-        "text": "Roi Carreau"
+        "text": "Roi Carreau",
+        "image": "../img/classical_card_face/king_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -385,14 +559,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "ace-diamonds",
       "face": {
         "type": "text",
-        "text": "As Carreau"
+        "text": "As Carreau",
+        "image": "../img/classical_card_face/ace_of_diamonds.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -400,14 +581,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "2-clubs",
       "face": {
         "type": "text",
-        "text": "2 Trèfle"
+        "text": "2 Trèfle",
+        "image": "../img/classical_card_face/2_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -415,14 +603,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "3-clubs",
       "face": {
         "type": "text",
-        "text": "3 Trèfle"
+        "text": "3 Trèfle",
+        "image": "../img/classical_card_face/3_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -430,14 +625,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "4-clubs",
       "face": {
         "type": "text",
-        "text": "4 Trèfle"
+        "text": "4 Trèfle",
+        "image": "../img/classical_card_face/4_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -445,14 +647,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "5-clubs",
       "face": {
         "type": "text",
-        "text": "5 Trèfle"
+        "text": "5 Trèfle",
+        "image": "../img/classical_card_face/5_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -460,14 +669,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "6-clubs",
       "face": {
         "type": "text",
-        "text": "6 Trèfle"
+        "text": "6 Trèfle",
+        "image": "../img/classical_card_face/6_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -475,14 +691,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "7-clubs",
       "face": {
         "type": "text",
-        "text": "7 Trèfle"
+        "text": "7 Trèfle",
+        "image": "../img/classical_card_face/7_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -490,14 +713,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "8-clubs",
       "face": {
         "type": "text",
-        "text": "8 Trèfle"
+        "text": "8 Trèfle",
+        "image": "../img/classical_card_face/8_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -505,14 +735,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "9-clubs",
       "face": {
         "type": "text",
-        "text": "9 Trèfle"
+        "text": "9 Trèfle",
+        "image": "../img/classical_card_face/9_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -520,14 +757,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "10-clubs",
       "face": {
         "type": "text",
-        "text": "10 Trèfle"
+        "text": "10 Trèfle",
+        "image": "../img/classical_card_face/10_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -535,14 +779,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "jack-clubs",
       "face": {
         "type": "text",
-        "text": "Valet Trèfle"
+        "text": "Valet Trèfle",
+        "image": "../img/classical_card_face/jack_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -550,14 +801,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "queen-clubs",
       "face": {
         "type": "text",
-        "text": "Dame Trèfle"
+        "text": "Dame Trèfle",
+        "image": "../img/classical_card_face/queen_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -565,14 +823,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "king-clubs",
       "face": {
         "type": "text",
-        "text": "Roi Trèfle"
+        "text": "Roi Trèfle",
+        "image": "../img/classical_card_face/king_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -580,14 +845,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "ace-clubs",
       "face": {
         "type": "text",
-        "text": "As Trèfle"
+        "text": "As Trèfle",
+        "image": "../img/classical_card_face/ace_of_clubs.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -595,14 +867,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "2-spades",
       "face": {
         "type": "text",
-        "text": "2 Pique"
+        "text": "2 Pique",
+        "image": "../img/classical_card_face/2_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -610,14 +889,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "3-spades",
       "face": {
         "type": "text",
-        "text": "3 Pique"
+        "text": "3 Pique",
+        "image": "../img/classical_card_face/3_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -625,14 +911,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "4-spades",
       "face": {
         "type": "text",
-        "text": "4 Pique"
+        "text": "4 Pique",
+        "image": "../img/classical_card_face/4_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -640,14 +933,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "5-spades",
       "face": {
         "type": "text",
-        "text": "5 Pique"
+        "text": "5 Pique",
+        "image": "../img/classical_card_face/5_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -655,14 +955,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "6-spades",
       "face": {
         "type": "text",
-        "text": "6 Pique"
+        "text": "6 Pique",
+        "image": "../img/classical_card_face/6_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -670,14 +977,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "7-spades",
       "face": {
         "type": "text",
-        "text": "7 Pique"
+        "text": "7 Pique",
+        "image": "../img/classical_card_face/7_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -685,14 +999,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "8-spades",
       "face": {
         "type": "text",
-        "text": "8 Pique"
+        "text": "8 Pique",
+        "image": "../img/classical_card_face/8_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -700,14 +1021,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "9-spades",
       "face": {
         "type": "text",
-        "text": "9 Pique"
+        "text": "9 Pique",
+        "image": "../img/classical_card_face/9_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -715,14 +1043,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "10-spades",
       "face": {
         "type": "text",
-        "text": "10 Pique"
+        "text": "10 Pique",
+        "image": "../img/classical_card_face/10_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -730,14 +1065,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "jack-spades",
       "face": {
         "type": "text",
-        "text": "Valet Pique"
+        "text": "Valet Pique",
+        "image": "../img/classical_card_face/jack_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -745,14 +1087,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "queen-spades",
       "face": {
         "type": "text",
-        "text": "Dame Pique"
+        "text": "Dame Pique",
+        "image": "../img/classical_card_face/queen_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -760,14 +1109,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "king-spades",
       "face": {
         "type": "text",
-        "text": "Roi Pique"
+        "text": "Roi Pique",
+        "image": "../img/classical_card_face/king_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -775,14 +1131,21 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "card",
       "id": "ace-spades",
       "face": {
         "type": "text",
-        "text": "As Pique"
+        "text": "As Pique",
+        "image": "../img/classical_card_face/ace_of_spades.svg"
+      },
+      "back": {
+        "type": "text",
+        "text": "Dos",
+        "image": "../img/classical_card_face/back.svg"
       },
       "position": null,
       "actions": [
@@ -790,7 +1153,8 @@
           "type": "flip",
           "label": "Retourner"
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Retourner"
     },
     {
       "type": "zone",
