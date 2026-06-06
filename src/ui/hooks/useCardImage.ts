@@ -129,5 +129,70 @@ function useCardImage(url: string | undefined): UseCardImageResult {
   return { image: entry.image, loading: entry.loading, error: entry.error };
 }
 
+/**
+ * Preload an image URL into the shared store.
+ *
+ * This is the same mechanism that `useCardImage` uses: it creates or reuses
+ * a store entry, starts loading the image, and updates the entry (and notifies
+ * listeners) when done. This ensures that when a card component later calls
+ * `useCardImage` with the same URL, the image is already loaded and no text
+ * fallback is shown.
+ *
+ * Returns a promise that resolves when the image has loaded (or rejects on error).
+ */
+export function preloadImage(url: string): Promise<void> {
+  const e = getOrCreateStore(url);
+
+  // If already loaded, resolve immediately
+  if (e.image && !e.loading && !e.error) return Promise.resolve();
+
+  // If currently loading, wait for it (listen for version change)
+  if (e.loading) {
+    return new Promise((resolve, reject) => {
+      const unsub = subscribeToStore(e, () => {
+        if (!e.loading) {
+          unsub();
+          if (e.error) reject(new Error(`Failed to load image: ${url.substring(0, 80)}`));
+          else resolve();
+        }
+      });
+    });
+  }
+
+  // Start loading
+  e.image = null;
+  e.loading = true;
+  e.error = false;
+  e.version++;
+  e.listeners.forEach((l) => l());
+
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    if (!url.startsWith("blob:")) {
+      img.crossOrigin = "anonymous";
+    }
+
+    img.onload = () => {
+      e.image = img;
+      e.loading = false;
+      e.error = false;
+      e.version++;
+      e.listeners.forEach((l) => l());
+      resolve();
+    };
+
+    img.onerror = () => {
+      e.image = null;
+      e.loading = false;
+      e.error = true;
+      e.version++;
+      e.listeners.forEach((l) => l());
+      reject(new Error(`Failed to load image: ${url.substring(0, 80)}`));
+    };
+
+    img.src = url;
+  });
+}
+
 export default useCardImage;
 export type { UseCardImageResult };
