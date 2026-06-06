@@ -11,6 +11,7 @@ const STEP_TYPES = [
   { value: "shuffle", label: "Shuffle" },
   { value: "draw-to-zone", label: "Draw to Zone" },
   { value: "remove", label: "Remove" },
+  { value: "merge", label: "Merge" },
   { value: "composite", label: "Composite" },
 ] as const;
 
@@ -28,6 +29,8 @@ function createDefaultStep(type: string): StartupStep {
       return { type: "draw-to-zone", target: "", targetZone: "", faceUp: false };
     case "remove":
       return { type: "remove", target: "", count: 1 };
+    case "merge":
+      return { type: "merge", target: "", targetDeck: "" };
     case "composite":
       return { type: "composite", target: "", actionLabel: "" };
     default:
@@ -118,7 +121,15 @@ export default function StartupEditor() {
     }
   }, [steps, updateSteps]);
 
-  const compOptions = components.map((c: GameComponent) => c.id);
+  const decks = components.filter((c: GameComponent) => c.type === "deck");
+
+  /** For shuffle steps, only decks are valid targets */
+  const targetOptionsForType = (step: StartupStep): { id: string }[] => {
+    if (step.type === "shuffle") {
+      return decks.map((d) => ({ id: d.id }));
+    }
+    return components;
+  };
 
   return (
     <div className="space-y-3">
@@ -200,13 +211,36 @@ export default function StartupEditor() {
                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
                 >
                   <option value="">-- Select component --</option>
-                  {compOptions.map((id) => (
-                    <option key={id} value={id}>
-                      {id}
+                  {targetOptionsForType(step).map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.id}
                     </option>
                   ))}
                 </select>
               </div>
+
+              {/* Merge targetDeck selector */}
+                {step.type === "merge" && "targetDeck" in step && (
+                  <div className="mb-2">
+                    <label className="mb-0.5 block text-xs text-gray-500">Target Deck (merge into)</label>
+                    <select
+                      value={(step as any).targetDeck ?? ""}
+                      onChange={(e) => {
+                        const newSteps = [...steps] as StartupStep[];
+                        (newSteps[index] as any).targetDeck = e.target.value;
+                        updateSteps(newSteps);
+                      }}
+                      className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
+                    >
+                      <option value="">-- Select deck --</option>
+                      {decks.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.id}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
               {/* Draw-to-zone parameters */}
               {isDrawToZone && (

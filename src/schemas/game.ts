@@ -147,6 +147,11 @@ const startupStepSchema = z.discriminatedUnion("type", [
     count: z.number().int().min(1).max(100).optional().default(1),
   }),
   z.object({
+    type: z.literal("merge"),
+    target: z.string().min(1),
+    targetDeck: z.string().min(1),
+  }),
+  z.object({
     type: z.literal("composite"),
     target: z.string().min(1),
     // For composite, we refer to a composite action defined on the target component

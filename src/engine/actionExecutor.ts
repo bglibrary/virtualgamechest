@@ -287,6 +287,56 @@ export async function executeActionByLabel(
 }
 
 /**
+ * Merge a card or entire deck into a target deck.
+ * Used both by runtime (handleMerge in TableCanvas) and startup sequence.
+ */
+function executeMergeStep(targetId: string, targetDeckId: string): void {
+  const { game, replaceComponent, removeComponent } = useGameStore.getState();
+  if (!game) return;
+
+  const { getCards: getDeckCards, addCardToTop, addCardsToTop, removeDeck } = useDeckStateStore.getState();
+  const { removeFromZOrder } = useCardZOrderStore.getState();
+  const { setFaceUp } = useCardStateStore.getState();
+
+  const targetComponent = game.components.find((c) => c.id === targetId);
+  const deckComponent = game.components.find((c) => c.id === targetDeckId);
+
+  if (!targetComponent || !deckComponent) {
+    console.warn(`Merge: target ${targetId} or deck ${targetDeckId} not found`);
+    return;
+  }
+  if (deckComponent.type !== "deck") {
+    console.warn(`Merge: targetDeck ${targetDeckId} is not a deck (type=${deckComponent.type})`);
+    return;
+  }
+
+  if (targetComponent.type === "card") {
+    // Merge card into deck
+    addCardToTop(targetDeckId, targetId);
+    if ("position" in targetComponent) {
+      replaceComponent(targetId, { ...targetComponent, position: null } as GameComponent);
+    }
+    setFaceUp(targetId, useDeckStateStore.getState().isFaceUp(targetDeckId));
+    removeFromZOrder(targetId);
+  } else if (targetComponent.type === "deck") {
+    if (targetId === targetDeckId) {
+      console.warn(`Merge: target and targetDeck are the same (${targetId})`);
+      return;
+    }
+    const targetDeckCards = getDeckCards(targetId);
+    if (targetDeckCards.length === 0) return;
+    addCardsToTop(targetDeckId, targetDeckCards);
+    const targetFaceUp = useDeckStateStore.getState().isFaceUp(targetDeckId);
+    targetDeckCards.forEach((cid) => {
+      setFaceUp(cid, targetFaceUp);
+      removeFromZOrder(cid);
+    });
+    removeComponent(targetId);
+    removeDeck(targetId);
+  }
+}
+
+/**
  * Executes the entire startup sequence.
  */
 export async function executeStartupSequence(steps: StartupStep[]): Promise<void> {
@@ -300,7 +350,9 @@ export async function executeStartupSequence(steps: StartupStep[]): Promise<void
       continue;
     }
 
-    if (step.type === "composite") {
+    if (step.type === "merge") {
+      executeMergeStep(step.target, step.targetDeck);
+    } else if (step.type === "composite") {
       if (component.type === "zone") {
         console.warn(`Startup step target ${step.target} is a zone, cannot execute composite action`);
         continue;
@@ -309,7 +361,6 @@ export async function executeStartupSequence(steps: StartupStep[]): Promise<void
         console.warn(`Startup step target ${step.target} has no actions, cannot execute composite`);
         continue;
       }
-      // Find the composite action on the component by its label
       const action = (component.actions as (CardAction | DeckAction)[]).find(
         (a) => a.type === "composite" && a.label === step.actionLabel,
       );

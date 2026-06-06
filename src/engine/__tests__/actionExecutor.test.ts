@@ -113,4 +113,120 @@ describe("actionExecutor", () => {
     // expect(useDeckStateStore.getState().isFaceUp("d1")).toBe(true); // Temporarily disabling
     expect(useDeckStateStore.getState().getCardCount("d1")).toBe(0); // drawn
   });
+
+  it("startup merge step merges a card into a deck", async () => {
+    const gameWithMerge: GameDefinition = {
+      name: "Merge Test",
+      version: "1.0.0",
+      components: [
+        {
+          type: "card",
+          id: "card-to-merge",
+          face: { type: "text", text: "Card to Merge" },
+          position: { x: 0.1, y: 0.1 },
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+        {
+          type: "deck",
+          id: "target-deck",
+          cards: ["existing-card"],
+          position: { x: 0.5, y: 0.5 },
+          faceUp: false,
+          actions: [{ type: "draw-face-down", label: "Draw" }],
+        },
+        {
+          type: "card",
+          id: "existing-card",
+          face: { type: "text", text: "Existing" },
+          position: null,
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+      ],
+      startup: [
+        { type: "merge", target: "card-to-merge", targetDeck: "target-deck" },
+      ],
+    };
+
+    useGameStore.getState().setGame(gameWithMerge);
+    useDeckStateStore.getState().initDeck("target-deck", ["existing-card"], false);
+    useCardStateStore.getState().setFaceUp("card-to-merge", true);
+
+    await executeStartupSequence(gameWithMerge.startup!);
+
+    // Card should be in deck
+    const deckCards = useDeckStateStore.getState().getCards("target-deck");
+    expect(deckCards).toContain("card-to-merge");
+
+    // Card position should be null (hidden inside deck)
+    const mergedCard = useGameStore.getState().game?.components.find(c => c.id === "card-to-merge");
+    expect(mergedCard?.type === "card" && mergedCard.position).toBeNull();
+
+    // Card faceUp should match deck
+    expect(useCardStateStore.getState().isFaceUp("card-to-merge")).toBe(false);
+  });
+
+  it("startup merge step merges an entire deck into another deck", async () => {
+    const gameWithDeckMerge: GameDefinition = {
+      name: "Deck Merge Test",
+      version: "1.0.0",
+      components: [
+        {
+          type: "deck",
+          id: "source-deck",
+          cards: ["card-a", "card-b"],
+          position: { x: 0.4, y: 0.5 },
+          faceUp: false,
+          actions: [{ type: "draw-face-down", label: "Draw" }],
+        },
+        {
+          type: "deck",
+          id: "target-deck",
+          cards: ["card-c"],
+          position: { x: 0.6, y: 0.5 },
+          faceUp: false,
+          actions: [{ type: "draw-face-down", label: "Draw" }],
+        },
+        {
+          type: "card",
+          id: "card-a",
+          face: { type: "text", text: "A" },
+          position: null,
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+        {
+          type: "card",
+          id: "card-b",
+          face: { type: "text", text: "B" },
+          position: null,
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+        {
+          type: "card",
+          id: "card-c",
+          face: { type: "text", text: "C" },
+          position: null,
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+      ],
+      startup: [
+        { type: "merge", target: "source-deck", targetDeck: "target-deck" },
+      ],
+    };
+
+    useGameStore.getState().setGame(gameWithDeckMerge);
+    useDeckStateStore.getState().initDeck("source-deck", ["card-a", "card-b"], false);
+    useDeckStateStore.getState().initDeck("target-deck", ["card-c"], false);
+
+    await executeStartupSequence(gameWithDeckMerge.startup!);
+
+    // Source deck should be removed
+    expect(useGameStore.getState().game?.components.find(c => c.id === "source-deck")).toBeUndefined();
+    expect(useDeckStateStore.getState().getCards("source-deck").length).toBe(0);
+
+    // Target deck should now contain all cards
+    const targetCards = useDeckStateStore.getState().getCards("target-deck");
+    expect(targetCards).toContain("card-a");
+    expect(targetCards).toContain("card-b");
+    expect(targetCards).toContain("card-c");
+  });
 });
