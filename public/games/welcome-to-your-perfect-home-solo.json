@@ -1,0 +1,1487 @@
+{
+  "name": "Welcome to your perfect home solo",
+  "version": "1.0.0",
+  "components": [
+    {
+      "type": "zone",
+      "id": "tvx-1",
+      "position": {
+        "x": 0.3,
+        "y": 0.8
+      },
+      "label": "Travaux 1",
+      "snapRadius": 30
+    },
+    {
+      "type": "zone",
+      "id": "tvx-2",
+      "position": {
+        "x": 0.5,
+        "y": 0.8
+      },
+      "snapRadius": 30,
+      "label": "Travaux 2"
+    },
+    {
+      "type": "zone",
+      "id": "tvx-3",
+      "position": {
+        "x": 0.7,
+        "y": 0.8
+      },
+      "label": "Travaux 3",
+      "snapRadius": 30
+    },
+    {
+      "type": "zone",
+      "id": "plan-1",
+      "position": {
+        "x": 0.3,
+        "y": 0.2
+      },
+      "label": "plan-1",
+      "snapRadius": 30
+    },
+    {
+      "type": "zone",
+      "id": "plan-2",
+      "position": {
+        "x": 0.5,
+        "y": 0.2
+      },
+      "label": "plan-2",
+      "snapRadius": 30
+    },
+    {
+      "type": "zone",
+      "id": "plan-3",
+      "position": {
+        "x": 0.7,
+        "y": 0.2
+      },
+      "label": "plan-3",
+      "snapRadius": 30
+    },
+    {
+      "type": "deck",
+      "id": "deck-0",
+      "cards": [
+        "card-0",
+        "card-1",
+        "card-2",
+        "card-3",
+        "card-4",
+        "card-5",
+        "card-6",
+        "card-7",
+        "card-8",
+        "card-9",
+        "card-10",
+        "card-11",
+        "card-12",
+        "card-13",
+        "card-14",
+        "card-15",
+        "card-16",
+        "card-17",
+        "card-18",
+        "card-19",
+        "card-20",
+        "card-21",
+        "card-22",
+        "card-23",
+        "card-24",
+        "card-25",
+        "card-26",
+        "card-27",
+        "card-28",
+        "card-29",
+        "card-30",
+        "card-31",
+        "card-32",
+        "card-33",
+        "card-34",
+        "card-35",
+        "card-36",
+        "card-37",
+        "card-38",
+        "card-39",
+        "card-40",
+        "card-41",
+        "card-42",
+        "card-43",
+        "card-44",
+        "card-45",
+        "card-46",
+        "card-47",
+        "card-48",
+        "card-49",
+        "card-50",
+        "card-51",
+        "card-52",
+        "card-53",
+        "card-54",
+        "card-55",
+        "card-56",
+        "card-57",
+        "card-58",
+        "card-59",
+        "card-60",
+        "card-61",
+        "card-62",
+        "card-63",
+        "card-64",
+        "card-65"
+      ],
+      "position": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "faceUp": false,
+      "actions": [
+        {
+          "type": "composite",
+          "label": "Piocher",
+          "steps": [
+            {
+              "type": "draw-to-zone",
+              "targetZone": "tvx-1",
+              "faceUp": true
+            },
+            {
+              "type": "draw-to-zone",
+              "targetZone": "tvx-2",
+              "faceUp": true
+            },
+            {
+              "type": "draw-to-zone",
+              "targetZone": "tvx-3",
+              "faceUp": true
+            }
+          ]
+        }
+      ],
+      "doubleClickActionLabel": "Piocher"
+    },
+    {
+      "type": "card",
+      "id": "card-0",
+      "face": {
+        "type": "text",
+        "text": "F 1 Geometre",
+        "image": "blob:http://localhost:5173/fb14fd8e-add6-4fe6-805d-9eadb200a2db"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-1",
+      "face": {
+        "type": "text",
+        "text": "F 1 Immo",
+        "image": "blob:http://localhost:5173/9648e4e5-c5dc-467b-a7a1-a3da08ec067a"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-2",
+      "face": {
+        "type": "text",
+        "text": "F 1 Paysage",
+        "image": "blob:http://localhost:5173/30be37c3-8a0e-4a9b-9cfb-830de199b3b7"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-3",
+      "face": {
+        "type": "text",
+        "text": "F 2 Geometre",
+        "image": "blob:http://localhost:5173/235af20b-a693-4910-b140-3d62f3f43ce1"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-4",
+      "face": {
+        "type": "text",
+        "text": "F 2 Immo",
+        "image": "blob:http://localhost:5173/1dbbd9a5-e7c4-4847-9907-03b053a32571"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-5",
+      "face": {
+        "type": "text",
+        "text": "F 2 Paysage",
+        "image": "blob:http://localhost:5173/41378d90-6692-48a8-8a9a-25047ae6df68"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-6",
+      "face": {
+        "type": "text",
+        "text": "F 3 Bis",
+        "image": "blob:http://localhost:5173/625c4e0b-3458-4b9e-91b2-7bfe6187725c"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-7",
+      "face": {
+        "type": "text",
+        "text": "F 3 Geometre",
+        "image": "blob:http://localhost:5173/3f3653c7-096b-4629-bac0-4caeab64f09b"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-8",
+      "face": {
+        "type": "text",
+        "text": "F 3 Interim",
+        "image": "blob:http://localhost:5173/5061c865-e8c3-4b2f-8b5b-1081d8ec0045"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-9",
+      "face": {
+        "type": "text",
+        "text": "F 3 Piscine",
+        "image": "blob:http://localhost:5173/786d3088-a163-4b22-ad26-8ef510fba604"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-10",
+      "face": {
+        "type": "text",
+        "text": "F 4 Bis",
+        "image": "blob:http://localhost:5173/f4d567ef-9b08-48db-858f-ad3199b7fbca"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-11",
+      "face": {
+        "type": "text",
+        "text": "F 4 Immo",
+        "image": "blob:http://localhost:5173/5cdcaa0e-326a-47e2-8302-c545e69f9e50"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-12",
+      "face": {
+        "type": "text",
+        "text": "F 4 Interim",
+        "image": "blob:http://localhost:5173/fc617527-240d-4f0e-8017-6e97c496b26f"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-13",
+      "face": {
+        "type": "text",
+        "text": "F 4 Paysage",
+        "image": "blob:http://localhost:5173/6f928c6b-c006-4a65-a47b-4e9e6769a067"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-14",
+      "face": {
+        "type": "text",
+        "text": "F 4 Piscine",
+        "image": "blob:http://localhost:5173/ed285845-2def-437e-9b70-d50a64560431"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-15",
+      "face": {
+        "type": "text",
+        "text": "F 5 Geometre",
+        "image": "blob:http://localhost:5173/00f71067-9693-4231-84f2-dfcdc35cdf1f"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-16",
+      "face": {
+        "type": "text",
+        "text": "F 5 Immo",
+        "image": "blob:http://localhost:5173/c2b3f990-b276-4dee-a090-f743600398f0"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-17",
+      "face": {
+        "type": "text",
+        "text": "F 5 Paysage",
+        "image": "blob:http://localhost:5173/beea5cfb-f215-4bb8-8291-753e10f3f33e"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-18",
+      "face": {
+        "type": "text",
+        "text": "F 6 Bis",
+        "image": "blob:http://localhost:5173/040eaf27-d704-4535-81b6-87f5dc5ac9ca"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-19",
+      "face": {
+        "type": "text",
+        "text": "F 6 Geometre",
+        "image": "blob:http://localhost:5173/ce1060a6-0b92-47f8-a129-f15d55376e69"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-20",
+      "face": {
+        "type": "text",
+        "text": "F 6 Immo",
+        "image": "blob:http://localhost:5173/525f70ae-d664-4617-896a-0390ea3d7507"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-21",
+      "face": {
+        "type": "text",
+        "text": "F 6 Interim",
+        "image": "blob:http://localhost:5173/9e6c70a8-c724-4b53-878a-392cfc496c95"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-22",
+      "face": {
+        "type": "text",
+        "text": "F 6 Paysage",
+        "image": "blob:http://localhost:5173/247311d1-f29b-4413-a435-9db9f3bb862d"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-23",
+      "face": {
+        "type": "text",
+        "text": "F 6 Piscine",
+        "image": "blob:http://localhost:5173/cb4279af-6b97-48f7-87e7-b60d33466167"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-24",
+      "face": {
+        "type": "text",
+        "text": "F 7 Bis",
+        "image": "blob:http://localhost:5173/8c1ae044-45b2-44ed-b898-902e37f95529"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-25",
+      "face": {
+        "type": "text",
+        "text": "F 7 Geometre",
+        "image": "blob:http://localhost:5173/ba19ffcb-4e12-4aef-a585-3231285aaa4a"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-26",
+      "face": {
+        "type": "text",
+        "text": "F 7 Immo",
+        "image": "blob:http://localhost:5173/c46b30aa-e5a9-40f9-8023-4f9e95e167e3"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-27",
+      "face": {
+        "type": "text",
+        "text": "F 7 Interim",
+        "image": "blob:http://localhost:5173/54647ae8-9bc5-4fd1-b792-3fb285ac1edb"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-28",
+      "face": {
+        "type": "text",
+        "text": "F 7 Paysage",
+        "image": "blob:http://localhost:5173/7132053f-5f86-4e8d-ac3a-4942d886668e"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-29",
+      "face": {
+        "type": "text",
+        "text": "F 7 Piscine",
+        "image": "blob:http://localhost:5173/396559a7-4268-49d2-a65d-e998c69c2814"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-30",
+      "face": {
+        "type": "text",
+        "text": "F 8 Bis",
+        "image": "blob:http://localhost:5173/fee46d85-f828-4f3c-91af-a10acce31366"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-31",
+      "face": {
+        "type": "text",
+        "text": "F 8 Geometre",
+        "image": "blob:http://localhost:5173/8586723f-45f3-4b1d-8407-b2281ae9a709"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-32",
+      "face": {
+        "type": "text",
+        "text": "F 8 Immo",
+        "image": "blob:http://localhost:5173/301af0e0-4e54-4d7e-af7e-7de17ab2a0bf"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-33",
+      "face": {
+        "type": "text",
+        "text": "F 8 Interim",
+        "image": "blob:http://localhost:5173/1a4f4b17-644b-41a6-8a01-0ab1302f7bc4"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-34",
+      "face": {
+        "type": "text",
+        "text": "F 8 Paysage",
+        "image": "blob:http://localhost:5173/646370cf-9e5f-4f7a-80f2-17bcdbd39902"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-35",
+      "face": {
+        "type": "text",
+        "text": "F 8 Piscine",
+        "image": "blob:http://localhost:5173/f67c8391-8c36-4f5d-b3b4-025b6b1ae9b1"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-36",
+      "face": {
+        "type": "text",
+        "text": "F 9 Bis",
+        "image": "blob:http://localhost:5173/63d338ab-cec0-4c7a-b552-ebba92db5f68"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-37",
+      "face": {
+        "type": "text",
+        "text": "F 9 Geometre",
+        "image": "blob:http://localhost:5173/c7b3863d-55c3-41cf-bb08-0b36222e4558"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-38",
+      "face": {
+        "type": "text",
+        "text": "F 9 Immo",
+        "image": "blob:http://localhost:5173/3030fb46-98b3-471f-b41e-45a0afd4bcda"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-39",
+      "face": {
+        "type": "text",
+        "text": "F 9 Interim",
+        "image": "blob:http://localhost:5173/8fd77146-6e71-4056-ba06-e8ffd6d9622b"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-40",
+      "face": {
+        "type": "text",
+        "text": "F 9 Paysage",
+        "image": "blob:http://localhost:5173/3e3d71a8-1af1-4c80-9acd-7d3104ab638b"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-41",
+      "face": {
+        "type": "text",
+        "text": "F 9 Piscine",
+        "image": "blob:http://localhost:5173/2a1c6ccb-3c7f-4629-b19d-b41e97d0ed0c"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-42",
+      "face": {
+        "type": "text",
+        "text": "F 10 Bis",
+        "image": "blob:http://localhost:5173/2e49ec50-20c9-4726-8cc4-982384786d57"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-43",
+      "face": {
+        "type": "text",
+        "text": "F 10 Geometre",
+        "image": "blob:http://localhost:5173/4865abea-5b8c-4c05-bd45-72a67a653e4a"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-44",
+      "face": {
+        "type": "text",
+        "text": "F 10 Immo",
+        "image": "blob:http://localhost:5173/e781d864-a677-417c-bda7-4c272fd18588"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-45",
+      "face": {
+        "type": "text",
+        "text": "F 10 Interim",
+        "image": "blob:http://localhost:5173/f03297c2-7586-4512-83ee-9a85f49a090f"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-46",
+      "face": {
+        "type": "text",
+        "text": "F 10 Paysage",
+        "image": "blob:http://localhost:5173/4856efb1-8f0d-4aad-8726-c2b84f4ece9b"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-47",
+      "face": {
+        "type": "text",
+        "text": "F 10 Piscine",
+        "image": "blob:http://localhost:5173/17e85229-6d60-4b35-a9ee-e44bb2ee485a"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-48",
+      "face": {
+        "type": "text",
+        "text": "F 11 Geometre",
+        "image": "blob:http://localhost:5173/f17714db-5919-4676-b49d-fd574cb5386a"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-49",
+      "face": {
+        "type": "text",
+        "text": "F 11 Immo",
+        "image": "blob:http://localhost:5173/ca0321fe-e0d5-427e-82ad-7c6ac8cbd751"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-50",
+      "face": {
+        "type": "text",
+        "text": "F 11 Paysage",
+        "image": "blob:http://localhost:5173/53610387-a69f-423f-a2b4-c7e929af2700"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-51",
+      "face": {
+        "type": "text",
+        "text": "F 12 Bis",
+        "image": "blob:http://localhost:5173/e130010e-de4c-4e7e-8d50-d6a4f7f353cc"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-52",
+      "face": {
+        "type": "text",
+        "text": "F 12 Immo",
+        "image": "blob:http://localhost:5173/2a7aacfd-005a-4d04-9ed3-23294b578be5"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-53",
+      "face": {
+        "type": "text",
+        "text": "F 12 Interim",
+        "image": "blob:http://localhost:5173/58169685-9045-4fc1-a2f7-56bddb8d8417"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-54",
+      "face": {
+        "type": "text",
+        "text": "F 12 Paysage",
+        "image": "blob:http://localhost:5173/f5fbe02f-51bf-45dd-b093-2f8d6eff35e7"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-55",
+      "face": {
+        "type": "text",
+        "text": "F 12 Piscine",
+        "image": "blob:http://localhost:5173/b9f43429-fc0e-4fd5-928e-256c2dcdf01d"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-56",
+      "face": {
+        "type": "text",
+        "text": "F 13 Bis",
+        "image": "blob:http://localhost:5173/b5cd2ccb-e676-44b9-9445-a4ae8e1f8c75"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-57",
+      "face": {
+        "type": "text",
+        "text": "F 13 Geometre",
+        "image": "blob:http://localhost:5173/f4ad95ca-9bcc-4b65-a350-74b03ed3a898"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-58",
+      "face": {
+        "type": "text",
+        "text": "F 13 Interim",
+        "image": "blob:http://localhost:5173/e5378e26-382b-426c-878a-ebf3f673d2b7"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-59",
+      "face": {
+        "type": "text",
+        "text": "F 13 Piscine",
+        "image": "blob:http://localhost:5173/302a1358-b51b-4521-87ff-94b233cf724f"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-60",
+      "face": {
+        "type": "text",
+        "text": "F 14 Geometre",
+        "image": "blob:http://localhost:5173/60ac6104-6d28-4be2-b8de-70c49e149607"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-61",
+      "face": {
+        "type": "text",
+        "text": "F 14 Immo",
+        "image": "blob:http://localhost:5173/0e1e7fb5-9b32-42b8-b66e-22e25dc34284"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-62",
+      "face": {
+        "type": "text",
+        "text": "F 14 Paysage",
+        "image": "blob:http://localhost:5173/78785383-d3ba-48ba-b353-8a56a62a7877"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-63",
+      "face": {
+        "type": "text",
+        "text": "F 15 Geometre",
+        "image": "blob:http://localhost:5173/7d1b6335-283e-4a5c-990e-bdc5a7f35805"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-64",
+      "face": {
+        "type": "text",
+        "text": "F 15 Immo",
+        "image": "blob:http://localhost:5173/4086611f-fa00-4401-8995-1948b4425b57"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-65",
+      "face": {
+        "type": "text",
+        "text": "F 15 Paysage",
+        "image": "blob:http://localhost:5173/82b1aac9-4158-4c81-a0a5-42b7be2c29d5"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    }
+  ]
+}
