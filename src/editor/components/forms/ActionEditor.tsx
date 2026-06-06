@@ -44,7 +44,7 @@ function createDefaultDeckAction(type: string): DeckAction {
     case "shuffle":
       return { type: "shuffle", label: "Mélanger" };
     case "draw-to-zone":
-      return { type: "draw-to-zone", label: "Défausser", targetZone: "", faceUp: false };
+      return { type: "draw-to-zone", label: "Défausser", targetZone: "", faceUp: false, count: 1 };
     case "remove":
       return { type: "remove", label: "Ranger", count: 1 };
     case "composite":
@@ -255,10 +255,10 @@ export default function ActionEditor({ componentId }: ActionEditorProps) {
                     type="number"
                     min={1}
                     max={100}
-                    value={("count" in action ? (action as any).count : 1) ?? 1}
+                    value={(action as any).count ?? 1}
                     onChange={(e) => {
                       const newActions = [...actions];
-                      newActions[index] = { ...newActions[index], count: parseInt(e.target.value) || 1 } as any;
+                      newActions[index] = { ...newActions[index], count: Math.max(1, Math.min(100, parseInt(e.target.value) || 1)) } as any;
                       updateActions(newActions);
                     }}
                     className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
@@ -283,6 +283,22 @@ export default function ActionEditor({ componentId }: ActionEditorProps) {
                         </option>
                       ))}
                     </select>
+                  </div>
+                  <div>
+                    <label className="mb-0.5 block text-xs text-gray-500">Count (1-100)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={(action as any).count ?? 1}
+                      onChange={(e) => {
+                        const val = Math.max(1, Math.min(100, parseInt(e.target.value) || 1));
+                        const newActions = [...actions];
+                        newActions[index] = { ...newActions[index], count: val } as any;
+                        updateActions(newActions);
+                      }}
+                      className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
+                    />
                   </div>
                   <label className="flex items-center gap-2 text-xs text-gray-400">
                     <input

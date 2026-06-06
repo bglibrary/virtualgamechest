@@ -30,6 +30,7 @@ const drawToZoneActionSchema = z.object({
   label: z.string().min(1),
   targetZone: z.string().min(1),
   faceUp: z.boolean(),
+  count: z.number().int().min(1).max(100).optional().default(1),
 });
 
 const simpleDeckUnitActionSchema = z.object({
@@ -140,6 +141,7 @@ const startupStepSchema = z.discriminatedUnion("type", [
     target: z.string().min(1),
     targetZone: z.string().min(1),
     faceUp: z.boolean(),
+    count: z.number().int().min(1).max(100).optional().default(1),
   }),
   z.object({
     type: z.literal("remove"),
@@ -335,7 +337,7 @@ export const gameDefinitionSchema = z.object({
     const unitZoneRefs = data.components
       .filter((c) => c.type === "deck")
       .flatMap((deck) => deck.actions)
-      .filter((action): action is { type: "draw-to-zone"; targetZone: string; faceUp: boolean; label: string } => action.type === "draw-to-zone")
+      .filter((action): action is { type: "draw-to-zone"; targetZone: string; faceUp: boolean; label: string; count: number } => action.type === "draw-to-zone")
       .map((action) => action.targetZone);
     // Check draw-to-zone steps inside composite actions
     const compositeZoneRefs = data.components

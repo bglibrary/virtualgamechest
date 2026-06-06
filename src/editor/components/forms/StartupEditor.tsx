@@ -26,7 +26,7 @@ function createDefaultStep(type: string): StartupStep {
     case "shuffle":
       return { type: "shuffle", target: "" };
     case "draw-to-zone":
-      return { type: "draw-to-zone", target: "", targetZone: "", faceUp: false };
+      return { type: "draw-to-zone", target: "", targetZone: "", faceUp: false, count: 1 };
     case "remove":
       return { type: "remove", target: "", count: 1 };
     case "merge":
@@ -259,6 +259,17 @@ export default function StartupEditor() {
                         </option>
                       ))}
                     </select>
+                  </div>
+                  <div>
+                    <label className="mb-0.5 block text-xs text-gray-500">Count (1-100)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={"count" in step ? (step as any).count ?? 1 : 1}
+                      onChange={(e) => handleCountChange(index, parseInt(e.target.value) || 1)}
+                      className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-200"
+                    />
                   </div>
                   <label className="flex items-center gap-2 text-xs text-gray-400">
                     <input
