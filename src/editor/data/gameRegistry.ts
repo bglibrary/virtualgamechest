@@ -12,6 +12,7 @@ export interface GameMeta {
 
 const GAMES: GameMeta[] = [
   { id: "poker_patience", filename: "poker_patience.json", label: "Poker Patience" },
+  { id: "welcome-to-your-perfect-home-solo", filename: "welcome-to-your-perfect-home-solo.json", label: "Welcome to your perfect home solo" },
 ];
 
 /**
