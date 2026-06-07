@@ -14,7 +14,7 @@ import EditorCanvas from "@/editor/components/forms/EditorCanvas";
 import PropertyPanel from "@/editor/components/forms/PropertyPanel";
 import ValidationPanel from "@/editor/components/ValidationPanel";
 import JsonPreview from "@/editor/components/JsonPreview";
-import { downloadGameJson } from "@/editor/utils/jsonExport";
+import { downloadGameZip } from "@/editor/utils/gameExportZip";
 import type { GameDefinition } from "@/types/game";
 import { AlertCircle, CheckCircle, Download, Code, Undo2, Redo2, Smartphone, Monitor } from "lucide-react";
 
@@ -117,8 +117,7 @@ export default function GameEditor() {
       alert(`Cannot export: ${errorCount} validation error(s) remain.`);
       return;
     }
-    downloadGameJson(game, gameId);
-    markClean();
+    downloadGameZip(game, gameId).then(() => markClean());
   }, [game, gameId, isValid, errorCount, markClean]);
 
   // If unknown game ID
