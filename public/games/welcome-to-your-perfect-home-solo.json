@@ -66,8 +66,70 @@
       "type": "deck",
       "id": "deck-0",
       "cards": [
-        "card-0",
-        "card-1"
+        "card-2",
+        "card-3",
+        "card-4",
+        "card-5",
+        "card-6",
+        "card-7",
+        "card-8",
+        "card-9",
+        "card-10",
+        "card-11",
+        "card-12",
+        "card-13",
+        "card-14",
+        "card-15",
+        "card-16",
+        "card-17",
+        "card-18",
+        "card-19",
+        "card-20",
+        "card-21",
+        "card-22",
+        "card-23",
+        "card-24",
+        "card-25",
+        "card-26",
+        "card-27",
+        "card-28",
+        "card-29",
+        "card-30",
+        "card-31",
+        "card-32",
+        "card-33",
+        "card-34",
+        "card-35",
+        "card-36",
+        "card-37",
+        "card-38",
+        "card-39",
+        "card-40",
+        "card-41",
+        "card-42",
+        "card-43",
+        "card-44",
+        "card-45",
+        "card-46",
+        "card-47",
+        "card-48",
+        "card-49",
+        "card-50",
+        "card-51",
+        "card-52",
+        "card-53",
+        "card-54",
+        "card-55",
+        "card-56",
+        "card-57",
+        "card-58",
+        "card-59",
+        "card-60",
+        "card-61",
+        "card-62",
+        "card-63",
+        "card-64",
+        "card-65"
       ],
       "position": {
         "x": 0.5,
@@ -76,25 +138,39 @@
       "faceUp": false,
       "actions": [
         {
-          "type": "shuffle",
-          "label": "Mélanger"
-        },
-        {
           "type": "draw-face-up",
-          "label": "Piocher"
+          "label": "Piocher (x1)"
         },
         {
-          "type": "flip",
-          "label": "Retourner"
+          "type": "composite",
+          "label": "Piocher (x3)",
+          "steps": [
+            {
+              "type": "draw-to-zone",
+              "targetZone": "tvx-1",
+              "faceUp": true
+            },
+            {
+              "type": "draw-to-zone",
+              "targetZone": "tvx-2",
+              "faceUp": true
+            },
+            {
+              "type": "draw-to-zone",
+              "targetZone": "tvx-3",
+              "faceUp": true
+            }
+          ]
         }
-      ]
+      ],
+      "doubleClickActionLabel": "Piocher (x3)"
     },
     {
       "type": "card",
-      "id": "card-0",
+      "id": "card-2",
       "face": {
         "type": "text",
-        "text": "F 1 Geometre",
+        "text": "F 1 Immo",
         "image": "../img/welcome-to-your-perfect-home-solo/image-0.png"
       },
       "back": {
@@ -111,10 +187,10 @@
     },
     {
       "type": "card",
-      "id": "card-1",
+      "id": "card-3",
       "face": {
         "type": "text",
-        "text": "F 1 Paysage",
+        "text": "F 2 Geometre",
         "image": "../img/welcome-to-your-perfect-home-solo/image-1.png"
       },
       "back": {
@@ -128,6 +204,1304 @@
           "label": "Retourner"
         }
       ]
+    },
+    {
+      "type": "card",
+      "id": "card-4",
+      "face": {
+        "type": "text",
+        "text": "F 2 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-2.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-5",
+      "face": {
+        "type": "text",
+        "text": "F 2 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-3.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-6",
+      "face": {
+        "type": "text",
+        "text": "F 3 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-4.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-7",
+      "face": {
+        "type": "text",
+        "text": "F 3 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-5.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-8",
+      "face": {
+        "type": "text",
+        "text": "F 3 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-6.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-9",
+      "face": {
+        "type": "text",
+        "text": "F 3 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-7.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-10",
+      "face": {
+        "type": "text",
+        "text": "F 4 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-8.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-11",
+      "face": {
+        "type": "text",
+        "text": "F 4 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-9.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-12",
+      "face": {
+        "type": "text",
+        "text": "F 4 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-10.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-13",
+      "face": {
+        "type": "text",
+        "text": "F 4 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-11.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-14",
+      "face": {
+        "type": "text",
+        "text": "F 4 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-12.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-15",
+      "face": {
+        "type": "text",
+        "text": "F 5 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-13.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-16",
+      "face": {
+        "type": "text",
+        "text": "F 5 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-14.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-17",
+      "face": {
+        "type": "text",
+        "text": "F 5 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-15.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-18",
+      "face": {
+        "type": "text",
+        "text": "F 6 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-16.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-19",
+      "face": {
+        "type": "text",
+        "text": "F 6 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-17.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-20",
+      "face": {
+        "type": "text",
+        "text": "F 6 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-18.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-21",
+      "face": {
+        "type": "text",
+        "text": "F 6 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-19.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-22",
+      "face": {
+        "type": "text",
+        "text": "F 6 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-20.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-23",
+      "face": {
+        "type": "text",
+        "text": "F 6 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-21.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-24",
+      "face": {
+        "type": "text",
+        "text": "F 7 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-22.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-25",
+      "face": {
+        "type": "text",
+        "text": "F 7 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-23.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-26",
+      "face": {
+        "type": "text",
+        "text": "F 7 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-24.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-27",
+      "face": {
+        "type": "text",
+        "text": "F 7 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-25.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-28",
+      "face": {
+        "type": "text",
+        "text": "F 7 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-26.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-29",
+      "face": {
+        "type": "text",
+        "text": "F 7 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-27.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-30",
+      "face": {
+        "type": "text",
+        "text": "F 8 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-28.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-31",
+      "face": {
+        "type": "text",
+        "text": "F 8 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-29.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-32",
+      "face": {
+        "type": "text",
+        "text": "F 8 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-30.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-33",
+      "face": {
+        "type": "text",
+        "text": "F 8 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-31.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-34",
+      "face": {
+        "type": "text",
+        "text": "F 8 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-32.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-35",
+      "face": {
+        "type": "text",
+        "text": "F 8 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-33.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-36",
+      "face": {
+        "type": "text",
+        "text": "F 9 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-34.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-37",
+      "face": {
+        "type": "text",
+        "text": "F 9 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-35.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-38",
+      "face": {
+        "type": "text",
+        "text": "F 9 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-36.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-39",
+      "face": {
+        "type": "text",
+        "text": "F 9 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-37.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-40",
+      "face": {
+        "type": "text",
+        "text": "F 9 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-38.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-41",
+      "face": {
+        "type": "text",
+        "text": "F 9 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-39.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-42",
+      "face": {
+        "type": "text",
+        "text": "F 10 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-40.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-43",
+      "face": {
+        "type": "text",
+        "text": "F 10 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-41.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-44",
+      "face": {
+        "type": "text",
+        "text": "F 10 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-42.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-45",
+      "face": {
+        "type": "text",
+        "text": "F 10 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-43.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-46",
+      "face": {
+        "type": "text",
+        "text": "F 10 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-44.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-47",
+      "face": {
+        "type": "text",
+        "text": "F 10 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-45.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-48",
+      "face": {
+        "type": "text",
+        "text": "F 11 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-46.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-49",
+      "face": {
+        "type": "text",
+        "text": "F 11 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-47.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-50",
+      "face": {
+        "type": "text",
+        "text": "F 11 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-48.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-51",
+      "face": {
+        "type": "text",
+        "text": "F 12 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-49.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-52",
+      "face": {
+        "type": "text",
+        "text": "F 12 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-50.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-53",
+      "face": {
+        "type": "text",
+        "text": "F 12 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-51.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-54",
+      "face": {
+        "type": "text",
+        "text": "F 12 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-52.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-55",
+      "face": {
+        "type": "text",
+        "text": "F 12 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-53.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-56",
+      "face": {
+        "type": "text",
+        "text": "F 13 Bis",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-54.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-57",
+      "face": {
+        "type": "text",
+        "text": "F 13 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-55.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-58",
+      "face": {
+        "type": "text",
+        "text": "F 13 Interim",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-56.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-59",
+      "face": {
+        "type": "text",
+        "text": "F 13 Piscine",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-57.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-60",
+      "face": {
+        "type": "text",
+        "text": "F 14 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-58.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-61",
+      "face": {
+        "type": "text",
+        "text": "F 14 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-59.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-62",
+      "face": {
+        "type": "text",
+        "text": "F 14 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-60.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-63",
+      "face": {
+        "type": "text",
+        "text": "F 15 Geometre",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-61.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-64",
+      "face": {
+        "type": "text",
+        "text": "F 15 Immo",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-62.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-65",
+      "face": {
+        "type": "text",
+        "text": "F 15 Paysage",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-63.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-66",
+      "face": {
+        "type": "text",
+        "text": "Solo "
+      },
+      "back": {
+        "type": "text",
+        "text": "Solo"
+      },
+      "position": {
+        "x": 0.67,
+        "y": 0.5
+      },
+      "actions": [
+        {
+          "type": "remove",
+          "label": "Ranger"
+        }
+      ]
+    },
+    {
+      "type": "restart-button",
+      "id": "restart-0",
+      "position": {
+        "x": 0.34,
+        "y": 0.5
+      },
+      "label": "Relancer"
+    }
+  ],
+  "startup": [
+    {
+      "type": "shuffle",
+      "target": "deck-0"
+    },
+    {
+      "type": "draw-to-zone",
+      "target": "deck-0",
+      "targetZone": "tvx-1",
+      "faceUp": false,
+      "count": 32
+    },
+    {
+      "type": "merge",
+      "target": "card-66",
+      "targetDeck": "deck-0"
+    },
+    {
+      "type": "shuffle",
+      "target": "deck-0"
+    },
+    {
+      "type": "merge",
+      "target": "tvx-1",
+      "targetDeck": "deck-0"
     }
   ]
 }
