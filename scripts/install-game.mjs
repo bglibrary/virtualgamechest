@@ -21,9 +21,10 @@
  * 5. Register the game in src/editor/data/gameRegistry.ts (if not already present)
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { execSync } from "node:child_process";
 import JSZip from "jszip";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -160,6 +161,24 @@ async function main() {
 
     writeFileSync(registryPath, registryContent);
     info(`Registered in gameRegistry.ts`);
+  }
+
+  // --- Auto-commit ---
+  try {
+    const gameName = gameDef.name || gameId;
+    execSync(`git add public/games/${gameId}.json public/img/${gameId}/ src/editor/data/gameRegistry.ts`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    });
+    execSync(`git commit -m "feat: add game '${gameName}'"`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    });
+    info(`Changes committed: "feat: add game '${gameName}'"`);
+  } catch (commitErr) {
+    console.warn(`  ⚠️  Git commit failed. You may need to commit manually:`);
+    console.warn(`     git add public/games/${gameId}.json public/img/${gameId}/ src/editor/data/gameRegistry.ts`);
+    console.warn(`     git commit -m "feat: add game '${gameName}'"`);
   }
 
   console.log(`\n✅ Game "${gameId}" installed successfully!\n`);

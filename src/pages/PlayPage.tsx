@@ -37,6 +37,10 @@ export default function PlayPage() {
         return;
       }
 
+      console.log(`[PlayPage] Game "${loadedGame.name}" loaded, ${loadedGame.components.length} components, ${loadedGame.startup?.length ?? 0} startup steps`);
+
+      // Initialize stores BEFORE setting game, so executeStartupSequence
+      // can use the stores (deckState, zoneState) which are populated here.
       const { initDeck, removeDeck } = useDeckStateStore.getState();
       const { initZone, removeZone } = useZoneStateStore.getState();
 
@@ -57,21 +61,21 @@ export default function PlayPage() {
         }
       });
 
-      // Execute startup sequence before preloading (startup may remove cards
-      // from the deck, which means fewer cards to potentially render)
+      // Set the game FIRST so executeStartupSequence can find components via the store
+      setGame(loadedGame);
+
+      // Execute startup sequence (await it so it completes before showing canvas)
       if (loadedGame.startup && loadedGame.startup.length > 0) {
-        executeStartupSequence(loadedGame.startup);
+        console.log(`[PlayPage] Executing startup sequence (${loadedGame.startup.length} steps)...`);
+        await executeStartupSequence(loadedGame.startup);
+        console.log(`[PlayPage] Startup sequence completed`);
       }
 
       // Preload all card images into the shared useCardImage store
-      // BEFORE setting the game and rendering the canvas.
-      // This avoids showing text fallback when cards are drawn/flipped.
-      // Promise.allSettled swallows per-image errors so one broken image
-      // doesn't block the game from starting.
+      // AFTER startup (startup may have merged cards into decks, reducing visible cards)
       await preloadCardImagesForGame(loadedGame);
 
       if (!cancelled) {
-        setGame(loadedGame);
         setLoading(false);
       }
     });

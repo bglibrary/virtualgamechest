@@ -325,6 +325,11 @@ function executeMergeStep(targetId: string, targetDeckId: string): void {
     return;
   }
 
+  if (targetComponent.type !== "card" && targetComponent.type !== "deck") {
+    console.warn(`Merge: target ${targetId} is a ${targetComponent.type}, cannot merge it into a deck`);
+    return;
+  }
+
   if (targetComponent.type === "card") {
     // Merge card into deck
     addCardToTop(targetDeckId, targetId);
@@ -353,39 +358,50 @@ function executeMergeStep(targetId: string, targetDeckId: string): void {
 
 /**
  * Executes the entire startup sequence.
+ * Each iteration re-reads the game from the store to pick up changes from previous steps.
  */
 export async function executeStartupSequence(steps: StartupStep[]): Promise<void> {
-  const { game } = useGameStore.getState();
-  if (!game) return;
+  for (let i = 0; i < steps.length; i++) {
+    const step = steps[i];
+    const { game } = useGameStore.getState();
+    if (!game) {
+      console.warn(`[startup] Step ${i + 1}/${steps.length}: game is null, aborting sequence`);
+      return;
+    }
 
-  for (const step of steps) {
     const component = game.components.find((c) => c.id === step.target);
     if (!component) {
-      console.warn(`Startup step target ${step.target} not found`);
+      console.warn(`[startup] Step ${i + 1}/${steps.length} (${step.type}): target "${step.target}" not found among ${game.components.length} components. Available: [${game.components.map(c => c.id).join(", ")}]`);
       continue;
     }
 
+    console.log(`[startup] Step ${i + 1}/${steps.length}: type=${step.type}, target="${step.target}"`);
+
     if (step.type === "merge") {
+      console.log(`[startup]   → merging into deck "${step.targetDeck}"`);
       executeMergeStep(step.target, step.targetDeck);
     } else if (step.type === "composite") {
       if (component.type === "zone") {
-        console.warn(`Startup step target ${step.target} is a zone, cannot execute composite action`);
+        console.warn(`[startup] Step ${i + 1}: target "${step.target}" is a zone, cannot execute composite action`);
         continue;
       }
       if (!("actions" in component) || !component.actions) {
-        console.warn(`Startup step target ${step.target} has no actions, cannot execute composite`);
+        console.warn(`[startup] Step ${i + 1}: target "${step.target}" has no actions`);
         continue;
       }
       const action = (component.actions as (CardAction | DeckAction)[]).find(
         (a) => a.type === "composite" && a.label === step.actionLabel,
       );
       if (action && action.type === "composite") {
+        console.log(`[startup]   → composite action "${action.label}" (${action.steps.length} steps)`);
         await executeCompositeAction(step.target, action);
       } else {
-        console.warn(`Composite action with label "${step.actionLabel}" not found on component ${step.target}`);
+        console.warn(`[startup] Step ${i + 1}: composite action with label "${step.actionLabel}" not found on ${step.target}`);
       }
     } else {
+      console.log(`[startup]   → executing action type=${step.type}`);
       await executeAction(step.target, step);
     }
   }
+  console.log(`[startup] Sequence completed (${steps.length} steps)`);
 }
