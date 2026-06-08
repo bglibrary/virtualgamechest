@@ -165,6 +165,86 @@ describe("actionExecutor", () => {
     expect(useCardStateStore.getState().isFaceUp("card-to-merge")).toBe(false);
   });
 
+  it("startup merge step merges a zone into a deck (all cards from zone)", async () => {
+    const gameWithZoneMerge: GameDefinition = {
+      name: "Zone Merge Test",
+      version: "1.0.0",
+      components: [
+        {
+          type: "zone",
+          id: "zone-to-merge",
+          position: { x: 0.8, y: 0.8 },
+        },
+        {
+          type: "deck",
+          id: "target-deck",
+          cards: ["card-c"],
+          position: { x: 0.5, y: 0.5 },
+          faceUp: false,
+          actions: [{ type: "draw-face-down", label: "Draw" }],
+        },
+        {
+          type: "card",
+          id: "card-a",
+          face: { type: "text", text: "A" },
+          position: null,
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+        {
+          type: "card",
+          id: "card-b",
+          face: { type: "text", text: "B" },
+          position: null,
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+        {
+          type: "card",
+          id: "card-c",
+          face: { type: "text", text: "C" },
+          position: null,
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+      ],
+      startup: [
+        { type: "merge", target: "zone-to-merge", targetDeck: "target-deck" },
+      ],
+    };
+
+    useGameStore.getState().setGame(gameWithZoneMerge);
+    useDeckStateStore.getState().initDeck("target-deck", ["card-c"], false);
+    useZoneStateStore.getState().initZone("zone-to-merge");
+
+    // Add cards to zone (addCard adds to top, so order is: a (bottom), b (top))
+    useZoneStateStore.getState().addCard("zone-to-merge", {
+      id: "card-a",
+      face: { type: "text", text: "A" },
+    });
+    useZoneStateStore.getState().addCard("zone-to-merge", {
+      id: "card-b",
+      face: { type: "text", text: "B" },
+    });
+
+    await executeStartupSequence(gameWithZoneMerge.startup!);
+
+    // Zone should still exist (just emptied)
+    const zone = useGameStore.getState().game?.components.find(c => c.id === "zone-to-merge");
+    expect(zone).toBeDefined();
+    expect(zone?.type).toBe("zone");
+
+    // Zone should have no cards
+    expect(useZoneStateStore.getState().getCards("zone-to-merge").length).toBe(0);
+
+    // Target deck should contain all cards
+    const targetCards = useDeckStateStore.getState().getCards("target-deck");
+    expect(targetCards).toContain("card-a");
+    expect(targetCards).toContain("card-b");
+    expect(targetCards).toContain("card-c");
+
+    // Cards should have position null (hidden in deck)
+    const cardA = useGameStore.getState().game?.components.find(c => c.id === "card-a");
+    expect(cardA?.type === "card" && cardA.position).toBeNull();
+  });
+
   it("startup merge step merges an entire deck into another deck", async () => {
     const gameWithDeckMerge: GameDefinition = {
       name: "Deck Merge Test",

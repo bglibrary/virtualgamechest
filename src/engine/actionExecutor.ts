@@ -325,6 +325,35 @@ function executeMergeStep(targetId: string, targetDeckId: string): void {
     return;
   }
 
+  if (targetComponent.type === "zone") {
+    // Merge all cards from a zone into the deck (zone stays, just emptied)
+    const { removeTopCard } = useZoneStateStore.getState();
+    const zoneCards: string[] = [];
+    while (true) {
+      const removed = removeTopCard(targetId);
+      if (!removed) break;
+      zoneCards.unshift(removed.id); // unshift to maintain original order (bottom->top)
+    }
+    if (zoneCards.length === 0) return;
+
+    // Add them to the deck and set faceUp to match deck
+    const targetFaceUp = useDeckStateStore.getState().isFaceUp(targetDeckId);
+    for (const cardId of zoneCards) {
+      useDeckStateStore.getState().addCardToTop(targetDeckId, cardId);
+      setFaceUp(cardId, targetFaceUp);
+      removeFromZOrder(cardId);
+
+      // Set card position to null (hidden in deck) if it still exists in game store
+      const cardComp = game.components.find((c) => c.id === cardId);
+      if (cardComp && "position" in cardComp) {
+        replaceComponent(cardId, { ...cardComp, position: null } as GameComponent);
+      }
+    }
+    // Zone stays in game, just emptied
+    console.log(`[startup] Merge: zone "${targetId}" (${zoneCards.length} cards) merged into deck "${targetDeckId}", zone kept`);
+    return;
+  }
+
   if (targetComponent.type !== "card" && targetComponent.type !== "deck") {
     console.warn(`Merge: target ${targetId} is a ${targetComponent.type}, cannot merge it into a deck`);
     return;
