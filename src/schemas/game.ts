@@ -202,7 +202,7 @@ export const cardComponentSchema = z.object({
   back: cardBackSchema.optional(),
   position: positionSchema.nullable(),
   mobilePosition: positionSchema.optional(),
-  actions: z.array(cardActionSchema).min(1).refine(
+  actions: z.array(cardActionSchema).optional().default([]).refine(
     (arr) => new Set(arr.map((a) => a.type)).size === arr.length,
     { message: "Duplicate actions are not allowed" },
   ),
@@ -216,7 +216,7 @@ export const deckComponentSchema = z.object({
   position: positionSchema,
   mobilePosition: positionSchema.optional(),
   faceUp: z.boolean().optional().default(false),
-  actions: z.array(deckActionSchema).min(1).refine(
+  actions: z.array(deckActionSchema).optional().default([]).refine(
     (arr) => new Set(arr.map((a) => "targetZone" in a ? `${a.type}:${a.targetZone}` : a.type)).size === arr.length,
     { message: "Duplicate actions are not allowed" },
   ),

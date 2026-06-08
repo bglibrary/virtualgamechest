@@ -220,17 +220,20 @@ actions: [flipAction],
 expect(result.success).toBe(false);
 });
 
-it("rejects card without actions field", () => {
+it("accepts card without actions field (defaults to [])", () => {
 const result = cardComponentSchema.safeParse({
 type: "card",
 id: "ace-hearts",
 face: { type: "text", text: "As Cœur" },
 position: { x: 0.5, y: 0.5 },
 });
-expect(result.success).toBe(false);
+expect(result.success).toBe(true);
+if (result.success) {
+expect(result.data.actions).toEqual([]);
+}
 });
 
-it("rejects card with empty actions array", () => {
+it("accepts card with empty actions array", () => {
 const result = cardComponentSchema.safeParse({
 type: "card",
 id: "ace-hearts",
@@ -238,7 +241,7 @@ face: { type: "text", text: "As Cœur" },
 position: { x: 0.5, y: 0.5 },
 actions: [],
 });
-expect(result.success).toBe(false);
+expect(result.success).toBe(true);
 });
 
 it("rejects card with invalid action type draw-face-up", () => {

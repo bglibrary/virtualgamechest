@@ -105,17 +105,20 @@ actions: [flipAction],
 expect(result.success).toBe(false);
 });
 
-it("rejects deck without actions field", () => {
+it("accepts deck without actions field (defaults to [])", () => {
 const result = deckComponentSchema.safeParse({
 type: "deck",
 id: "draw-pile",
 cards: ["card-1"],
 position: { x: 0.5, y: 0.5 },
 });
-expect(result.success).toBe(false);
+expect(result.success).toBe(true);
+if (result.success) {
+expect(result.data.actions).toEqual([]);
+}
 });
 
-it("rejects deck with empty actions array", () => {
+it("accepts deck with empty actions array", () => {
 const result = deckComponentSchema.safeParse({
 type: "deck",
 id: "draw-pile",
@@ -123,7 +126,7 @@ cards: ["card-1"],
 position: { x: 0.5, y: 0.5 },
 actions: [],
 });
-expect(result.success).toBe(false);
+expect(result.success).toBe(true);
 });
 
 it("accepts flip-only deck", () => {
