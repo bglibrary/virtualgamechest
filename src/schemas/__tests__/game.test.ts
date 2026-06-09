@@ -628,8 +628,33 @@ actions: [flipAction],
 expect(result.success).toBe(false);
 });
 
-it("rejects completely invalid input", () => {
-const result = gameDefinitionSchema.safeParse("not an object");
-expect(result.success).toBe(false);
-});
+  it("rejects completely invalid input", () => {
+    const result = gameDefinitionSchema.safeParse("not an object");
+    expect(result.success).toBe(false);
+  });
+
+  it("defaults hideCountBadge to false on zone", () => {
+    const result = componentSchema.safeParse({
+      type: "zone",
+      id: "test-zone",
+      position: { x: 0.5, y: 0.5 },
+    });
+    expect(result.success).toBe(true);
+    if (result.success && result.data.type === "zone") {
+      expect(result.data.hideCountBadge).toBe(false);
+    }
+  });
+
+  it("accepts hideCountBadge: true on zone", () => {
+    const result = componentSchema.safeParse({
+      type: "zone",
+      id: "test-zone",
+      position: { x: 0.5, y: 0.5 },
+      hideCountBadge: true,
+    });
+    expect(result.success).toBe(true);
+    if (result.success && result.data.type === "zone") {
+      expect(result.data.hideCountBadge).toBe(true);
+    }
+  });
 });

@@ -385,6 +385,63 @@ it("rejects card in deck with non-null position", () => {
   }
 });
 
+it("defaults hideCountBadge to false when omitted on deck", () => {
+  const result = gameDefinitionSchema.safeParse({
+    name: "Poker Patience",
+    version: "1.0.0",
+    components: [
+      {
+        type: "card",
+        id: "card-1",
+        face: { type: "text", text: "Roi" },
+        position: null,
+        actions: [flipAction],
+      },
+      {
+        type: "deck",
+        id: "draw-pile",
+        cards: ["card-1"],
+        position: { x: 0.5, y: 0.5 },
+        actions: [flipAction],
+      },
+    ],
+  });
+  expect(result.success).toBe(true);
+  if (result.success) {
+    const deck = result.data.components.find((c) => c.type === "deck")!;
+    expect(deck.hideCountBadge).toBe(false);
+  }
+});
+
+it("accepts hideCountBadge: true on deck", () => {
+  const result = gameDefinitionSchema.safeParse({
+    name: "Poker Patience",
+    version: "1.0.0",
+    components: [
+      {
+        type: "card",
+        id: "card-1",
+        face: { type: "text", text: "Roi" },
+        position: null,
+        actions: [flipAction],
+      },
+      {
+        type: "deck",
+        id: "draw-pile",
+        cards: ["card-1"],
+        position: { x: 0.5, y: 0.5 },
+        hideCountBadge: true,
+        actions: [flipAction],
+      },
+    ],
+  });
+  expect(result.success).toBe(true);
+  if (result.success) {
+    const deck = result.data.components.find((c) => c.type === "deck")!;
+    expect(deck.hideCountBadge).toBe(true);
+  }
+});
+
 it("rejects card referenced by two decks", () => {
 const result = gameDefinitionSchema.safeParse({
 name: "Dual Ref",

@@ -140,6 +140,7 @@ export function createStandard52CardDeck(
     cards: cards.map((c) => c.id),
     position: { x: 0.1, y: 0.5 },
     faceUp: false,
+    hideCountBadge: false,
     actions: [
       { type: "shuffle" as const, label: "Mélanger" },
       { type: "draw-face-up" as const, label: "Piocher" },

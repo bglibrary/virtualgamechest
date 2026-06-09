@@ -75,6 +75,8 @@ Cards in a zone are NOT a deck — they are independent cards stacked at the sam
 - [ ] A zone component has an optional `label` field (string, displayed below the zone)
 - [ ] A zone component has an optional `snapRadius` field (number > 0, in pixels, default: half-card-width at current viewport)
 - [ ] A zone with no `snapRadius` uses the default (half-card-width at the current viewport size)
+- [ ] A zone component has an optional `hideCountBadge` boolean field (default: `false`). When `true`, the count badge is not rendered, even when cards are stacked in the zone.
+- [ ] The `hideCountBadge` field can be toggled in the editor's ZoneForm.
 - [ ] The game JSON schema validates that all component IDs (cards + decks + zones) are unique across the entire `components` array
 - [ ] A zone starts empty (no cards). Cards are added at runtime by dragging and dropping
 
@@ -217,6 +219,7 @@ Cards in a zone are NOT a deck — they are independent cards stacked at the sam
 | Zone `position` | Mandatory. Same `positionSchema` as cards (x: 0-1, y: 0-1). | Zod validation rejects game JSON. |
 | Zone `label` | Optional. `z.string().max(30)`. | Omitted = no label. Too long = rejected by Zod. |
 | Zone `snapRadius` | Optional. `z.number().positive()`. Default: half-card-width at runtime. | Omitted = default. Non-positive = rejected by Zod. |
+| Zone `hideCountBadge` | Optional boolean. Default: `false`. | Omitted = badge shown. |
 | Snap radius at runtime | If `snapRadius` is defined in JSON, it is used as-is (pixels). Otherwise, computed as `cardWidth / 2` at current viewport. | No error state. |
 | Card added to a zone that doesn't exist | Should never happen (zones are JSON-defined). Runtime defensive check: no-op. | No card added. No error thrown. |
 

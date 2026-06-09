@@ -13,15 +13,19 @@ interface CountBadgeProps {
   count: number;
   cardWidth: number;
   cardHeight: number;
+  /** When true, the badge is not rendered (only visible when count > 1) */
+  hide?: boolean;
 }
 
-function CountBadge({ count, cardWidth, cardHeight }: CountBadgeProps) {
+function CountBadge({ count, cardWidth, cardHeight, hide = false }: CountBadgeProps) {
   const badgeWidth = cardWidth * BADGE_WIDTH_RATIO;
   const badgeHeight = cardHeight * BADGE_HEIGHT_RATIO;
   const badgeFontSize = cardWidth * BADGE_FONT_SIZE_RATIO;
   const badgeX = cardWidth - badgeWidth - BADGE_PADDING_X;
   const badgeY = BADGE_PADDING_Y;
   const countText = String(count);
+
+  if (hide) return null;
 
   return (
     <Group x={badgeX} y={badgeY}>

@@ -268,7 +268,7 @@ function DeckRenderer({
         strokeWidth={BORDER_WIDTH}
       />
       {renderFaceContent()}
-      <CountBadge count={cardCount} cardWidth={cardWidth} cardHeight={cardHeight} />
+      <CountBadge count={cardCount} cardWidth={cardWidth} cardHeight={cardHeight} hide={component.hideCountBadge} />
     </Group>
   );
 }

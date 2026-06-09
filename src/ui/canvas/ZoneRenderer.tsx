@@ -289,7 +289,7 @@ function ZoneRenderer({
           strokeWidth={highlighted ? 3 : BORDER_WIDTH}
         />
         {renderFaceContent()}
-        <CountBadge count={cardCount} cardWidth={cardWidth} cardHeight={cardHeight} />
+        <CountBadge count={cardCount} cardWidth={cardWidth} cardHeight={cardHeight} hide={component.hideCountBadge} />
       </Group>
       {labelElement}
     </Group>

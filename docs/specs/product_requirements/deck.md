@@ -187,6 +187,9 @@ F1 (Card Drag & Drop) and F2 (Multi-Card Independent) enable independent card ma
 | Rapidly alternating clicks on two overlapping decks | Each click selects the topmost deck at the click point. Z-order does not change on click. |
 | Drag a deck, then click it | Drag: deck moves to top of z-order. Click after drag: deck is selected, action bar appears. Same as independent cards. |
 
+- [ ] A deck component has an optional `hideCountBadge` boolean field (default: `false`). When `true`, the count badge is not rendered.
+- [ ] The `hideCountBadge` field can be toggled in the editor's DeckForm.
+
 ## Validation Rules
 
 | Input / Condition | Rule | Error Behavior |
@@ -198,6 +201,7 @@ F1 (Card Drag & Drop) and F2 (Multi-Card Independent) enable independent card ma
 | Card in deck `back` | Optional. Same `cardBackSchema` as independent cards. | Omitted = hardcoded fallback (navy + "Dos"). |
 | Deck `position` | Mandatory. Same `positionSchema` as cards (x: 0-1, y: 0-1). | Zod validation rejects game JSON. |
 | Deck `faceUp` | Optional boolean. Default: `false`. | Omitted = face-down. Invalid type = rejected by Zod. |
+| Deck `hideCountBadge` | Optional boolean. Default: `false`. | Omitted = badge shown. |
 | Deck state: card count | Must be ≥ 1 at all times (enforced by schema at load time, and by runtime logic — empty decks are removed) | Runtime: deck with 0 cards is removed from state. |
 
 ## UX Expectations

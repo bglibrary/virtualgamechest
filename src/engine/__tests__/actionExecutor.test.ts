@@ -38,6 +38,7 @@ describe("actionExecutor", () => {
         cards: ["c2"],
         position: { x: 0.5, y: 0.5 },
         faceUp: false,
+        hideCountBadge: false,
         actions: [
           { type: "flip", label: "Flip Deck" },
           { type: "shuffle", label: "Shuffle" },
@@ -53,6 +54,7 @@ describe("actionExecutor", () => {
         type: "zone",
         id: "z1",
         position: { x: 0.8, y: 0.8 },
+        hideCountBadge: false,
       },
     ],
   };
@@ -132,6 +134,7 @@ describe("actionExecutor", () => {
           cards: ["existing-card"],
           position: { x: 0.5, y: 0.5 },
           faceUp: false,
+          hideCountBadge: false,
           actions: [{ type: "draw-face-down", label: "Draw" }],
         },
         {
@@ -174,6 +177,7 @@ describe("actionExecutor", () => {
           type: "zone",
           id: "zone-to-merge",
           position: { x: 0.8, y: 0.8 },
+          hideCountBadge: false,
         },
         {
           type: "deck",
@@ -181,6 +185,7 @@ describe("actionExecutor", () => {
           cards: ["card-c"],
           position: { x: 0.5, y: 0.5 },
           faceUp: false,
+          hideCountBadge: false,
           actions: [{ type: "draw-face-down", label: "Draw" }],
         },
         {
@@ -256,6 +261,7 @@ describe("actionExecutor", () => {
           cards: ["card-a", "card-b"],
           position: { x: 0.4, y: 0.5 },
           faceUp: false,
+          hideCountBadge: false,
           actions: [{ type: "draw-face-down", label: "Draw" }],
         },
         {
@@ -264,6 +270,7 @@ describe("actionExecutor", () => {
           cards: ["card-c"],
           position: { x: 0.6, y: 0.5 },
           faceUp: false,
+          hideCountBadge: false,
           actions: [{ type: "draw-face-down", label: "Draw" }],
         },
         {

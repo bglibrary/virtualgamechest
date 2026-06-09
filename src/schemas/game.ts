@@ -216,6 +216,7 @@ export const deckComponentSchema = z.object({
   position: positionSchema,
   mobilePosition: positionSchema.optional(),
   faceUp: z.boolean().optional().default(false),
+  hideCountBadge: z.boolean().optional().default(false),
   actions: z.array(deckActionSchema).optional().default([]).refine(
     (arr) => new Set(arr.map((a) => "targetZone" in a ? `${a.type}:${a.targetZone}` : a.type)).size === arr.length,
     { message: "Duplicate actions are not allowed" },
@@ -232,6 +233,7 @@ export const zoneComponentSchema = z.object({
   mobilePosition: positionSchema.optional(),
   label: z.string().max(30).optional(),
   snapRadius: z.number().positive().optional(),
+  hideCountBadge: z.boolean().optional().default(false),
   actions: z.array(zoneActionSchema).optional(),
 });
 

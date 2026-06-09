@@ -57,6 +57,7 @@ export function createDefaultDeck(
     cards: [],
     position: { x: 0.5, y: 0.5 },
     faceUp: false,
+    hideCountBadge: false,
     actions: [SHUFFLE_ACTION, DRAW_FACE_UP_ACTION, FLIP_ACTION],
   };
 }
@@ -72,6 +73,7 @@ export function createDefaultZone(
     position: { x: 0.5, y: 0.5 },
     label,
     snapRadius: 30,
+    hideCountBadge: false,
   };
 }
 
