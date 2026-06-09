@@ -10,7 +10,11 @@
         "y": 0.8
       },
       "label": "Travaux 1",
-      "snapRadius": 30
+      "snapRadius": 30,
+      "mobilePosition": {
+        "x": 0.2,
+        "y": 0.8
+      }
     },
     {
       "type": "zone",
@@ -20,7 +24,11 @@
         "y": 0.8
       },
       "label": "Travaux 2",
-      "snapRadius": 30
+      "snapRadius": 30,
+      "mobilePosition": {
+        "x": 0.5,
+        "y": 0.8
+      }
     },
     {
       "type": "zone",
@@ -30,7 +38,11 @@
         "y": 0.8
       },
       "label": "Travaux 3",
-      "snapRadius": 30
+      "snapRadius": 30,
+      "mobilePosition": {
+        "x": 0.8,
+        "y": 0.8
+      }
     },
     {
       "type": "zone",
@@ -40,7 +52,11 @@
         "y": 0.2
       },
       "label": "plan-1",
-      "snapRadius": 30
+      "snapRadius": 30,
+      "mobilePosition": {
+        "x": 0.2,
+        "y": 0.2
+      }
     },
     {
       "type": "zone",
@@ -50,7 +66,11 @@
         "y": 0.2
       },
       "label": "plan-2",
-      "snapRadius": 30
+      "snapRadius": 30,
+      "mobilePosition": {
+        "x": 0.5,
+        "y": 0.2
+      }
     },
     {
       "type": "zone",
@@ -60,7 +80,11 @@
         "y": 0.2
       },
       "label": "plan-3",
-      "snapRadius": 30
+      "snapRadius": 30,
+      "mobilePosition": {
+        "x": 0.8,
+        "y": 0.2
+      }
     },
     {
       "type": "deck",
@@ -132,7 +156,7 @@
         "card-65"
       ],
       "position": {
-        "x": 0.5,
+        "x": 0.1,
         "y": 0.5
       },
       "faceUp": false,
@@ -163,7 +187,11 @@
           ]
         }
       ],
-      "doubleClickActionLabel": "Piocher (x3)"
+      "doubleClickActionLabel": "Piocher (x3)",
+      "mobilePosition": {
+        "x": 0.32,
+        "y": 0.5
+      }
     },
     {
       "type": "card",
@@ -176,7 +204,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -197,7 +225,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -218,7 +246,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -239,7 +267,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -260,7 +288,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -281,7 +309,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -302,7 +330,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -323,7 +351,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -344,7 +372,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -365,7 +393,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -386,7 +414,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -407,7 +435,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -428,7 +456,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -449,7 +477,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -470,7 +498,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -491,7 +519,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -512,7 +540,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -533,7 +561,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -554,7 +582,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -575,7 +603,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -596,7 +624,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -617,7 +645,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -638,7 +666,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -659,7 +687,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -680,7 +708,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -701,7 +729,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -722,7 +750,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -743,7 +771,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -764,7 +792,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -785,7 +813,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -806,7 +834,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -827,7 +855,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -848,7 +876,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -869,7 +897,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -890,7 +918,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -911,7 +939,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -932,7 +960,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -953,7 +981,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -974,7 +1002,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -995,7 +1023,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -1016,7 +1044,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -1037,7 +1065,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1058,7 +1086,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1079,7 +1107,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -1100,7 +1128,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1121,7 +1149,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -1142,7 +1170,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1163,7 +1191,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1184,7 +1212,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1205,7 +1233,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -1226,7 +1254,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1247,7 +1275,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -1268,7 +1296,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1289,7 +1317,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -1310,7 +1338,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos bis.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -1331,7 +1359,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1352,7 +1380,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos interim.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -1373,7 +1401,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos piscine.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -1394,7 +1422,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1415,7 +1443,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1436,7 +1464,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1457,7 +1485,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos geometre.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1478,7 +1506,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos Agent immobilier.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1499,7 +1527,7 @@
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/back/Dos paysagiste.png"
+        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1521,7 +1549,7 @@
         "text": "Solo"
       },
       "position": {
-        "x": 0.67,
+        "x": 0.87,
         "y": 0.5
       },
       "actions": [
@@ -1529,16 +1557,24 @@
           "type": "remove",
           "label": "Ranger"
         }
-      ]
+      ],
+      "mobilePosition": {
+        "x": 0.74,
+        "y": 0.5
+      }
     },
     {
       "type": "restart-button",
       "id": "restart-0",
       "position": {
-        "x": 0.34,
-        "y": 0.5
+        "x": 0.1,
+        "y": 0.86
       },
-      "label": "Relancer"
+      "label": "Relancer",
+      "mobilePosition": {
+        "x": 0.13,
+        "y": 0.95
+      }
     }
   ],
   "startup": [
@@ -1567,5 +1603,15 @@
       "target": "tvx-1",
       "targetDeck": "deck-0"
     }
-  ]
+  ],
+  "cardSize": {
+    "widthRatio": 0.16,
+    "minWidth": 55,
+    "aspectRatio": 1.4
+  },
+  "mobileCardSize": {
+    "widthRatio": 0.25,
+    "minWidth": 55,
+    "aspectRatio": 1.4
+  }
 }
