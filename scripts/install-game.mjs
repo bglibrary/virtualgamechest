@@ -19,9 +19,10 @@
  * 3. Rewrite image URLs in the JSON to ../img/<game-id>/<filename>
  * 4. Save the JSON to public/games/<game-id>.json
  * 5. Register the game in src/editor/data/gameRegistry.ts (if not already present)
+ * 6. Auto-commit with "add game" for new games or "update game" for existing ones
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
@@ -147,9 +148,9 @@ async function main() {
   let registryContent = readFileSync(registryPath, "utf-8");
 
   const idPattern = new RegExp(`id:\\s*"${escapeRegex(gameId)}"`);
-  if (idPattern.test(registryContent)) {
-    info(`Already registered in gameRegistry.ts, skipping.`);
-  } else {
+  const isNew = !idPattern.test(registryContent);
+
+  if (isNew) {
     const gameName = gameDef.name || gameId;
     const newEntry = `  { id: "${gameId}", filename: "${gameId}.json", label: "${gameName}" },\n];\n`;
 
@@ -161,24 +162,35 @@ async function main() {
 
     writeFileSync(registryPath, registryContent);
     info(`Registered in gameRegistry.ts`);
+  } else {
+    info(`Already registered in gameRegistry.ts, skipping.`);
   }
 
   // --- Auto-commit ---
+  const filesToAdd = [
+    `public/games/${gameId}.json`,
+    `public/img/${gameId}/`,
+    `src/editor/data/gameRegistry.ts`,
+  ];
+
   try {
     const gameName = gameDef.name || gameId;
-    execSync(`git add public/games/${gameId}.json public/img/${gameId}/ src/editor/data/gameRegistry.ts`, {
+    const commitMsg = isNew
+      ? `feat: add game '${gameName}'`
+      : `feat: update game '${gameName}'`;
+    execSync(`git add ${filesToAdd.join(" ")}`, {
       cwd: REPO_ROOT,
       stdio: "pipe",
     });
-    execSync(`git commit -m "feat: add game '${gameName}'"`, {
+    execSync(`git commit -m "${commitMsg}"`, {
       cwd: REPO_ROOT,
       stdio: "pipe",
     });
-    info(`Changes committed: "feat: add game '${gameName}'"`);
+    info(`Changes committed: "${commitMsg}"`);
   } catch (commitErr) {
-    console.warn(`  ⚠️  Git commit failed. You may need to commit manually:`);
-    console.warn(`     git add public/games/${gameId}.json public/img/${gameId}/ src/editor/data/gameRegistry.ts`);
-    console.warn(`     git commit -m "feat: add game '${gameName}'"`);
+    console.warn(`  ⚠️  Git commit failed or nothing to commit. You may need to commit manually:`);
+    console.warn(`     git add ${filesToAdd.join(" ")}`);
+    console.warn(`     git commit -m "feat: update game '${gameName}'"`);
   }
 
   console.log(`\n✅ Game "${gameId}" installed successfully!\n`);
