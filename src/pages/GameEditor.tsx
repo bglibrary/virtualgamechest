@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEditorStore } from "@/editor/stores/editorStore";
 import { useEditorHistoryStore } from "@/editor/stores/editorHistoryStore";
@@ -45,6 +45,9 @@ export default function GameEditor() {
   useDraftPersistence();
   useUnsavedChangesGuard();
 
+  // Store the game definition from location.state for re-opening in Strict Mode
+  const gameDefRef = useRef<GameDefinition | null>(null);
+
   // Undo/redo handlers
   const canUndo = useEditorHistoryStore((s) => s.past.length > 0);
   const canRedo = useEditorHistoryStore((s) => s.future.length > 0);
@@ -85,9 +88,20 @@ export default function GameEditor() {
   useEffect(() => {
     if (!gameId) return;
 
+    // Handle new game from NewGamePage (via location state)
     if (state?.newGame && state?.defaultDefinition) {
-      openGame(gameId, state.defaultDefinition as unknown as GameDefinition);
+      const gameDef = state.defaultDefinition as unknown as GameDefinition;
+      gameDefRef.current = gameDef;
+      openGame(gameId, gameDef);
+
+      // Clear the location state so it doesn't interfere with subsequent navigations
       window.history.replaceState({}, document.title);
+      return;
+    }
+
+    // On Strict Mode remount: re-open from the ref if we already consumed location.state
+    if (gameDefRef.current) {
+      openGame(gameId, gameDefRef.current);
       return;
     }
 
@@ -120,8 +134,9 @@ export default function GameEditor() {
     downloadGameZip(game, gameId).then(() => markClean());
   }, [game, gameId, isValid, errorCount, markClean]);
 
-  // If unknown game ID
-  if (gameId && !getGameById(gameId) && !state?.newGame) {
+  // If unknown game ID (new games from location.state pass through when state is still present,
+  // or when gameDefRef was populated on previous Strict Mode mount)
+  if (gameId && !getGameById(gameId) && !state?.newGame && !gameDefRef.current) {
     return (
       <div className="min-h-screen bg-gray-950 text-gray-100 flex items-center justify-center">
         <div className="text-center">
