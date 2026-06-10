@@ -57,18 +57,13 @@ export default function ZoneForm({ component }: Props) {
         />
       </Field>
 
-      <Field label="Hide Count Badge">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={component.hideCountBadge ?? false}
-            onChange={() => handleChange("hideCountBadge", !(component.hideCountBadge ?? false))}
-            className="rounded border-gray-700 bg-gray-950"
-          />
-          <span className="text-sm text-gray-400">
-            {component.hideCountBadge ? "Hidden" : "Visible"}
-          </span>
-        </label>
+      <Field label="Masquer le compteur">
+        <input
+          type="checkbox"
+          checked={component.hideCountBadge ?? false}
+          onChange={() => handleChange("hideCountBadge", !(component.hideCountBadge ?? false))}
+          className="rounded border-gray-700 bg-gray-950"
+        />
       </Field>
     </div>
   );

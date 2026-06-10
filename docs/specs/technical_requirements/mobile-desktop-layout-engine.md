@@ -12,6 +12,33 @@
 - `gameDefinitionSchema`: add optional `mobileCardSize: cardSizeSchema.optional()`
 - Removed `mobileOrientation` (no longer needed — mobile is always portrait)
 
+### Card dimensioning
+
+The `cardSizeSchema` now includes an optional `heightRatio` field:
+
+```typescript
+export const cardSizeSchema = z.object({
+  widthRatio: z.number().min(0.01).max(0.5).default(0.08),
+  minWidth: z.number().min(10).default(55),
+  aspectRatio: z.number().min(0.5).max(2).default(1.4),
+  heightRatio: z.number().min(0.01).max(1).optional(),
+});
+```
+
+When `heightRatio` is defined, card height is capped to `viewportHeight × heightRatio`. If exceeded, both width and height are scaled down proportionally to preserve aspect ratio. This prevents cards from overflowing the viewport vertically on ultrawide or unusually proportioned screens.
+
+The core computation is centralized in `src/ui/canvas/cardDimensions.ts`:
+
+```typescript
+function computeCardDimensions(
+  viewportWidth: number,
+  viewportHeight: number,
+  cardSize?: CardSize | null,
+): { cardWidth: number; cardHeight: number }
+```
+
+All renderers (CardRenderer, DeckRenderer, ZoneRenderer) and the editor (EditorCanvas) use this shared function.
+
 ## Device Detection (`src/utils/deviceDetection.ts`)
 
 New utility file:
@@ -86,4 +113,5 @@ interface LayoutStore {
   - **Width Ratio**: 0.01 to 0.5 (default 0.08)
   - **Min Width**: 10 to 500 (default 55)
   - **Aspect Ratio**: 0.5 to 2.0 (default 1.4)
+  - **Max Height % (opt.)**: 0.01 to 1.0 (optional, no default). When set, constrains card height relative to viewport height.
 - If `mobileCardSize` is not set, the form should offer to "Override desktop card size" for mobile.

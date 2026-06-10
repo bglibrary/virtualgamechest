@@ -275,6 +275,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
           cards: [targetCard.id, draggedComp.id],
           position: targetPos,
           faceUp: sharedFaceUp,
+          hideCountBadge: false,
           actions: [{ type: "draw-face-down", label: "Piocher" }],
         };
 

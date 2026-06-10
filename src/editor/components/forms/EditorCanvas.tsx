@@ -6,6 +6,7 @@ import { setViewportSize } from "@/editor/stores/viewportStore";
 import type { CardComponent, DeckComponent, ZoneComponent, LabelComponent, RestartButtonComponent, GameComponent } from "@/types/game";
 import useCardImage from "@/ui/hooks/useCardImage";
 import computeCoverCrop from "@/ui/canvas/coverCrop";
+import { computeCardDimensions } from "@/ui/canvas/cardDimensions";
 
 const CARD_WIDTH_RATIO = 0.08;
 const CARD_MIN_WIDTH = 55;
@@ -36,16 +37,12 @@ const SNAP_THRESHOLD_PX = 6;
 const GUIDE_COLOR = "#FF3366";
 const GUIDE_STROKE_WIDTH = 1;
 
-function useCardDimensions(viewportWidth: number) {
+function useCardDimensions(viewportWidth: number, viewportHeight: number) {
   const game = useEditorStore((s) => s.game);
   const editLayout = useEditorStore((s) => s.editLayout);
   const isMobile = editLayout === "mobile";
   const cardSizeConfig = isMobile ? (game?.mobileCardSize ?? game?.cardSize) : game?.cardSize;
-  const widthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
-  const minWidth = cardSizeConfig?.minWidth ?? CARD_MIN_WIDTH;
-  const aspectRatio = cardSizeConfig?.aspectRatio ?? CARD_ASPECT;
-  const cardWidth = Math.max(viewportWidth * widthRatio, minWidth);
-  const cardHeight = cardWidth * aspectRatio;
+  const { cardWidth, cardHeight } = computeCardDimensions(viewportWidth, viewportHeight, cardSizeConfig);
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
   return { cardWidth, cardHeight, cornerRadius, fontSize };
@@ -702,7 +699,7 @@ export default function EditorCanvas() {
   }, [isMobile, size]);
 
   const { cardWidth, cardHeight, cornerRadius, fontSize } =
-    useCardDimensions(viewportInfo.width);
+    useCardDimensions(viewportInfo.width, viewportInfo.height);
 
   // Update viewport store with actual game viewport (not the full container)
   useEffect(() => {

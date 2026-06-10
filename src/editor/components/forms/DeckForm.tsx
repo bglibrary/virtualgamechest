@@ -95,20 +95,15 @@ export default function DeckForm({ component }: Props) {
         </label>
       </Field>
 
-      <Field label="Hide Count Badge">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={component.hideCountBadge ?? false}
-            onChange={() => updateComponent(component.id, (c) =>
-              c.type === "deck" ? { ...c, hideCountBadge: !c.hideCountBadge } : c,
-            )}
-            className="rounded border-gray-700 bg-gray-950"
-          />
-          <span className="text-sm text-gray-400">
-            {component.hideCountBadge ? "Hidden" : "Visible"}
-          </span>
-        </label>
+      <Field label="Masquer le compteur">
+        <input
+          type="checkbox"
+          checked={component.hideCountBadge ?? false}
+          onChange={() => updateComponent(component.id, (c) =>
+            c.type === "deck" ? { ...c, hideCountBadge: !c.hideCountBadge } : c,
+          )}
+          className="rounded border-gray-700 bg-gray-950"
+        />
       </Field>
 
       <Field label="Cards">

@@ -65,7 +65,7 @@ export default function CardSizeForm() {
       </div>
 
       {(isOverridden || !isMobile) && (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <Field label="Width %">
             <input
               type="number"
@@ -96,6 +96,21 @@ export default function CardSizeForm() {
               max="2.0"
               value={currentSize.aspectRatio}
               onChange={(e) => updateSize({ aspectRatio: parseFloat(e.target.value) })}
+              className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-sm"
+            />
+          </Field>
+          <Field label="Max Height % (opt.)">
+            <input
+              type="number"
+              step="0.005"
+              min="0.01"
+              max="1"
+              value={currentSize.heightRatio ?? ""}
+              onChange={(e) => {
+                const v = e.target.value;
+                updateSize({ heightRatio: v === "" ? undefined : parseFloat(v) });
+              }}
+              placeholder="—"
               className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-sm"
             />
           </Field>

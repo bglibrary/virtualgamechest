@@ -279,6 +279,7 @@ export const cardSizeSchema = z.object({
   widthRatio: z.number().min(0.01).max(0.5).default(0.08),
   minWidth: z.number().min(10).default(55),
   aspectRatio: z.number().min(0.5).max(2).default(1.4),
+  heightRatio: z.number().min(0.01).max(1).optional(),
 });
 
 export const gameDefinitionSchema = z.object({
