@@ -78,7 +78,11 @@ Logic:
 - `handleSnapToZone` uses resolved position
 - ActionBar positioning uses resolved position
 - No `lockOrientation` call on mount (removed)
-- **New**: Compute `table = computeTableDimensions(size.width, size.height)` where `size` is the full viewport
+- **New**: Uses `ResizeObserver` on the container div (`ref={containerRef}`) instead of `window.innerHeight`, so the header bar in PlayPage is properly accounted for
+- **New**: Container div uses `w-full h-full` instead of `w-screen h-screen` to fill the parent's available space
+- **New**: Compute `table` dimensions based on device mode:
+  - **Desktop**: `computeTableDimensions(size.width, size.height)` — 16:9 landscape (same as EditorCanvas desktop)
+  - **Mobile**: Portrait mode — `width = size.width`, `height = width * 16/9` (same as EditorCanvas mobile)
 - **New**: All component positions are multiplied by `table.width`/`table.height` instead of `size.width`/`size.height`
 - **New**: All renderers (ZoneRenderer, InteractiveCard, InteractiveDeck, LabelRenderer, RestartButtonRenderer) receive `viewportWidth={table.width}` and `viewportHeight={table.height}`
 - **New**: The Stage and green background Rect still use `size.width`/`size.height` (full viewport)

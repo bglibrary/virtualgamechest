@@ -38,9 +38,19 @@ function TableCanvas() {
     height: window.innerHeight,
   });
 
-  // Compute the fixed 16:9 table area that fits within the viewport.
-  // All positions and sizes are relative to this table area.
-  const table = useMemo(() => computeTableDimensions(size.width, size.height), [size]);
+  // Compute the table area that fits within the viewport.
+  // - Desktop: 16:9 landscape (same as EditorCanvas desktop mode)
+  // - Mobile: 9:16 portrait (same as EditorCanvas mobile mode)
+  const table = useMemo(() => {
+    if (isMobile) {
+      // Portrait mode: width fills the container, height = width * 16/9
+      const width = size.width;
+      const height = width * (16 / 9);
+      const offsetY = Math.max(0, (size.height - height) / 2);
+      return { width, height, offsetX: 0, offsetY };
+    }
+    return computeTableDimensions(size.width, size.height);
+  }, [size, isMobile]);
   const [highlightedZoneId, setHighlightedZoneId] = useState<string | null>(null);
   const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string | null>(null);
   const executingActionRef = useRef(false);
