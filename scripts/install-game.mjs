@@ -83,7 +83,7 @@ async function main() {
   console.log(`\n📦 Installing game "${gameId}" from ${zipPath}...`);
   console.log(`   Game name from JSON: "${gameDef.name}"\n`);
 
-  // Find image entries in ZIP (non-directory entries under img/)
+  // Find image entries in ZIP (non-directory entries under img/<gameId>/)
   const imgEntries = Object.entries(zip.files).filter(
     ([name, file]) => !file.dir && name.startsWith("img/"),
   );
@@ -103,7 +103,8 @@ async function main() {
 
   for (const [entryName, file] of imgEntries) {
     const buffer = await file.async("nodebuffer");
-    const filename = entryName.replace("img/", "");
+    // Strip the img/<gameId>/ prefix to get just the filename
+    const filename = entryName.replace(/^img\/[^/]+\//, "");
     const destPath = join(imgDir, filename);
 
     if (existsSync(destPath)) {
@@ -123,17 +124,22 @@ async function main() {
   info(`Images: ${addedCount} new, ${updatedCount} modified, ${skippedCount} unchanged.\n`);
 
   // --- Rewrite image URLs in JSON ---
-  // The JSON from the ZIP has relative URLs like `../img/<filename>`.
-  // Rewrite them to `../img/<gameId>/<filename>`.
+  // The JSON from the ZIP has relative URLs like `../img/<gameId>/<filename>`.
+  // They should already be correct, but verify they point to the right gameId.
   for (const component of gameDef.components) {
     if (component.type === "card") {
       if (component.face?.image) {
-        const baseName = component.face.image.replace("../img/", "");
-        component.face.image = `../img/${gameId}/${baseName}`;
+        // Ensure the path uses the correct gameId
+        const match = component.face.image.match(/\.\.\/img\/([^/]+)\/(.+)/);
+        if (match) {
+          component.face.image = `../img/${gameId}/${match[2]}`;
+        }
       }
       if (component.back?.image) {
-        const baseName = component.back.image.replace("../img/", "");
-        component.back.image = `../img/${gameId}/${baseName}`;
+        const match = component.back.image.match(/\.\.\/img\/([^/]+)\/(.+)/);
+        if (match) {
+          component.back.image = `../img/${gameId}/${match[2]}`;
+        }
       }
     }
   }

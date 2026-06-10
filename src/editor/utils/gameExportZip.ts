@@ -58,16 +58,33 @@ function getImageFilename(url: string, index: number): string {
 }
 
 /**
+ * Check if an image URL points to an already-deployed image in public/img/<gameId>/.
+ * Such images don't need to be re-exported — they're already in the repo.
+ */
+function isDeployedImage(url: string, gameId: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.pathname.startsWith(`/img/${gameId}/`);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Downloads a game definition as a ZIP file containing:
  * - The game JSON (with image URLs rewritten to relative paths)
  * - All referenced images (fetched from blob URLs or copied)
  *
  * The ZIP structure is:
  *   <gameId>.json
- *   img/
+ *   img/<gameId>/
  *     <filename1>
  *     <filename2>
  *     ...
+ *
+ * Images that are already deployed in public/img/<gameId>/ are NOT included
+ * in the ZIP (they're already in the repo). Only blob URLs or external images
+ * are fetched and included.
  */
 export async function downloadGameZip(game: GameDefinition, gameId: string): Promise<void> {
   const zip = new JSZip();
@@ -79,8 +96,17 @@ export async function downloadGameZip(game: GameDefinition, gameId: string): Pro
 
   for (let i = 0; i < imageUrls.length; i++) {
     const url = imageUrls[i];
+
+    // Skip images that are already deployed in public/img/<gameId>/
+    if (isDeployedImage(url, gameId)) {
+      // Still map the URL so JSON rewriting works, but don't add to ZIP
+      const filename = getImageFilename(url, i);
+      imageMap.set(url, `img/${gameId}/${filename}`);
+      continue;
+    }
+
     const filename = getImageFilename(url, i);
-    const zipPath = `img/${filename}`;
+    const zipPath = `img/${gameId}/${filename}`;
     imageMap.set(url, zipPath);
 
     try {
