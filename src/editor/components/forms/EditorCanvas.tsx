@@ -6,7 +6,7 @@ import { setViewportSize } from "@/editor/stores/viewportStore";
 import type { CardComponent, DeckComponent, ZoneComponent, LabelComponent, RestartButtonComponent, GameComponent } from "@/types/game";
 import useCardImage from "@/ui/hooks/useCardImage";
 import computeCoverCrop from "@/ui/canvas/coverCrop";
-import { computeCardDimensions } from "@/ui/canvas/cardDimensions";
+import { computeTableDimensions } from "@/ui/canvas/tableDimensions";
 
 const CARD_WIDTH_RATIO = 0.08;
 const CARD_MIN_WIDTH = 55;
@@ -37,12 +37,16 @@ const SNAP_THRESHOLD_PX = 6;
 const GUIDE_COLOR = "#FF3366";
 const GUIDE_STROKE_WIDTH = 1;
 
-function useCardDimensions(viewportWidth: number, viewportHeight: number) {
+function useCardDimensions(viewportWidth: number) {
   const game = useEditorStore((s) => s.game);
   const editLayout = useEditorStore((s) => s.editLayout);
   const isMobile = editLayout === "mobile";
   const cardSizeConfig = isMobile ? (game?.mobileCardSize ?? game?.cardSize) : game?.cardSize;
-  const { cardWidth, cardHeight } = computeCardDimensions(viewportWidth, viewportHeight, cardSizeConfig);
+  const widthRatio = cardSizeConfig?.widthRatio ?? CARD_WIDTH_RATIO;
+  const minWidth = cardSizeConfig?.minWidth ?? CARD_MIN_WIDTH;
+  const aspectRatio = cardSizeConfig?.aspectRatio ?? CARD_ASPECT;
+  const cardWidth = Math.max(viewportWidth * widthRatio, minWidth);
+  const cardHeight = cardWidth * aspectRatio;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
   return { cardWidth, cardHeight, cornerRadius, fontSize };
@@ -685,10 +689,14 @@ export default function EditorCanvas() {
   const posKey = getPositionKey(editLayout);
   const isMobile = editLayout === "mobile";
 
-  // Compute mobile viewport dimensions (always portrait, chrome-inspector style)
+  // Compute viewport dimensions:
+  // - Desktop: 16:9 table area computed via computeTableDimensions (same as TableCanvas)
+  //   The green felt fills the full container, but the table is the conceptual 16:9 area
+  //   where all component positions (0-1 normalized) are relative to.
+  // - Mobile: portrait mode, chrome-inspector style
   const viewportInfo = useMemo(() => {
     if (!isMobile) {
-      return { width: size.width, height: size.height, offsetX: 0, offsetY: 0 };
+      return computeTableDimensions(size.width, size.height);
     }
     const maxVpWidth = Math.floor(size.width * MOBILE_VIEWPORT_FRACTION);
     const vpWidth = Math.floor(Math.min(maxVpWidth, size.height * MOBILE_RATIO));
@@ -699,16 +707,12 @@ export default function EditorCanvas() {
   }, [isMobile, size]);
 
   const { cardWidth, cardHeight, cornerRadius, fontSize } =
-    useCardDimensions(viewportInfo.width, viewportInfo.height);
+    useCardDimensions(viewportInfo.width);
 
-  // Update viewport store with actual game viewport (not the full container)
+  // Update viewport store with actual game viewport (the 16:9 table area)
   useEffect(() => {
-    if (isMobile) {
-      setViewportSize(viewportInfo.width, viewportInfo.height);
-    } else {
-      setViewportSize(size.width, size.height);
-    }
-  }, [isMobile, viewportInfo, size]);
+    setViewportSize(viewportInfo.width, viewportInfo.height);
+  }, [viewportInfo]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -1227,16 +1231,30 @@ export default function EditorCanvas() {
   }
 
   return (
-    <div ref={containerRef} className="h-full w-full overflow-hidden rounded-lg">
-      <Stage
-        width={viewportInfo.width}
-        height={viewportInfo.height}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
+    <div
+      ref={containerRef}
+      className="h-full w-full overflow-hidden rounded-lg"
+      style={{ backgroundColor: "#1a1a2e" }}
+    >
+      <div
+        style={{
+          position: "relative",
+          marginLeft: viewportInfo.offsetX,
+          marginTop: viewportInfo.offsetY,
+          width: viewportInfo.width,
+          height: viewportInfo.height,
+        }}
       >
-        {stageContent.props.children}
-      </Stage>
+        <Stage
+          width={viewportInfo.width}
+          height={viewportInfo.height}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          {stageContent.props.children}
+        </Stage>
+      </div>
     </div>
   );
 }

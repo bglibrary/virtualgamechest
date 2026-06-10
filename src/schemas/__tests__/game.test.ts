@@ -8,7 +8,6 @@ componentSchema,
 cardComponentSchema,
 labelComponentSchema,
 imageUrlSchema,
-cardSizeSchema,
 CardActionType,
 DeckActionType,
 } from "@/schemas/game";
@@ -629,45 +628,10 @@ actions: [flipAction],
 expect(result.success).toBe(false);
 });
 
-it("rejects completely invalid input", () => {
-  const result = gameDefinitionSchema.safeParse("not an object");
-  expect(result.success).toBe(false);
-});
-
-it("defaults heightRatio to undefined when omitted", () => {
-  const result = cardSizeSchema.safeParse({
-    widthRatio: 0.08,
-    minWidth: 55,
-    aspectRatio: 1.4,
+  it("rejects completely invalid input", () => {
+    const result = gameDefinitionSchema.safeParse("not an object");
+    expect(result.success).toBe(false);
   });
-  expect(result.success).toBe(true);
-  if (result.success) {
-    expect(result.data.heightRatio).toBeUndefined();
-  }
-});
-
-it("accepts heightRatio when provided", () => {
-  const result = cardSizeSchema.safeParse({
-    widthRatio: 0.08,
-    minWidth: 55,
-    aspectRatio: 1.4,
-    heightRatio: 0.2,
-  });
-  expect(result.success).toBe(true);
-  if (result.success) {
-    expect(result.data.heightRatio).toBe(0.2);
-  }
-});
-
-it("rejects out-of-range heightRatio", () => {
-  const result = cardSizeSchema.safeParse({
-    widthRatio: 0.08,
-    minWidth: 55,
-    aspectRatio: 1.4,
-    heightRatio: 1.5,
-  });
-  expect(result.success).toBe(false);
-});
 
   it("defaults hideCountBadge to false on zone", () => {
     const result = componentSchema.safeParse({

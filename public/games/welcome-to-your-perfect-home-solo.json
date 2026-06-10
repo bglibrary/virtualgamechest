@@ -1,90 +1,106 @@
 {
   "name": "Welcome to your perfect home solo",
   "version": "1.0.0",
+  "cardSize": {
+    "widthRatio": 0.16,
+    "minWidth": 55,
+    "aspectRatio": 1.4
+  },
+  "mobileCardSize": {
+    "widthRatio": 0.25,
+    "minWidth": 55,
+    "aspectRatio": 1.4
+  },
   "components": [
     {
       "type": "zone",
       "id": "tvx-1",
       "position": {
         "x": 0.3,
+        "y": 0.75
+      },
+      "mobilePosition": {
+        "x": 0.2,
         "y": 0.8
       },
       "label": "Travaux 1",
       "snapRadius": 30,
-      "mobilePosition": {
-        "x": 0.2,
-        "y": 0.8
-      }
+      "hideCountBadge": true
     },
     {
       "type": "zone",
       "id": "tvx-2",
       "position": {
         "x": 0.5,
+        "y": 0.75
+      },
+      "mobilePosition": {
+        "x": 0.5,
         "y": 0.8
       },
       "label": "Travaux 2",
       "snapRadius": 30,
-      "mobilePosition": {
-        "x": 0.5,
-        "y": 0.8
-      }
+      "hideCountBadge": true
     },
     {
       "type": "zone",
       "id": "tvx-3",
       "position": {
         "x": 0.7,
+        "y": 0.75
+      },
+      "mobilePosition": {
+        "x": 0.8,
         "y": 0.8
       },
       "label": "Travaux 3",
       "snapRadius": 30,
-      "mobilePosition": {
-        "x": 0.8,
-        "y": 0.8
-      }
+      "hideCountBadge": true
     },
     {
       "type": "zone",
       "id": "plan-1",
       "position": {
         "x": 0.3,
+        "y": 0.25
+      },
+      "mobilePosition": {
+        "x": 0.2,
         "y": 0.2
       },
       "label": "plan-1",
       "snapRadius": 30,
-      "mobilePosition": {
-        "x": 0.2,
-        "y": 0.2
-      }
+      "hideCountBadge": false
     },
     {
       "type": "zone",
       "id": "plan-2",
       "position": {
         "x": 0.5,
+        "y": 0.25
+      },
+      "mobilePosition": {
+        "x": 0.5,
         "y": 0.2
       },
       "label": "plan-2",
       "snapRadius": 30,
-      "mobilePosition": {
-        "x": 0.5,
-        "y": 0.2
-      }
+      "hideCountBadge": false
     },
     {
       "type": "zone",
       "id": "plan-3",
       "position": {
         "x": 0.7,
+        "y": 0.25
+      },
+      "mobilePosition": {
+        "x": 0.8,
         "y": 0.2
       },
       "label": "plan-3",
       "snapRadius": 30,
-      "mobilePosition": {
-        "x": 0.8,
-        "y": 0.2
-      }
+      "hideCountBadge": false
     },
     {
       "type": "deck",
@@ -159,7 +175,12 @@
         "x": 0.1,
         "y": 0.5
       },
+      "mobilePosition": {
+        "x": 0.32,
+        "y": 0.5
+      },
       "faceUp": false,
+      "hideCountBadge": false,
       "actions": [
         {
           "type": "draw-face-up",
@@ -187,11 +208,7 @@
           ]
         }
       ],
-      "doubleClickActionLabel": "Piocher (x3)",
-      "mobilePosition": {
-        "x": 0.32,
-        "y": 0.5
-      }
+      "doubleClickActionLabel": "Piocher (x3)"
     },
     {
       "type": "card",
@@ -199,12 +216,12 @@
       "face": {
         "type": "text",
         "text": "F 1 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-0.png"
+        "image": "../img/image-0.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -220,12 +237,12 @@
       "face": {
         "type": "text",
         "text": "F 2 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-1.png"
+        "image": "../img/image-1.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -241,12 +258,12 @@
       "face": {
         "type": "text",
         "text": "F 2 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-2.png"
+        "image": "../img/image-2.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -262,12 +279,12 @@
       "face": {
         "type": "text",
         "text": "F 2 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-3.png"
+        "image": "../img/image-3.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -283,12 +300,12 @@
       "face": {
         "type": "text",
         "text": "F 3 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-4.png"
+        "image": "../img/image-4.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -304,12 +321,12 @@
       "face": {
         "type": "text",
         "text": "F 3 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-5.png"
+        "image": "../img/image-5.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -325,12 +342,12 @@
       "face": {
         "type": "text",
         "text": "F 3 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-6.png"
+        "image": "../img/image-6.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -346,12 +363,12 @@
       "face": {
         "type": "text",
         "text": "F 3 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-7.png"
+        "image": "../img/image-7.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -367,12 +384,12 @@
       "face": {
         "type": "text",
         "text": "F 4 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-8.png"
+        "image": "../img/image-8.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -388,12 +405,12 @@
       "face": {
         "type": "text",
         "text": "F 4 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-9.png"
+        "image": "../img/image-9.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -409,12 +426,12 @@
       "face": {
         "type": "text",
         "text": "F 4 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-10.png"
+        "image": "../img/image-10.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -430,12 +447,12 @@
       "face": {
         "type": "text",
         "text": "F 4 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-11.png"
+        "image": "../img/image-11.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -451,12 +468,12 @@
       "face": {
         "type": "text",
         "text": "F 4 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-12.png"
+        "image": "../img/image-12.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -472,12 +489,12 @@
       "face": {
         "type": "text",
         "text": "F 5 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-13.png"
+        "image": "../img/image-13.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -493,12 +510,12 @@
       "face": {
         "type": "text",
         "text": "F 5 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-14.png"
+        "image": "../img/image-14.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -514,12 +531,12 @@
       "face": {
         "type": "text",
         "text": "F 5 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-15.png"
+        "image": "../img/image-15.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -535,12 +552,12 @@
       "face": {
         "type": "text",
         "text": "F 6 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-16.png"
+        "image": "../img/image-16.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -556,12 +573,12 @@
       "face": {
         "type": "text",
         "text": "F 6 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-17.png"
+        "image": "../img/image-17.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -577,12 +594,12 @@
       "face": {
         "type": "text",
         "text": "F 6 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-18.png"
+        "image": "../img/image-18.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -598,12 +615,12 @@
       "face": {
         "type": "text",
         "text": "F 6 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-19.png"
+        "image": "../img/image-19.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -619,12 +636,12 @@
       "face": {
         "type": "text",
         "text": "F 6 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-20.png"
+        "image": "../img/image-20.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -640,12 +657,12 @@
       "face": {
         "type": "text",
         "text": "F 6 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-21.png"
+        "image": "../img/image-21.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -661,12 +678,12 @@
       "face": {
         "type": "text",
         "text": "F 7 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-22.png"
+        "image": "../img/image-22.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -682,12 +699,12 @@
       "face": {
         "type": "text",
         "text": "F 7 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-23.png"
+        "image": "../img/image-23.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -703,12 +720,12 @@
       "face": {
         "type": "text",
         "text": "F 7 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-24.png"
+        "image": "../img/image-24.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -724,12 +741,12 @@
       "face": {
         "type": "text",
         "text": "F 7 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-25.png"
+        "image": "../img/image-25.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -745,12 +762,12 @@
       "face": {
         "type": "text",
         "text": "F 7 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-26.png"
+        "image": "../img/image-26.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -766,12 +783,12 @@
       "face": {
         "type": "text",
         "text": "F 7 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-27.png"
+        "image": "../img/image-27.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -787,12 +804,12 @@
       "face": {
         "type": "text",
         "text": "F 8 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-28.png"
+        "image": "../img/image-28.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -808,12 +825,12 @@
       "face": {
         "type": "text",
         "text": "F 8 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-29.png"
+        "image": "../img/image-29.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -829,12 +846,12 @@
       "face": {
         "type": "text",
         "text": "F 8 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-30.png"
+        "image": "../img/image-30.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -850,12 +867,12 @@
       "face": {
         "type": "text",
         "text": "F 8 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-31.png"
+        "image": "../img/image-31.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -871,12 +888,12 @@
       "face": {
         "type": "text",
         "text": "F 8 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-32.png"
+        "image": "../img/image-32.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -892,12 +909,12 @@
       "face": {
         "type": "text",
         "text": "F 8 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-33.png"
+        "image": "../img/image-33.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -913,12 +930,12 @@
       "face": {
         "type": "text",
         "text": "F 9 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-34.png"
+        "image": "../img/image-34.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -934,12 +951,12 @@
       "face": {
         "type": "text",
         "text": "F 9 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-35.png"
+        "image": "../img/image-35.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -955,12 +972,12 @@
       "face": {
         "type": "text",
         "text": "F 9 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-36.png"
+        "image": "../img/image-36.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -976,12 +993,12 @@
       "face": {
         "type": "text",
         "text": "F 9 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-37.png"
+        "image": "../img/image-37.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -997,12 +1014,12 @@
       "face": {
         "type": "text",
         "text": "F 9 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-38.png"
+        "image": "../img/image-38.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1018,12 +1035,12 @@
       "face": {
         "type": "text",
         "text": "F 9 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-39.png"
+        "image": "../img/image-39.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -1039,12 +1056,12 @@
       "face": {
         "type": "text",
         "text": "F 10 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-40.png"
+        "image": "../img/image-40.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -1060,12 +1077,12 @@
       "face": {
         "type": "text",
         "text": "F 10 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-41.png"
+        "image": "../img/image-41.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1081,12 +1098,12 @@
       "face": {
         "type": "text",
         "text": "F 10 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-42.png"
+        "image": "../img/image-42.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1102,12 +1119,12 @@
       "face": {
         "type": "text",
         "text": "F 10 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-43.png"
+        "image": "../img/image-43.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -1123,12 +1140,12 @@
       "face": {
         "type": "text",
         "text": "F 10 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-44.png"
+        "image": "../img/image-44.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1144,12 +1161,12 @@
       "face": {
         "type": "text",
         "text": "F 10 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-45.png"
+        "image": "../img/image-45.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -1165,12 +1182,12 @@
       "face": {
         "type": "text",
         "text": "F 11 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-46.png"
+        "image": "../img/image-46.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1186,12 +1203,12 @@
       "face": {
         "type": "text",
         "text": "F 11 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-47.png"
+        "image": "../img/image-47.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1207,12 +1224,12 @@
       "face": {
         "type": "text",
         "text": "F 11 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-48.png"
+        "image": "../img/image-48.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1228,12 +1245,12 @@
       "face": {
         "type": "text",
         "text": "F 12 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-49.png"
+        "image": "../img/image-49.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -1249,12 +1266,12 @@
       "face": {
         "type": "text",
         "text": "F 12 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-50.png"
+        "image": "../img/image-50.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1270,12 +1287,12 @@
       "face": {
         "type": "text",
         "text": "F 12 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-51.png"
+        "image": "../img/image-51.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -1291,12 +1308,12 @@
       "face": {
         "type": "text",
         "text": "F 12 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-52.png"
+        "image": "../img/image-52.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1312,12 +1329,12 @@
       "face": {
         "type": "text",
         "text": "F 12 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-53.png"
+        "image": "../img/image-53.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -1333,12 +1350,12 @@
       "face": {
         "type": "text",
         "text": "F 13 Bis",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-54.png"
+        "image": "../img/image-54.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos bis.png"
+        "image": "../img/Dos bis.png"
       },
       "position": null,
       "actions": [
@@ -1354,12 +1371,12 @@
       "face": {
         "type": "text",
         "text": "F 13 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-55.png"
+        "image": "../img/image-55.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1375,12 +1392,12 @@
       "face": {
         "type": "text",
         "text": "F 13 Interim",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-56.png"
+        "image": "../img/image-56.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos interim.png"
+        "image": "../img/Dos interim.png"
       },
       "position": null,
       "actions": [
@@ -1396,12 +1413,12 @@
       "face": {
         "type": "text",
         "text": "F 13 Piscine",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-57.png"
+        "image": "../img/image-57.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos piscine.png"
+        "image": "../img/Dos piscine.png"
       },
       "position": null,
       "actions": [
@@ -1417,12 +1434,12 @@
       "face": {
         "type": "text",
         "text": "F 14 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-58.png"
+        "image": "../img/image-58.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1438,12 +1455,12 @@
       "face": {
         "type": "text",
         "text": "F 14 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-59.png"
+        "image": "../img/image-59.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1459,12 +1476,12 @@
       "face": {
         "type": "text",
         "text": "F 14 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-60.png"
+        "image": "../img/image-60.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1480,12 +1497,12 @@
       "face": {
         "type": "text",
         "text": "F 15 Geometre",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-61.png"
+        "image": "../img/image-61.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos geometre.png"
+        "image": "../img/Dos geometre.png"
       },
       "position": null,
       "actions": [
@@ -1501,12 +1518,12 @@
       "face": {
         "type": "text",
         "text": "F 15 Immo",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-62.png"
+        "image": "../img/image-62.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos Agent immobilier.png"
+        "image": "../img/Dos Agent immobilier.png"
       },
       "position": null,
       "actions": [
@@ -1522,12 +1539,12 @@
       "face": {
         "type": "text",
         "text": "F 15 Paysage",
-        "image": "../img/welcome-to-your-perfect-home-solo/image-63.png"
+        "image": "../img/image-63.png"
       },
       "back": {
         "type": "text",
         "text": "Dos",
-        "image": "../img/welcome-to-your-perfect-home-solo/Dos paysagiste.png"
+        "image": "../img/Dos paysagiste.png"
       },
       "position": null,
       "actions": [
@@ -1552,16 +1569,16 @@
         "x": 0.87,
         "y": 0.5
       },
+      "mobilePosition": {
+        "x": 0.74,
+        "y": 0.5
+      },
       "actions": [
         {
           "type": "remove",
           "label": "Ranger"
         }
-      ],
-      "mobilePosition": {
-        "x": 0.74,
-        "y": 0.5
-      }
+      ]
     },
     {
       "type": "restart-button",
@@ -1570,11 +1587,11 @@
         "x": 0.1,
         "y": 0.86
       },
-      "label": "Relancer",
       "mobilePosition": {
         "x": 0.13,
         "y": 0.95
-      }
+      },
+      "label": "Relancer"
     }
   ],
   "startup": [
@@ -1603,15 +1620,5 @@
       "target": "tvx-1",
       "targetDeck": "deck-0"
     }
-  ],
-  "cardSize": {
-    "widthRatio": 0.16,
-    "minWidth": 55,
-    "aspectRatio": 1.4
-  },
-  "mobileCardSize": {
-    "widthRatio": 0.25,
-    "minWidth": 55,
-    "aspectRatio": 1.4
-  }
+  ]
 }

@@ -28,15 +28,21 @@ import type { MergeTargetInfo } from "@/utils/mergeDetection";
 import { findNearestMergeTarget } from "@/utils/mergeDetection";
 import type Konva from "konva";
 import type { DeckComponent, CardComponent, ZoneComponent } from "@/types/game";
+import { computeTableDimensions, TABLE_ASPECT_RATIO } from "@/ui/canvas/tableDimensions";
 
 function TableCanvas() {
   const { isMobile, getPosition, getCardSize } = useDeviceLayout();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  // Compute the fixed 16:9 table area that fits within the viewport.
+  // All positions and sizes are relative to this table area.
+  const table = useMemo(() => computeTableDimensions(size.width, size.height), [size]);
   const [highlightedZoneId, setHighlightedZoneId] = useState<string | null>(null);
-const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string | null>(null);
+  const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string | null>(null);
   const executingActionRef = useRef(false);
   const game = useGameStore((s) => s.game);
   const selectedComponentId = useCardStateStore((s) => s.selectedComponentId);
@@ -66,12 +72,21 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
     }
   }, [game, initZOrder]);
 
+  // Use ResizeObserver on the container to account for any header/footer space
   useEffect(() => {
-    const handleResize = () => {
-      setSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        if (width > 0 && height > 0) {
+          setSize({ width: Math.floor(width), height: Math.floor(height) });
+        }
+      }
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
   }, []);
 
   const handleBackgroundClick = useCallback(() => {
@@ -88,9 +103,9 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
 
     return zoneComponents.map((zone, index) => {
       const zonePos = getPosition(zone);
-      const zoneX = zonePos.x * size.width;
-      const zoneY = zonePos.y * size.height;
-      const snapRadius = zone.snapRadius ?? (Math.max(size.width * cardWidthRatio, cardMinWidth) * 0.75);
+      const zoneX = zonePos.x * table.width;
+      const zoneY = zonePos.y * table.height;
+      const snapRadius = zone.snapRadius ?? (Math.max(table.width * cardWidthRatio, cardMinWidth) * 0.75);
       return {
         zoneId: zone.id,
         centerX: zoneX,
@@ -99,7 +114,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
         componentIndex: index,
       };
     });
-  }, [zoneComponents, size, getCardSize, getPosition, game]);
+  }, [zoneComponents, table, getCardSize, getPosition, game]);
 
   const handleAction = useCallback(async (action: { type: string; targetZone?: string; faceUp?: boolean }) => {
     const componentId = selectedComponentId;
@@ -143,7 +158,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       const cardWidthRatio = cardSizeConfig.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
       const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
 
-      const cardW = Math.max(size.width * cardWidthRatio, cardMinWidth);
+      const cardW = Math.max(table.width * cardWidthRatio, cardMinWidth);
       const r = cardW / 2;
       const result: MergeTargetInfo[] = [];
       for (const c of state.game.components) {
@@ -153,8 +168,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
           result.push({
             componentId: c.id,
             type: "card",
-            centerX: pos.x * size.width,
-            centerY: pos.y * size.height,
+            centerX: pos.x * table.width,
+            centerY: pos.y * table.height,
             mergeRadius: r,
             faceUp: useCardStateStore.getState().isFaceUp(c.id),
           });
@@ -165,8 +180,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
             result.push({
               componentId: c.id,
               type: "deck",
-              centerX: pos.x * size.width,
-              centerY: pos.y * size.height,
+              centerX: pos.x * table.width,
+              centerY: pos.y * table.height,
               mergeRadius: r,
               faceUp: useDeckStateStore.getState().isFaceUp(c.id),
             });
@@ -175,7 +190,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       }
       return result;
     },
-    [size, getCardSize, getPosition],
+    [table, getCardSize, getPosition],
   );
 
   const handleDragMoveCommon = useCallback(
@@ -185,7 +200,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
       const aspectRatio = cardSizeConfig.aspectRatio ?? DEFAULT_CARD_ASPECT;
 
-      const cardW = Math.max(size.width * cardWidthRatio, cardMinWidth);
+      const cardW = Math.max(table.width * cardWidthRatio, cardMinWidth);
       const cardH = cardW * aspectRatio;
       // Use absolute position to handle both top-level (InteractiveCard/InteractiveDeck)
       // and nested (zone card) Konva Groups correctly
@@ -209,7 +224,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       const mergeResult = findNearestMergeTarget(cx, cy, draggedFaceUp, targets);
       setHighlightedMergeTargetId(mergeResult?.componentId ?? null);
     },
-    [zoneSnapInfos, size, buildMergeTargetInfos, getDraggedFaceUp, getCardSize, game],
+    [zoneSnapInfos, table, buildMergeTargetInfos, getDraggedFaceUp, getCardSize, game],
   );
 
   const handleMerge = useCallback(
@@ -219,8 +234,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       const targets = buildMergeTargetInfos(draggedId);
 
       const mergeResult = findNearestMergeTarget(
-        pos.x * size.width,
-        pos.y * size.height,
+        pos.x * table.width,
+        pos.y * table.height,
         draggedFaceUp,
         targets,
       );
@@ -275,7 +290,6 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
           cards: [targetCard.id, draggedComp.id],
           position: targetPos,
           faceUp: sharedFaceUp,
-          hideCountBadge: false,
           actions: [{ type: "draw-face-down", label: "Piocher" }],
         };
 
@@ -299,15 +313,15 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       setHighlightedZoneId(null);
       useCardStateStore.getState().selectComponent(null);
     },
-    [size, buildMergeTargetInfos, getCardPosition, getDraggedFaceUp],
+    [table, buildMergeTargetInfos, getCardPosition, getDraggedFaceUp],
   );
 
   const handleSnapToZone = useCallback(
     (cardId: string) => {
       const pos = getCardPosition(cardId) ?? { x: 0.5, y: 0.5 };
       const snapResult = findNearestSnapZone(
-        pos.x * size.width,
-        pos.y * size.height,
+        pos.x * table.width,
+        pos.y * table.height,
         zoneSnapInfos,
       );
       if (!snapResult) return false;
@@ -425,11 +439,11 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       const cardWidthRatio = cardSizeConfig.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
       const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
       const cardAspectRatio = cardSizeConfig.aspectRatio ?? DEFAULT_CARD_ASPECT;
-      const cardWidth = Math.max(size.width * cardWidthRatio, cardMinWidth);
+      const cardWidth = Math.max(table.width * cardWidthRatio, cardMinWidth);
       const cardHeight = cardWidth * cardAspectRatio;
 
-      const nx = (absPos.x + cardWidth / 2) / size.width;
-      const ny = (absPos.y + cardHeight / 2) / size.height;
+      const nx = (absPos.x + cardWidth / 2) / table.width;
+      const ny = (absPos.y + cardHeight / 2) / table.height;
       const clampedPos = {
         x: Math.max(0, Math.min(1, nx)),
         y: Math.max(0, Math.min(1, ny)),
@@ -454,7 +468,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
       // Now process snap/merge/drop as a normal card
       handleCardDragEnd(cardId);
     },
-    [handleCardDragEnd, getCardSize, game, size],
+    [handleCardDragEnd, getCardSize, game, table],
   );
 
   const makeDragMoveHandler = useCallback(
@@ -538,7 +552,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
   const cardSizeConfig = getCardSize(game ?? { cardSize: undefined, mobileCardSize: undefined });
   const cardWidthRatio = cardSizeConfig.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
   const cardMinWidth = cardSizeConfig.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
-  const cardWidth = Math.max(size.width * cardWidthRatio, cardMinWidth);
+  const cardWidth = Math.max(table.width * cardWidthRatio, cardMinWidth);
 
   const ACTION_BAR_GAP = 8;
   const ACTION_BAR_MARGIN = 4;
@@ -548,21 +562,21 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
   let actionBarSide: "left" | "right";
 
   if (selectedPosition) {
-    const cx = selectedPosition.x * size.width;
-    const cy = selectedPosition.y * size.height;
-    if (cx > size.width / 2) {
+    const cx = selectedPosition.x * table.width;
+    const cy = selectedPosition.y * table.height;
+    if (cx > table.width / 2) {
       actionBarSide = "left";
       actionBarX = Math.max(ACTION_BAR_MARGIN, cx - cardWidth / 2 - ACTION_BAR_GAP);
       actionBarY = cy;
     } else {
       actionBarSide = "right";
-      actionBarX = Math.min(size.width - ACTION_BAR_MARGIN, cx + cardWidth / 2 + ACTION_BAR_GAP);
+      actionBarX = Math.min(table.width - ACTION_BAR_MARGIN, cx + cardWidth / 2 + ACTION_BAR_GAP);
       actionBarY = cy;
     }
   } else if (selectedComponentId) {
     actionBarSide = "right";
-    actionBarX = size.width / 2 + 100;
-    actionBarY = size.height / 2;
+    actionBarX = table.width / 2 + 100;
+    actionBarY = table.height / 2;
   } else {
     actionBarSide = "right";
     actionBarX = 0;
@@ -572,7 +586,7 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
   logZOrder(`TableCanvas render visibleComponents (${visibleComponents.length})`, visibleComponents.map((c) => `${c.id}(${c.type})`));
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden">
+    <div ref={containerRef} className="relative w-full h-full overflow-hidden">
       <Stage width={size.width} height={size.height}>
         <Layer>
           <Rect
@@ -592,8 +606,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
               <LabelRenderer
                 key={component.id}
                 component={component}
-                viewportWidth={size.width}
-                viewportHeight={size.height}
+                viewportWidth={table.width}
+                viewportHeight={table.height}
                 positionOverride={labelPosOverride}
               />
             );
@@ -602,8 +616,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
             <RestartButtonRenderer
               key={component.id}
               component={component}
-              viewportWidth={size.width}
-              viewportHeight={size.height}
+              viewportWidth={table.width}
+              viewportHeight={table.height}
             />
           ))}
         </Layer>
@@ -618,8 +632,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
                 topCardFaceUp={topCard ? cardStateIsFaceUp(topCard.id) : undefined}
                 cardCount={getCardCount(component.id)}
                 highlighted={highlightedZoneId === component.id}
-                viewportWidth={size.width}
-                viewportHeight={size.height}
+                viewportWidth={table.width}
+                viewportHeight={table.height}
                 onTopCardDragStart={handleZoneCardDragStart}
                 onTopCardDragMove={handleZoneCardDragMove}
                 onTopCardDragEnd={handleZoneCardDragEnd}
@@ -640,8 +654,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
                   key={component.id}
                   component={renderComponent}
                   cardId={component.id}
-                  viewportWidth={size.width}
-                  viewportHeight={size.height}
+                  viewportWidth={table.width}
+                  viewportHeight={table.height}
                   highlighted={highlightedMergeTargetId === component.id}
                   onDragMove={makeDragMoveHandler(component.id)}
                   onDragEndCallback={handleCardDragEnd}
@@ -654,8 +668,8 @@ const [highlightedMergeTargetId, setHighlightedMergeTargetId] = useState<string 
                   key={component.id}
                   component={component}
                   deckId={component.id}
-                  viewportWidth={size.width}
-                  viewportHeight={size.height}
+                  viewportWidth={table.width}
+                  viewportHeight={table.height}
                   highlighted={highlightedMergeTargetId === component.id}
                   onDragMove={makeDragMoveHandler(component.id)}
                   onDragEndCallback={handleDeckDragEnd}

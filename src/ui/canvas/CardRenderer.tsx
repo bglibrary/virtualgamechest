@@ -4,17 +4,14 @@ import type Konva from "konva";
 import KonvaLib from "konva";
 import type { CardComponent, Position } from "@/types/game";
 import CardFaceImage from "@/ui/canvas/CardFaceImage";
-import {
-  computeCardDimensions,
-  DEFAULT_WIDTH_RATIO,
-  DEFAULT_MIN_WIDTH,
-  DEFAULT_ASPECT_RATIO,
-} from "@/ui/canvas/cardDimensions";
 
 const HIGHLIGHT_STROKE = "#FFD700";
 const HIGHLIGHT_STROKE_WIDTH = 4;
 const HIGHLIGHT_FILL = "rgba(255, 215, 0, 0.12)";
 
+export const DEFAULT_CARD_WIDTH_RATIO = 0.08;
+export const DEFAULT_CARD_MIN_WIDTH = 55;
+export const DEFAULT_CARD_ASPECT = 1.4;
 const CORNER_RADIUS_RATIO = 0.05;
 const FONT_SIZE_RATIO = 0.22;
 const BORDER_WIDTH = 2;
@@ -70,7 +67,13 @@ function CardRenderer({
   const { getCardSize, getPosition } = useDeviceLayout();
   const game = useGameStore((state) => state.game);
   const cardSizeConfig = getCardSize(game ?? {});
-  const { cardWidth, cardHeight } = computeCardDimensions(viewportWidth, viewportHeight, cardSizeConfig);
+  const cardWidthRatio = cardSizeConfig?.widthRatio ?? DEFAULT_CARD_WIDTH_RATIO;
+  const cardMinWidth = cardSizeConfig?.minWidth ?? DEFAULT_CARD_MIN_WIDTH;
+  const cardAspectRatio = cardSizeConfig?.aspectRatio ?? DEFAULT_CARD_ASPECT;
+
+  const cardWidth = Math.max(viewportWidth * cardWidthRatio, cardMinWidth);
+  console.log("[CardRenderer] dimensions:", { cardWidth, cardHeight: cardWidth * cardAspectRatio, viewportWidth, cardWidthRatio, cardMinWidth });
+  const cardHeight = cardWidth * cardAspectRatio;
   const cornerRadius = cardWidth * CORNER_RADIUS_RATIO;
   const fontSize = cardWidth * FONT_SIZE_RATIO;
 
@@ -233,10 +236,10 @@ function CardRenderer({
 }
 
 export default CardRenderer;
-export const CARD_WIDTH_RATIO = DEFAULT_WIDTH_RATIO;
-export const CARD_MIN_WIDTH = DEFAULT_MIN_WIDTH;
-export const CARD_ASPECT = DEFAULT_ASPECT_RATIO;
 export {
+  DEFAULT_CARD_WIDTH_RATIO as CARD_WIDTH_RATIO,
+  DEFAULT_CARD_MIN_WIDTH as CARD_MIN_WIDTH,
+  DEFAULT_CARD_ASPECT as CARD_ASPECT,
   CORNER_RADIUS_RATIO,
   FONT_SIZE_RATIO,
   BORDER_WIDTH,

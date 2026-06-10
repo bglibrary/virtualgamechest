@@ -8,9 +8,9 @@ import { useCardZOrderStore } from "@/store/cardZOrderStore";
 import { useGameStore } from "@/store/gameStore";
 import { useDeviceLayout } from "@/ui/hooks/useDeviceLayout";
 import CardRenderer, {
-  CARD_WIDTH_RATIO as DEFAULT_CARD_WIDTH_RATIO,
-  CARD_MIN_WIDTH as DEFAULT_CARD_MIN_WIDTH,
-  CARD_ASPECT as DEFAULT_CARD_ASPECT,
+  DEFAULT_CARD_WIDTH_RATIO,
+  DEFAULT_CARD_MIN_WIDTH,
+  DEFAULT_CARD_ASPECT,
 } from "@/ui/canvas/CardRenderer";
 import { WIGGLE_TOTAL_DURATION } from "@/ui/canvas/DeckRenderer";
 import DeckRenderer from "@/ui/canvas/DeckRenderer";
