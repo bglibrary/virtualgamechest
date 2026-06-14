@@ -476,6 +476,68 @@ describe("actionExecutor", () => {
     expect((drawn as any)?.mobilePosition).toBeUndefined();
   });
 
+  it("degenerates deck to standalone card when remove leaves exactly 1 card", async () => {
+    const game: GameDefinition = {
+      name: "Remove Degeneration Test",
+      version: "1.0.0",
+      components: [
+        {
+          type: "deck",
+          id: "remove-deck",
+          cards: ["card-to-keep", "card-to-remove"],
+          position: { x: 0.5, y: 0.5 },
+          mobilePosition: { x: 0.3, y: 0.5 },
+          faceUp: true,
+          hideCountBadge: false,
+          actions: [],
+        },
+        {
+          type: "card",
+          id: "card-to-keep",
+          face: { type: "text", text: "Keep" },
+          back: { type: "text", text: "Back" },
+          position: null,
+          mobilePosition: { x: 0.74, y: 0.5 },
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+        {
+          type: "card",
+          id: "card-to-remove",
+          face: { type: "text", text: "Remove" },
+          back: { type: "text", text: "Back" },
+          position: null,
+          actions: [{ type: "flip", label: "Flip" }],
+        },
+      ],
+    };
+
+    useGameStore.getState().setGame(game);
+    useDeckStateStore.getState().initDeck("remove-deck", ["card-to-keep", "card-to-remove"], true);
+
+    // Remove 1 card from top → 1 card remains → should degenerate
+    await executeAction("remove-deck", { type: "remove", count: 1 });
+
+    // Deck should be removed
+    expect(useGameStore.getState().game?.components.find(c => c.id === "remove-deck")).toBeUndefined();
+    expect(useDeckStateStore.getState().getCardCount("remove-deck")).toBe(0);
+
+    // The remaining card should be a standalone visible card at the deck position
+    const keptCard = useGameStore.getState().game?.components.find(c => c.id === "card-to-keep");
+    expect(keptCard).toBeDefined();
+    expect((keptCard as any)?.type).toBe("card");
+    // Card should have the deck's position (and not null)
+    expect((keptCard as any)?.position).not.toBeNull();
+    expect((keptCard as any)?.position?.x).toBe(0.5);
+    expect((keptCard as any)?.position?.y).toBe(0.5);
+    // FaceUp should match deck
+    expect(useCardStateStore.getState().isFaceUp("card-to-keep")).toBe(true);
+    // mobilePosition MUST be undefined
+    expect((keptCard as any)?.mobilePosition).toBeUndefined();
+
+    // Removed card should be gone
+    expect(useGameStore.getState().game?.components.find(c => c.id === "card-to-remove")).toBeUndefined();
+  });
+
   it("uses cardPositionStore runtime position in getEffectivePosition when deck was moved", async () => {
     const game: GameDefinition = {
       name: "Runtime Position Test",

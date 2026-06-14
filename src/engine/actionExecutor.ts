@@ -234,6 +234,22 @@ export async function executeAction(
         if (remaining.length === 0) {
           removeComponent(componentId);
           removeDeck(componentId);
+        } else if (remaining.length === 1) {
+          // Degenerate: replace the single-card deck with a standalone visible card
+          const lastCardId = remaining[0];
+          const lastCardComp = game.components.find((c) => c.id === lastCardId) as CardComponent;
+          const deckFaceUp = useDeckStateStore.getState().isFaceUp(componentId);
+          const deckPos = getEffectivePosition(component);
+          removeComponent(componentId);
+          removeDeck(componentId);
+          if (lastCardComp) {
+            setCardFaceUp(lastCardId, deckFaceUp);
+            replaceComponent(lastCardId, {
+              ...lastCardComp,
+              position: deckPos,
+              mobilePosition: undefined, // Clear so it renders at deckPos, not original mobilePosition
+            } as unknown as GameComponent);
+          }
         } else {
           // Update deck state store AND game store
           const { initDeck } = useDeckStateStore.getState();

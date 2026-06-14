@@ -122,3 +122,4 @@ During gameplay, players may need to remove cards permanently from the game (e.g
 | Date | Change | Author |
 |---|---|---|
 | 2026-01-06 | Initial draft | AI |
+| 2026-06-14 | Fix: remove on deck with 1 card remaining now properly degenerates to standalone card (was invisible) | Dev |
