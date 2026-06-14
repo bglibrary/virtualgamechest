@@ -17,10 +17,16 @@ import type {
 
 /**
  * Returns the effective position for a component based on the current device.
- * On mobile, uses mobilePosition if available, otherwise falls back to position.
- * On desktop, uses position directly.
+ * First checks if the component has been moved at runtime (cardPositionStore),
+ * then falls back to the component's mobilePosition (on mobile) or position.
  */
-function getEffectivePosition(component: { position: Position | null; mobilePosition?: Position | null }): Position {
+function getEffectivePosition(component: { id: string; position: Position | null; mobilePosition?: Position | null }): Position {
+  // Check runtime position first (component was dragged by the user)
+  const runtimePos = useCardPositionStore.getState().getCardPosition(component.id);
+  if (runtimePos) {
+    return runtimePos;
+  }
+  // Fall back to layout-aware static position
   const isMobile = useLayoutStore.getState().isMobile;
   if (isMobile && component.mobilePosition) {
     return component.mobilePosition;
