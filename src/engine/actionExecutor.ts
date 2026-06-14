@@ -170,7 +170,8 @@ export async function executeAction(
         replaceComponent(result.cardId, {
           ...cardComp,
           position: null, // Card is in a zone
-        });
+          mobilePosition: undefined, // Clear mobilePosition to prevent duplicate rendering on mobile
+        } as unknown as GameComponent);
 
         // Handle degeneration/emptying after each draw
         if (result.deckIsEmpty) {
@@ -346,7 +347,7 @@ function executeMergeStep(targetId: string, targetDeckId: string): void {
       // Set card position to null (hidden in deck) if it still exists in game store
       const cardComp = game.components.find((c) => c.id === cardId);
       if (cardComp && "position" in cardComp) {
-        replaceComponent(cardId, { ...cardComp, position: null } as GameComponent);
+        replaceComponent(cardId, { ...cardComp, position: null, mobilePosition: undefined } as unknown as GameComponent);
       }
     }
     // Zone stays in game, just emptied
@@ -363,7 +364,7 @@ function executeMergeStep(targetId: string, targetDeckId: string): void {
     // Merge card into deck
     addCardToTop(targetDeckId, targetId);
     if ("position" in targetComponent) {
-      replaceComponent(targetId, { ...targetComponent, position: null } as GameComponent);
+      replaceComponent(targetId, { ...targetComponent, position: null, mobilePosition: undefined } as unknown as GameComponent);
     }
     setFaceUp(targetId, useDeckStateStore.getState().isFaceUp(targetDeckId));
     removeFromZOrder(targetId);

@@ -13,12 +13,12 @@ function isEnabled(): boolean {
 
 export function enableZOrderDebug(): void {
   localStorage.setItem(DEBUG_KEY, "1");
-  console.log("[zOrder] DEBUG ENABLED");
+  console.debug("[zOrder] DEBUG ENABLED");
 }
 
 export function disableZOrderDebug(): void {
   localStorage.removeItem(DEBUG_KEY);
-  console.log("[zOrder] DEBUG DISABLED");
+  console.debug("[zOrder] DEBUG DISABLED");
 }
 
 export function initZOrderDebug(): void {
@@ -37,14 +37,14 @@ export function initZOrderDebug(): void {
 }
 
 export function logZOrder(...args: unknown[]): void {
-  console.log("[zOrder]", ...args);
+  console.debug("[zOrder]", ...args);
 }
 
 export function logZOrderGroup(label: string, ...args: unknown[]): void {
   if (!isEnabled()) return;
   console.group(`[zOrder] ${label}`);
   for (const arg of args) {
-    console.log(arg);
+    console.debug(arg);
   }
   console.groupEnd();
 }

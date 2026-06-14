@@ -38,7 +38,7 @@ export function useDeviceLayout(): DeviceLayout {
     }
     // We are in game mode — use real device detection
     const detected = isMobileDevice();
-    console.log("[DeviceLayout] game mode: isMobile =", detected, "href:", window.location.href, "ua:", navigator.userAgent);
+    console.debug("[DeviceLayout] game mode: isMobile =", detected, "href:", window.location.href, "ua:", navigator.userAgent);
     return detected;
   }, [editorGameId, editLayout]);
   const setIsMobile = useLayoutStore((s) => s.setIsMobile);
@@ -56,11 +56,11 @@ export function useDeviceLayout(): DeviceLayout {
 
   const getCardSize = (game: GameWithCardSize): CardSize => {
     if (isMobile && game.mobileCardSize) {
-      console.log("[DeviceLayout] returning mobileCardSize:", game.mobileCardSize);
+      console.debug("[DeviceLayout] returning mobileCardSize:", game.mobileCardSize);
       return game.mobileCardSize;
     }
     const res = game.cardSize ?? DEFAULT_CARD_SIZE;
-    console.log("[DeviceLayout] returning cardSize:", res, "isMobile:", isMobile);
+    console.debug("[DeviceLayout] returning cardSize:", res, "isMobile:", isMobile);
     return res;
   };
 

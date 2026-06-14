@@ -270,7 +270,8 @@ function TableCanvas() {
           useDeckStateStore.getState().addCardToTop(targetDeck.id, draggedId);
           // Keep card in gameStore.components for DeckRenderer topCard/face lookup.
           // Replace with position:null so unsortedVisible filter hides it.
-          useGameStore.getState().replaceComponent(draggedId, { ...draggedComp, position: null });
+          // Also clear mobilePosition to prevent duplicate rendering on mobile.
+          useGameStore.getState().replaceComponent(draggedId, { ...draggedComp, position: null, mobilePosition: undefined } as any);
           useCardStateStore.getState().setFaceUp(draggedId, useDeckStateStore.getState().isFaceUp(targetDeck.id));
           useCardZOrderStore.getState().removeFromZOrder(draggedId);
           useCardPositionStore.getState().updateCardPosition(draggedId, { x: 0, y: 0 });
@@ -313,8 +314,9 @@ function TableCanvas() {
         useCardPositionStore.getState().updateCardPosition(newDeckId, targetPos);
         // Set both cards' position to null (filtered from visible by unsortedVisible)
         // but keep in gameStore.components for DeckRenderer topCard/face lookup
-        useGameStore.getState().replaceComponent(draggedComp.id, { ...draggedComp, position: null });
-        useGameStore.getState().replaceComponent(targetCard.id, { ...targetCard, position: null });
+        // Also clear mobilePosition to prevent duplicate rendering on mobile.
+        useGameStore.getState().replaceComponent(draggedComp.id, { ...draggedComp, position: null, mobilePosition: undefined } as any);
+        useGameStore.getState().replaceComponent(targetCard.id, { ...targetCard, position: null, mobilePosition: undefined } as any);
         useCardPositionStore.getState().updateCardPosition(draggedComp.id, { x: 0, y: 0 });
         useCardPositionStore.getState().updateCardPosition(targetCard.id, { x: 0, y: 0 });
       }
