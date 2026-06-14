@@ -1565,7 +1565,7 @@
         "card-75"
       ],
       "position": {
-        "x": 0.19,
+        "x": 0.30,
         "y": 0.27
       },
       "faceUp": true,
@@ -1576,7 +1576,7 @@
         }
       ],
       "mobilePosition": {
-        "x": 0.2,
+        "x": 0.19,
         "y": 0.2
       },
       "doubleClickActionLabel": "Mélanger"
@@ -2089,7 +2089,7 @@
         "card-92"
       ],
       "position": {
-        "x": 0.81,
+        "x": 0.70,
         "y": 0.27
       },
       "faceUp": true,
@@ -2100,7 +2100,7 @@
         }
       ],
       "mobilePosition": {
-        "x": 0.8,
+        "x": 0.81,
         "y": 0.2
       },
       "hideCountBadge": false,
