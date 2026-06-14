@@ -17,7 +17,7 @@
       "id": "tvx-1",
       "position": {
         "x": 0.3,
-        "y": 0.75
+        "y": 0.73
       },
       "mobilePosition": {
         "x": 0.2,
@@ -32,7 +32,7 @@
       "id": "tvx-2",
       "position": {
         "x": 0.5,
-        "y": 0.75
+        "y": 0.73
       },
       "mobilePosition": {
         "x": 0.5,
@@ -47,7 +47,7 @@
       "id": "tvx-3",
       "position": {
         "x": 0.7,
-        "y": 0.75
+        "y": 0.73
       },
       "mobilePosition": {
         "x": 0.8,
@@ -56,51 +56,6 @@
       "label": "Travaux 3",
       "snapRadius": 30,
       "hideCountBadge": true
-    },
-    {
-      "type": "zone",
-      "id": "plan-1",
-      "position": {
-        "x": 0.3,
-        "y": 0.25
-      },
-      "mobilePosition": {
-        "x": 0.2,
-        "y": 0.2
-      },
-      "label": "plan-1",
-      "snapRadius": 30,
-      "hideCountBadge": false
-    },
-    {
-      "type": "zone",
-      "id": "plan-2",
-      "position": {
-        "x": 0.5,
-        "y": 0.25
-      },
-      "mobilePosition": {
-        "x": 0.5,
-        "y": 0.2
-      },
-      "label": "plan-2",
-      "snapRadius": 30,
-      "hideCountBadge": false
-    },
-    {
-      "type": "zone",
-      "id": "plan-3",
-      "position": {
-        "x": 0.7,
-        "y": 0.25
-      },
-      "mobilePosition": {
-        "x": 0.8,
-        "y": 0.2
-      },
-      "label": "plan-3",
-      "snapRadius": 30,
-      "hideCountBadge": false
     },
     {
       "type": "deck",
@@ -1592,6 +1547,662 @@
         "y": 0.5
       },
       "label": "Relancer"
+    },
+    {
+      "type": "deck",
+      "id": "deck-1",
+      "cards": [
+        "card-0",
+        "card-1",
+        "card-67",
+        "card-68",
+        "card-69",
+        "card-70",
+        "card-71",
+        "card-72",
+        "card-73",
+        "card-74",
+        "card-75"
+      ],
+      "position": {
+        "x": 0.3,
+        "y": 0.27
+      },
+      "faceUp": true,
+      "actions": [
+        {
+          "type": "shuffle",
+          "label": "Mélanger"
+        }
+      ],
+      "mobilePosition": {
+        "x": 0.2,
+        "y": 0.2
+      },
+      "doubleClickActionLabel": "Mélanger"
+    },
+    {
+      "type": "card",
+      "id": "card-0",
+      "face": {
+        "type": "text",
+        "text": "F 1 1 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-70.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-1",
+      "face": {
+        "type": "text",
+        "text": "F 1 2 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-71.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-67",
+      "face": {
+        "type": "text",
+        "text": "F 1 3 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-72.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-68",
+      "face": {
+        "type": "text",
+        "text": "F 1 4 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-73.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-69",
+      "face": {
+        "type": "text",
+        "text": "F 1 5 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-74.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-70",
+      "face": {
+        "type": "text",
+        "text": "F 1 6 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-75.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-71",
+      "face": {
+        "type": "text",
+        "text": "F 1s 1 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-76.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-72",
+      "face": {
+        "type": "text",
+        "text": "F 1s 2 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-77.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-73",
+      "face": {
+        "type": "text",
+        "text": "F 1s 3 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-78.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-74",
+      "face": {
+        "type": "text",
+        "text": "F 1s 4 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-79.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-75",
+      "face": {
+        "type": "text",
+        "text": "F 1s 5 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-80.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "deck",
+      "id": "deck-2",
+      "cards": [
+        "card-76",
+        "card-77",
+        "card-78",
+        "card-79",
+        "card-80",
+        "card-81",
+        "card-82",
+        "card-83",
+        "card-84",
+        "card-85",
+        "card-86"
+      ],
+      "position": {
+        "x": 0.5,
+        "y": 0.27
+      },
+      "faceUp": true,
+      "actions": [
+        {
+          "type": "shuffle",
+          "label": "Mélanger"
+        }
+      ],
+      "mobilePosition": {
+        "x": 0.5,
+        "y": 0.2
+      },
+      "hideCountBadge": false,
+      "doubleClickActionLabel": "Mélanger"
+    },
+    {
+      "type": "card",
+      "id": "card-76",
+      "face": {
+        "type": "text",
+        "text": "F 2 1 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-81.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-77",
+      "face": {
+        "type": "text",
+        "text": "F 2 2 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-82.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-78",
+      "face": {
+        "type": "text",
+        "text": "F 2 3 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-83.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-79",
+      "face": {
+        "type": "text",
+        "text": "F 2 4 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-84.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-80",
+      "face": {
+        "type": "text",
+        "text": "F 2 5 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-85.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-81",
+      "face": {
+        "type": "text",
+        "text": "F 2 6 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-86.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-82",
+      "face": {
+        "type": "text",
+        "text": "F 2s 1 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-87.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-83",
+      "face": {
+        "type": "text",
+        "text": "F 2s 2 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-88.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-84",
+      "face": {
+        "type": "text",
+        "text": "F 2s 3 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-89.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-85",
+      "face": {
+        "type": "text",
+        "text": "F 2s 4 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-90.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-86",
+      "face": {
+        "type": "text",
+        "text": "F 2s 5 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-91.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "deck",
+      "id": "deck-3",
+      "cards": [
+        "card-87",
+        "card-88",
+        "card-89",
+        "card-90",
+        "card-91",
+        "card-92"
+      ],
+      "position": {
+        "x": 0.7,
+        "y": 0.27
+      },
+      "faceUp": true,
+      "actions": [
+        {
+          "type": "shuffle",
+          "label": "Mélanger"
+        }
+      ],
+      "mobilePosition": {
+        "x": 0.8,
+        "y": 0.2
+      },
+      "hideCountBadge": false,
+      "doubleClickActionLabel": "Mélanger"
+    },
+    {
+      "type": "card",
+      "id": "card-87",
+      "face": {
+        "type": "text",
+        "text": "F 3 1 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-92.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-88",
+      "face": {
+        "type": "text",
+        "text": "F 3 2 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-93.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-89",
+      "face": {
+        "type": "text",
+        "text": "F 3 3 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-94.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-90",
+      "face": {
+        "type": "text",
+        "text": "F 3 4 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-95.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-91",
+      "face": {
+        "type": "text",
+        "text": "F 3 5 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-96.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "id": "card-92",
+      "face": {
+        "type": "text",
+        "text": "F 3 6 Plan",
+        "image": "../img/welcome-to-your-perfect-home-solo/image-97.png"
+      },
+      "back": {
+        "type": "text",
+        "text": "Card Back"
+      },
+      "position": null,
+      "actions": [
+        {
+          "type": "flip",
+          "label": "Retourner"
+        }
+      ]
     }
   ],
   "startup": [
@@ -1619,6 +2230,33 @@
       "type": "merge",
       "target": "tvx-1",
       "targetDeck": "deck-0"
+    },
+    {
+      "type": "shuffle",
+      "target": "deck-1"
+    },
+    {
+      "type": "remove",
+      "target": "deck-1",
+      "count": 10
+    },
+    {
+      "type": "shuffle",
+      "target": "deck-2"
+    },
+    {
+      "type": "remove",
+      "target": "deck-2",
+      "count": 10
+    },
+    {
+      "type": "shuffle",
+      "target": "deck-3"
+    },
+    {
+      "type": "remove",
+      "target": "deck-3",
+      "count": 5
     }
   ]
 }
