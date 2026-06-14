@@ -17,7 +17,7 @@ describe("deck-to-card degeneration flow (US-5)", () => {
       components: [
         { type: "card" as const, id: "c1", face: { type: "text" as const, text: "Roi" }, back: { type: "text" as const, text: "Dos" }, position: null, actions: [{ type: "flip" as const, label: "flip" }] },
         { type: "card" as const, id: "c2", face: { type: "text" as const, text: "Dame" }, back: { type: "text" as const, text: "Dos" }, position: null, actions: [{ type: "flip" as const, label: "flip" }] },
-        { type: "deck" as const, id: "draw-pile", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: [{ type: "flip" as const, label: "flip" }, { type: "draw-face-up" as const, label: "draw-face-up" }, { type: "draw-face-down" as const, label: "draw-face-down" }] },
+        { type: "deck" as const, id: "draw-pile", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: [{ type: "flip" as const, label: "flip" }, { type: "draw-face-up" as const, label: "draw-face-up" }, { type: "draw-face-down" as const, label: "draw-face-down" }] },
       ],
     });
 
@@ -60,7 +60,7 @@ describe("deck-to-card degeneration flow (US-5)", () => {
       components: [
         { type: "card" as const, id: "c1", face: { type: "text" as const, text: "Roi" }, back: { type: "text" as const, text: "Dos" }, position: null, actions: [{ type: "flip" as const, label: "flip" }] },
         { type: "card" as const, id: "c2", face: { type: "text" as const, text: "Dame" }, back: { type: "text" as const, text: "Dos" }, position: null, actions: [{ type: "flip" as const, label: "flip" }] },
-        { type: "deck" as const, id: "draw-pile", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: true, actions: [{ type: "flip" as const, label: "flip" }, { type: "draw-face-up" as const, label: "draw-face-up" }, { type: "draw-face-down" as const, label: "draw-face-down" }] },
+        { type: "deck" as const, id: "draw-pile", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: true, hideCountBadge: false, actions: [{ type: "flip" as const, label: "flip" }, { type: "draw-face-up" as const, label: "draw-face-up" }, { type: "draw-face-down" as const, label: "draw-face-down" }] },
       ],
     });
 
@@ -92,7 +92,7 @@ describe("deck-to-card degeneration flow (US-5)", () => {
       version: "1.0.0",
       components: [
         { type: "card" as const, id: "c1", face: { type: "text" as const, text: "Roi" }, back: { type: "text" as const, text: "Dos" }, position: null, actions: [{ type: "flip" as const, label: "flip" }] },
-        { type: "deck" as const, id: "draw-pile", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: [{ type: "flip" as const, label: "flip" }, { type: "draw-face-up" as const, label: "draw-face-up" }, { type: "draw-face-down" as const, label: "draw-face-down" }] },
+        { type: "deck" as const, id: "draw-pile", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: [{ type: "flip" as const, label: "flip" }, { type: "draw-face-up" as const, label: "draw-face-up" }, { type: "draw-face-down" as const, label: "draw-face-down" }] },
       ],
     });
 
@@ -120,7 +120,7 @@ describe("empty deck removal flow (US-6)", () => {
       components: [
         { type: "card" as const, id: "c0", face: { type: "text" as const, text: "A" }, back: { type: "text" as const, text: "Dos" }, position: { x: 0.3, y: 0.5 }, actions: [{ type: "flip" as const, label: "flip" }] },
         { type: "card" as const, id: "c1", face: { type: "text" as const, text: "Roi" }, back: { type: "text" as const, text: "Dos" }, position: null, actions: [{ type: "flip" as const, label: "flip" }] },
-        { type: "deck" as const, id: "draw-pile", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: [{ type: "flip" as const, label: "flip" }, { type: "draw-face-up" as const, label: "draw-face-up" }, { type: "draw-face-down" as const, label: "draw-face-down" }] },
+        { type: "deck" as const, id: "draw-pile", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: [{ type: "flip" as const, label: "flip" }, { type: "draw-face-up" as const, label: "draw-face-up" }, { type: "draw-face-down" as const, label: "draw-face-down" }] },
       ],
     });
 

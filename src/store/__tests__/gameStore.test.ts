@@ -171,7 +171,7 @@ useGameStore.getState().setGame({
 name: "Test",
 version: "1.0.0",
 components: [
-{ type: "deck", id: "d1", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
+{ type: "deck", id: "d1", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: deckActions },
 ],
 });
 

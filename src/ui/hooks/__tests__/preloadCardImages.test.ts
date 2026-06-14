@@ -62,6 +62,7 @@ describe("collectCardImageUrls", () => {
           type: "zone",
           id: "zone-1",
           position: { x: 0.5, y: 0.5 },
+          hideCountBadge: false,
         },
         {
           type: "deck",
@@ -69,6 +70,7 @@ describe("collectCardImageUrls", () => {
           cards: ["card-1"],
           position: { x: 0.5, y: 0.5 },
           faceUp: false,
+          hideCountBadge: false,
           actions: [{ type: "draw-face-up", label: "Draw" }],
         },
       ],

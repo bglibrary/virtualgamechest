@@ -256,6 +256,7 @@ export function createDeckFromExistingCards(
     cards: cardIds,
     position: { x: 0.5, y: 0.5 },
     faceUp: false,
+    hideCountBadge: false,
     actions: [
       { type: "shuffle" as const, label: "Mélanger" },
       { type: "draw-face-up" as const, label: "Piocher" },
@@ -308,6 +309,7 @@ export function createDeckFromSlots(
     cards: cards.map((c) => c.id),
     position: { x: 0.5, y: 0.5 },
     faceUp: false,
+    hideCountBadge: false,
     actions: [
       { type: "shuffle" as const, label: "Mélanger" },
       { type: "draw-face-up" as const, label: "Piocher" },

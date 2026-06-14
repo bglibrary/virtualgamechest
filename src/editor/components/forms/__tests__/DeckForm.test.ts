@@ -16,6 +16,7 @@ function createGameWithCardAndDeck(): GameDefinition {
     cards: [],
     position: { x: 0.5, y: 0.5 },
     faceUp: false,
+    hideCountBadge: false,
     actions: [{ type: "flip", label: "Flip" }],
   };
   return {

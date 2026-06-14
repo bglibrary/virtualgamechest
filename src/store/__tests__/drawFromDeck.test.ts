@@ -37,7 +37,7 @@ describe("full draw flow", () => {
         { type: "card", id: "c1", face: { type: "text", text: "Roi" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
         { type: "card", id: "c2", face: { type: "text", text: "Dame" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
         { type: "card", id: "c3", face: { type: "text", text: "Valet" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
-        { type: "deck", id: "draw-pile", cards: ["c1", "c2", "c3"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
+        { type: "deck", id: "draw-pile", cards: ["c1", "c2", "c3"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: deckActions },
       ],
     });
 
@@ -71,7 +71,7 @@ describe("full draw flow", () => {
       components: [
         { type: "card", id: "c1", face: { type: "text", text: "A" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
         { type: "card", id: "c2", face: { type: "text", text: "B" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
-        { type: "deck", id: "d1", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
+        { type: "deck", id: "d1", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: deckActions },
       ],
     });
 
@@ -95,7 +95,7 @@ describe("full draw flow", () => {
       components: [
         { type: "card", id: "c1", face: { type: "text", text: "A" }, back: { type: "text", text: "DosA" }, position: null, actions: [flipAction] },
         { type: "card", id: "c2", face: { type: "text", text: "B" }, back: { type: "text", text: "DosB" }, position: null, actions: [flipAction] },
-        { type: "deck", id: "d1", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
+        { type: "deck", id: "d1", cards: ["c1", "c2"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: deckActions },
       ],
     });
 
@@ -130,7 +130,7 @@ describe("full draw flow", () => {
       version: "1.0.0",
       components: [
         { type: "card", id: "c1", face: { type: "text", text: "A" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
-        { type: "deck", id: "d1", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
+        { type: "deck", id: "d1", cards: ["c1"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: deckActions },
       ],
     });
 
@@ -161,7 +161,7 @@ describe("full draw flow", () => {
         { type: "card", id: "c1", face: { type: "text", text: "A" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
         { type: "card", id: "c2", face: { type: "text", text: "B" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
         { type: "card", id: "c3", face: { type: "text", text: "C" }, back: { type: "text", text: "Dos" }, position: null, actions: [flipAction] },
-        { type: "deck", id: "d1", cards: ["c1", "c2", "c3"], position: { x: 0.7, y: 0.5 }, faceUp: false, actions: deckActions },
+        { type: "deck", id: "d1", cards: ["c1", "c2", "c3"], position: { x: 0.7, y: 0.5 }, faceUp: false, hideCountBadge: false, actions: deckActions },
       ],
     });
 

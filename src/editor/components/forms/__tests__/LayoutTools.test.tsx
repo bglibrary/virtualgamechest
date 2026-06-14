@@ -26,9 +26,9 @@ describe("LayoutTools", () => {
   describe("alignment", () => {
     it("should align left to minimum X", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -44,9 +44,9 @@ describe("LayoutTools", () => {
 
     it("should align right to maximum X", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -62,9 +62,9 @@ describe("LayoutTools", () => {
 
     it("should align center to average X", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -81,9 +81,9 @@ describe("LayoutTools", () => {
 
     it("should align top to minimum Y", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -99,9 +99,9 @@ describe("LayoutTools", () => {
 
     it("should align middle to average Y", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -118,9 +118,9 @@ describe("LayoutTools", () => {
 
     it("should align bottom to maximum Y", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.8, y: 0.2 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -136,8 +136,8 @@ describe("LayoutTools", () => {
 
     it("should only affect the relevant axis for horizontal alignment", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -152,8 +152,8 @@ describe("LayoutTools", () => {
 
     it("should only affect the relevant axis for vertical alignment", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -167,7 +167,7 @@ describe("LayoutTools", () => {
     });
 
     it("should be a no-op with fewer than 2 components", async () => {
-      const zone = { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 };
+      const zone = { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false };
       const game = createGameWithComponents([zone]);
       useEditorStore.getState().openGame("test", game);
 
@@ -182,9 +182,9 @@ describe("LayoutTools", () => {
   describe("distribution", () => {
     it("should distribute horizontally evenly", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.1, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.5 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.9, y: 0.5 }, label: "Z3", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.1, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.5 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.9, y: 0.5 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -203,9 +203,9 @@ describe("LayoutTools", () => {
 
     it("should distribute vertically evenly", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.1 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.5, y: 0.3 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.5, y: 0.9 }, label: "Z3", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.1 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.5, y: 0.3 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.5, y: 0.9 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -224,8 +224,8 @@ describe("LayoutTools", () => {
 
     it("should be a no-op with fewer than 3 components", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.1, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.9, y: 0.5 }, label: "Z2", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.1, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.9, y: 0.5 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -240,10 +240,10 @@ describe("LayoutTools", () => {
 
     it("should keep first and last component positions when distributing", async () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.1, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.5 }, label: "Z2", snapRadius: 30 },
-        { type: "zone" as const, id: "z3", position: { x: 0.7, y: 0.5 }, label: "Z3", snapRadius: 30 },
-        { type: "zone" as const, id: "z4", position: { x: 0.9, y: 0.5 }, label: "Z4", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.1, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.5 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z3", position: { x: 0.7, y: 0.5 }, label: "Z3", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z4", position: { x: 0.9, y: 0.5 }, label: "Z4", snapRadius: 30, hideCountBadge: false },
       ];
       const game = createGameWithComponents(zones);
       useEditorStore.getState().openGame("test", game);
@@ -260,8 +260,8 @@ describe("LayoutTools", () => {
   describe("rendering", () => {
     it("should render all alignment buttons", () => {
       const zones = [
-        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30 },
-        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30 },
+        { type: "zone" as const, id: "z1", position: { x: 0.5, y: 0.5 }, label: "Z1", snapRadius: 30, hideCountBadge: false },
+        { type: "zone" as const, id: "z2", position: { x: 0.3, y: 0.7 }, label: "Z2", snapRadius: 30, hideCountBadge: false },
       ];
       render(<LayoutTools components={zones} />);
 
