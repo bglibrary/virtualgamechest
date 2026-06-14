@@ -102,7 +102,8 @@ export async function executeAction(
           replaceComponent(result.cardId, {
             ...cardComp,
             position: result.position,
-          });
+            mobilePosition: undefined, // Clear so it renders at drawn position, not original mobilePosition
+          } as unknown as GameComponent);
 
           if (result.deckIsEmpty) {
             removeComponent(componentId);
@@ -127,7 +128,8 @@ export async function executeAction(
             replaceComponent(lastCardId, {
               ...lastCardComp,
               position: deckPos,
-            });
+              mobilePosition: undefined, // Clear so it renders at deckPos, not original mobilePosition
+            } as unknown as GameComponent);
           }
         }
         }
@@ -201,7 +203,8 @@ export async function executeAction(
             replaceComponent(lastCardId, {
               ...lastCardComp,
               position: deckPos,
-            });
+              mobilePosition: undefined, // Clear so it renders at deckPos, not original mobilePosition
+            } as unknown as GameComponent);
           }
         }
       }
